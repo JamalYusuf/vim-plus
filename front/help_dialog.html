@@ -1,0 +1,447 @@
+<div class="R Scroll UI" id="HDlg" tabindex="0">
+<style>
+.R.H {
+	all: initial; /** in C45-C55, `.R{all:initial}` forces `transform` to be "matrix(1, 0, 0, 1, 0, 0)" - hide the box */
+	contain: none;
+	/** add this line just in case */ pointer-events: all;
+	-webkit-user-select: auto;
+	user-select: auto;
+}
+#HDlg {
+	background: #fafafa;
+	border: 2px solid #e11d48;
+	border-radius: 0;
+	box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+	box-sizing: border-box;
+	contain: content;
+	left: calc(50% - 479px);
+	line-height: 130%;
+	max-height: calc(100% - 114px);
+	min-height: 25px;
+	overflow: auto;
+	overscroll-behavior: contain;
+	padding: 10px 10px 0 18px;
+	scrollbar-gutter: stable;
+	top: 52px;
+	-webkit-user-select: auto;
+	user-select: auto;
+	width: 958px;
+	color: #18181b;
+}
+#HDlg:focus {
+	outline: none;
+}
+#HelpContent {
+	width: 920px;
+}
+#HelpBanner {
+	min-height: 28px;
+	padding: 4px 2px 6px;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+	border-bottom: 2px solid #e11d48;
+	margin-bottom: 4px;
+}
+#HelpTitle {
+	font-size: 20px;
+	line-height: 130%;
+	font-weight: 700;
+	letter-spacing: -0.02em;
+}
+#HelpLinks {
+	float: none;
+	position: relative;
+	top: 0;
+	font-size: 0;
+	display: flex;
+	align-items: center;
+	gap: 2px;
+	flex-wrap: wrap;
+	justify-content: flex-end;
+}
+
+.Vim {
+	color: #e11d48;
+}
+.VimC {
+	color: #be123c;
+}
+.title2 {
+	font-size: 14px;
+	padding-left: 8px;
+	font-weight: 500;
+	color: #52525b;
+	opacity: 0.95;
+}
+.HelpQuick {
+	margin: 8px 0 4px;
+	padding: 8px 10px;
+	background: #fff1f2;
+	border-left: 3px solid #e11d48;
+	font-size: 12.5px;
+	line-height: 1.45;
+	color: #3f3f46;
+}
+.HelpQuick kbd {
+	font-family: Menlo, Monaco, Consolas, monospace;
+	background: #e11d48;
+	color: #fff;
+	border: 1px solid #9f1239;
+	padding: 0 5px;
+	font-size: 11px;
+}
+.HelpQuick a.VimL {
+	margin: 0 2px;
+}
+.HelpTables {
+	border-spacing: 0;
+	color: inherit;
+	table-layout: fixed;
+	width: 920px;
+}
+.HTablesTop {
+	vertical-align: top;
+}
+.HelpTable {
+	border-collapse: separate;
+	border-spacing: 5.5px 3px;
+	color: inherit;
+	contain: content;
+	line-height: 130%;
+	/* XML pages have a different default value of "word-break" */
+	word-break: normal;
+}
+.HColumn {
+	white-space: normal;
+	font: 12px/1 "Helvetica Neue",Arial,sans-serif;
+}
+.HelpTd {
+	line-height: 19.2px;
+	padding: 0;
+	vertical-align: top;
+}
+.TdBottom {
+	visibility: hidden;
+}
+.HDivider {
+	/* keep 1px so it can be more conspicuous than 0.5px */
+	border-bottom: 1px solid #ddd;
+	clear: both;
+	height: 1px;
+	margin: 10px 1px;
+}
+
+.HelpAdv {
+	display: none;
+}
+.HelpDA .HelpAdv {
+	display: table-row;
+}
+
+.HelpKeys {
+	clear: both;
+	font-family: Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+	text-align: right;
+	white-space: nowrap;
+}
+.HelpLongKeys {
+	text-align: left;
+}
+.HelpKey {
+	background-color: #18181b;
+	border: 1px solid #3f3f46;
+	border-bottom: 2px solid #e11d48;
+	border-radius: 0;
+	padding: 1px 5px 0;
+	color: #fafafa;
+	font-weight: 600;
+}
+.HelpCommandInfo {
+	font-size: 13.5px;
+	word-break: break-word;
+	overflow-wrap: anywhere;
+	width: 100%;
+	color: inherit;
+}
+.HelpCommandName {
+	font-style: italic;
+	cursor: pointer;
+	font-size: 11.5px;
+	color: #71717a;
+}
+.HelpSectionTitle {
+	font-size: 15px;
+	font-weight: 700;
+	line-height: 24px;
+	color: #e11d48;
+	letter-spacing: -0.01em;
+	padding-bottom: 2px;
+}
+
+.VimL {
+	all: initial;
+	background: none;
+	border: none;
+	box-shadow: none;
+	color: #e11d48;
+	cursor: pointer;
+	font: inherit;
+	padding: 0;
+	text-decoration: none;
+}
+.VimL:visited {
+	color: #e11d48;
+}
+.VimL:hover {
+	color: #be123c;
+	text-decoration: underline;
+}
+.VimL:active {
+	color: #9f1239;
+}
+.VimL:focus {
+	outline: 2px solid #e11d48;
+	outline-offset: 1px;
+}
+.TopLink {
+	font-size: 12.5px;
+	font-weight: 600;
+	margin: 0;
+	padding: 4px 8px;
+	border: 1px solid transparent;
+	letter-spacing: 0.01em;
+}
+.TopLink:hover {
+	background: rgba(225, 29, 72, 0.1);
+	border-color: #e11d48;
+	text-decoration: none !important;
+}
+#HCls {
+	color: #52525b;
+	margin: 0 1px;
+	padding: 4px 6px;
+	line-height: 0;
+}
+#HCls:hover {
+	color: #e11d48;
+	background: rgba(225, 29, 72, 0.1);
+}
+#HCls:active, #HCls:focus {
+	color: #e11d48;
+	outline: none;
+}
+#HCloseT {
+	vertical-align: middle;
+}
+
+#HelpFooter {
+	font-size: 13px;
+	line-height: 16px;
+	margin-bottom: 10px;
+	position: relative;
+}
+#HelpTip, #HAdv {
+	position: absolute;
+	top: -34px;
+}
+#HelpVersion {
+	float: right;
+}
+#HAdv {
+	right: 0;
+	text-decoration: none;
+}
+#HAdv:hover {
+	text-decoration: underline;
+}
+@media (max-width: 999.9px) {
+	#HDlg {
+		left: calc(50% - 419px);
+		width: 838px;
+	}
+	#HelpContent, .HelpTables {
+		width: 800px;
+	}
+}
+@media (max-width: 859.9px) {
+	#HDlg {
+		left: 4px;
+		right: 4px;
+		width: auto;
+	}
+	#HelpContent {
+		padding-right: 12px;
+	}
+}
+.D>#HDlg {
+	background: #0a0a0b;
+	border-color: #e11d48;
+	color: #e4e4e7;
+	box-shadow: 0 12px 40px rgba(0, 0, 0, 0.65);
+}
+.D #HelpBanner { border-bottom-color: #e11d48; }
+.D .title2 { color: #a1a1aa; }
+.D .HelpQuick {
+	background: rgba(225, 29, 72, 0.1);
+	color: #e4e4e7;
+}
+.D .HelpSectionTitle { color: #fb7185; }
+.D .HelpCommandInfo { color: #f4f4f5; }
+.D .HelpCommandName { color: #a1a1aa; }
+.D .Vim { color: #fb7185; }
+.D .VimC { color: #fda4af; }
+.D .VimL, .D #HCls { color: #fb7185; }
+.D .VimL:hover, .D #HCls:hover { color: #fda4af; }
+.D .TopLink:hover {
+	background: rgba(225, 29, 72, 0.16);
+	border-color: #e11d48;
+}
+.D .HDivider { border-color: #3f3f46; }
+.D .HelpKey {
+	background: #e11d48;
+	color: #fff;
+	border-color: #9f1239;
+	border-bottom-color: #fda4af;
+}
+.D #HelpFooter { color: #a1a1aa; }
+.D #HelpVersion { color: #d4d4d8; }
+@media (forced-colors: active) {
+	#HDlg {
+		border-radius: 0;
+	}
+	.HelpKey {
+		border-bottom-width: 1px;
+		border-radius: 0;
+		padding: 1px 4px;
+	}
+}
+
+/* Scrollbar */
+.D>.Scroll::-webkit-scrollbar:vertical, .D>.Scroll::-webkit-scrollbar:horizontal {
+	border-color: #555;
+}
+.D>.Scroll:hover::-webkit-scrollbar-thumb {
+	background: #666;
+}
+.Scroll::-webkit-scrollbar,
+.Scroll::-webkit-scrollbar-track,
+.Scroll::-webkit-scrollbar-thumb {
+	background: none;
+	border: none;
+	border-radius: 6px;
+	box-shadow: none;
+	overflow: hidden;
+}
+.Scroll::-webkit-scrollbar:vertical {
+	border-radius: 0 6px 6px 0;
+	border-left: 1px solid #ddd;
+	width: 12px;
+}
+.Scroll::-webkit-scrollbar:horizontal {
+	border-radius: 0 0 6px 6px;
+	border-top: 1px solid #ddd;
+	height: 12px;
+}
+.Scroll:hover::-webkit-scrollbar-thumb {
+	background: #ccc;
+}
+.Scroll::-webkit-scrollbar-thumb:vertical {
+	border-radius: 0 6px 6px 0;
+}
+.Scroll::-webkit-scrollbar-thumb:horizontal {
+	border-radius: 0 0 6px 6px;
+}
+#HDlg.Scroll::-webkit-scrollbar-thumb:hover {
+	background: #929292;
+}
+#HDlg.Scroll::-webkit-scrollbar-thumb:active {
+	background: #666;
+}
+@media (forced-colors: active) {
+	.Scroll::-webkit-scrollbar-thumb:vertical {
+		border: 2px solid #ddd;
+		border-left-width: 1px;
+		border-radius: 0;
+		border-right: none;
+	}
+	.Scroll::-webkit-scrollbar-thumb:horizontal {
+		border: 1px solid #ddd;
+		border-bottom: none;
+		border-radius: 0;
+		border-top-width: 1px;
+	}
+}
+</style>
+
+<div id="HelpContent">
+	<div id="HelpBanner">
+		<span id="HelpTitle"><span class="Vim">Vim</span><span class="VimC">+</span>{{name2}}<span class="title2">{{title2}}</span></span>
+		<span id="HelpLinks">
+			<a class="VimL TopLink HLaunch" id="HWiki" href="{{wikiPage}}" data-vim-url="{{wikiPage}}">$Wiki</a>
+			<a class="VimL TopLink HLaunch" id="HBrowserKeys" href="{{browserHelp}}" data-vim-url="{{browserHelp}}">$browserHelp</a>
+			<a class="VimL TopLink HLaunch" id="HOpt" href="{{optionsPage}}" data-vim-url="{{optionsPage}}">$Options</a>
+			<button class="VimL TopLink" id="HCls" title="$Close"
+					><svg xmlns="http://www.w3.org/2000/svg" id="HCloseT" width="12px" height="12px" stroke="currentColor">
+				<path d="M2 2l8 8zM2 10L10 2" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"></path>
+			</svg></button>
+		</span>
+	</div>
+	<div class="HelpQuick">
+		<strong>Quick:</strong>
+		<kbd>f</kbd> hints ·
+		<kbd>o</kbd> omnibar ·
+		<kbd>j</kbd>/<kbd>k</kbd> scroll ·
+		<kbd>gS</kbd> panel ·
+		<kbd>gA</kbd> windows ·
+		<kbd>o</kbd> then <kbd>:</kbd> actions ·
+		<kbd>Alt</kbd>+↑ dock / again full ·
+		<a class="VimL HLaunch" href="{{wikiHashbangs}}" data-vim-url="{{wikiHashbangs}}">hashbangs</a> ·
+		<a class="VimL HLaunch" href="{{wikiKeys}}" data-vim-url="{{wikiKeys}}">keys</a> ·
+		<a class="VimL HLaunch" href="{{wikiPanel}}" data-vim-url="{{wikiPanel}}">panel</a>
+	</div>
+	<table class="HelpTables"><tbody><tr>
+	<td class="HTablesTop"><table class="HelpTable">
+		<tbody class="HColumn">
+			<tr><td class="HelpTd"></td><td class="HelpTd HelpSectionTitle">$pageNav</td></tr>
+{{pageNavigation}}{{lbPad}}
+		</tbody>
+	</table></td><td class="HTablesTop"><table class="HelpTable">
+		<tbody class="HColumn">
+			<tr><td class="HelpTd"></td><td class="HelpTd HelpSectionTitle">$useVomnibar</td></tr>
+{{vomnibarCommands}}
+			<tr><td class="HelpTd"></td><td class="HelpTd HelpSectionTitle">$useFind</td></tr>
+{{findCommands}}
+			<tr><td class="HelpTd"></td><td class="HelpTd HelpSectionTitle">$historyNav</td></tr>
+{{historyNavigation}}
+			<tr><td class="HelpTd"></td><td class="HelpTd HelpSectionTitle">$changeTabs</td></tr>
+{{tabManipulation}}
+			<tr><td class="HelpTd"></td><td class="HelpTd HelpSectionTitle">$misc</td></tr>
+{{misc}}
+			<tr><td class="HelpTd TdBottom">&#160;</td></tr>
+		</tbody>
+	</table>
+	</td></tr></tbody></table>
+
+	<div class="HDivider"></div>
+
+	<div id="HelpFooter">
+		<div id="HelpTip">{{tip}}</div>
+		<button class="VimL" id="HAdv"
+				><span data-s="$Show" data-h="$Hide">$Show</span><span>$advCmd</span></button>
+
+			<div id="HelpVersion">$VerIs<a
+					class="VimL HLaunch" href="{{release}}" data-vim-url="{{release}}"
+				>{{version}}</a></div>
+			<span class="Vim">Vim</span><span class="VimC">+</span>
+			by <a class="VimL HLaunch" href="{{authorSite}}" data-vim-url="{{authorSite}}">Jamal Yusuf</a>
+			· <a class="VimL HLaunch" href="{{wikiPage}}" data-vim-url="{{wikiPage}}">$Wiki</a>
+			· <a class="VimL HLaunch" href="{{optionsPage}}" data-vim-url="{{optionsPage}}">$Options</a>
+			· <a class="VimL HLaunch" href="{{browserHelp}}" data-vim-url="{{browserHelp}}">$browserHelp</a>
+			· <a class="VimL HLaunch" href="{{reviewPage}}" data-vim-url="{{reviewPage}}">About</a>
+			<br/>
+			Docs stay inside the extension — no external GitHub required.
+	</div>
+</div>
+</div>

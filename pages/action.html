@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html spellcheck="false" style="width: 420px; min-height: 360px;" class="loading vp-dark">
+  <head>
+    <meta charset="utf-8">
+    <title>Vim+ Popup</title>
+    <meta name="color-scheme" content="dark light">
+    <script src="theme-boot.js"></script>
+    <script type="module" src="async_bg.js"></script>
+    <link rel="stylesheet" href="options.css">
+    <link rel="stylesheet" href="vim-plus-theme.css">
+    <script type="module" src="options_base.js"></script>
+    <script type="module" src="options_action.js"></script>
+    <style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html.loading { content-visibility: hidden; }
+body {
+  width: 420px;
+  background: var(--vp-bg, #0a0a0b);
+  color: var(--vp-fg, #f4f4f5);
+  font-family: var(--vp-font, system-ui, sans-serif);
+}
+#state {
+  background: var(--vp-bg-panel, #161618);
+  border-bottom: 2px solid var(--vp-red, #e11d48);
+  line-height: 18px;
+  margin: 0;
+  padding: 10px 12px 10px 36px;
+  text-indent: -24px;
+  width: 100%;
+  font-size: 13px;
+}
+#state-value {
+  color: var(--vp-red, #e11d48);
+  font-weight: 600;
+}
+.action { color: var(--vp-red, #e11d48); }
+a.decorate-none:not(:hover) { text-decoration: none; }
+.accesskey { text-decoration: underline; text-underline-offset: 2px; }
+
+#quick-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1px;
+  background: var(--vp-border-color, #27272a);
+  border-bottom: 1px solid var(--vp-border-color, #27272a);
+}
+#quick-actions button, #quick-actions a.qa {
+  font: 12px/1.2 var(--vp-font, system-ui, sans-serif);
+  padding: 10px 8px;
+  border: none;
+  border-radius: 0;
+  background: var(--vp-bg-elevated, #111113);
+  color: var(--vp-fg, #f4f4f5);
+  cursor: pointer;
+  text-decoration: none;
+  text-align: center;
+  letter-spacing: 0.02em;
+}
+#quick-actions button:hover, #quick-actions a.qa:hover {
+  background: var(--vp-red, #e11d48);
+  color: #fff;
+}
+#cheat {
+  padding: 8px 12px;
+  font: 11px/1.45 var(--vp-font, system-ui, sans-serif);
+  color: var(--vp-fg-muted, #a1a1aa);
+  border-bottom: 1px solid var(--vp-border-color, #27272a);
+  background: var(--vp-bg, #0a0a0b);
+}
+#cheat kbd {
+  font: 10px var(--vp-mono, monospace);
+  background: var(--vp-red, #e11d48);
+  color: #fff;
+  padding: 1px 4px;
+  margin-right: 1px;
+}
+#cheat .sep { opacity: .35; margin: 0 3px; }
+
+#exclusionRules {
+  height: 140px;
+  max-height: 140px;
+  margin: 0;
+  padding: 0 0 2px;
+}
+p { margin-top: 5px; }
+#helpText, #state {
+  font-family: var(--vp-font, system-ui, sans-serif);
+}
+#footer {
+  box-sizing: border-box;
+  min-height: 40px;
+  padding: 8px 10px;
+  position: static !important;
+  text-align: right;
+  width: 100%;
+  background: var(--vp-bg-panel, #161618);
+  border-top: 1px solid var(--vp-border-color, #27272a);
+}
+#helpText {
+  margin-top: 0;
+  text-align: left;
+  font-size: 12px;
+  color: var(--vp-fg-muted, #a1a1aa);
+}
+#footer button {
+  margin-left: 6px;
+}
+#blocked-msg {
+  box-sizing: border-box;
+  display: none;
+  padding: 12px 16px 16px;
+  background: var(--vp-bg, #0a0a0b);
+}
+#blocked-msg h4 {
+  font-size: 15px;
+  margin-bottom: 8px;
+  border-bottom: 2px solid var(--vp-red, #e11d48);
+  padding-bottom: 6px;
+}
+    </style>
+  </head>
+  <body>
+    <div id="state">
+      <span class="Vim">Vim</span><span class="C">+</span>
+      <span id="state-action"></span><span></span><span></span>
+    </div>
+
+    <div id="quick-actions">
+      <button type="button" id="qa-help" title="Show help on page">Help (?)</button>
+      <button type="button" id="qa-sidepanel" title="Open side panel (gS)">Side panel</button>
+      <button type="button" id="qa-reading" title="Add tab to Reading List (yr)">Read later</button>
+      <a class="qa options-link" href="options.html" target="_blank">Options</a>
+      <button type="button" id="qa-bookmark" title="Bookmark this page">Bookmark</button>
+      <a class="qa" id="qa-shortcuts" href="chrome://extensions/shortcuts" target="_blank">Shortcuts</a>
+    </div>
+    <div id="cheat">
+      <kbd>f</kbd> hints <span class="sep">·</span>
+      <kbd>F</kbd> new tab <span class="sep">·</span>
+      <kbd>o</kbd> open <span class="sep">·</span>
+      <kbd>j</kbd>/<kbd>k</kbd> scroll <span class="sep">·</span>
+      <kbd>yg</kbd> group <span class="sep">·</span>
+      <kbd>yr</kbd> read later <span class="sep">·</span>
+      <kbd>gS</kbd> panel
+    </div>
+
+    <div id="exclusionRules">
+      <table id="exclusionTable" class="code">
+        <thead><tr>
+          <td><span class="exclusionHeader" data-i="Patterns">Patterns</span></td>
+          <td class="exclusionPassKeysTd"><span class="exclusionHeader" data-i="Keys">Keys</span></td>
+          <td class="exclusionRemoveTd"></td>
+        </tr></thead>
+        <tbody></tbody>
+      </table>
+      <template id="exclusionTemplate"><table><tr class="exclusionRule">
+          <td>
+            <input autocomplete="off" type="text" class="pattern" placeholder=":https://example.net/"
+                spellcheck="false" />
+          </td>
+          <td>
+            <input autocomplete="off" type="text" class="passKeys" placeholder="f j &lt;c-j&gt; K" lang="en"
+                spellcheck="false" />
+          </td>
+          <td>
+            <a class="remove" role="button" tabindex="0" title="Remove"
+                ><svg class="btn_svg" viewBox="0 0 16 16"><path d="M4 4l8 8zM4 12L12 4"></path></svg></a>
+          </td>
+        </tr></table>
+      </template>
+    </div>
+
+    <div id="footer">
+      <span id="helpText">
+        <a id="toggleOnce" href="vimium://status toggle" class="decorate-none"
+            tabindex="1" role="button" accesskey="x">
+        <span>Disable for once</span> (<span class="accesskey">X</span>)</a><span class="hidden"> /
+        <a id="resetStatus" href="vimium://status reset" class="decorate-none"
+            tabindex="1" role="button" accesskey="z">
+        <span data-i="121">Reset</span> (<span class="accesskey">Z</span>)</a></span><span
+            data-i="period">.</span><span data-i="NS">
+        </span><a class="options-link" href="options.html" target="_blank" tabindex="1" data-i="121_2">Options</a><span
+            data-i="period">.</span>
+        <span data-i="VerIs">Version </span><span id="version"></span><span
+            data-i="period">.</span>
+        <br>
+        <span id="helpSpan" data-i="122">In table are the rules matching this page.</span>
+        <span style="display: none;"><strong><kbd>&lt;c-enter&gt;</kbd></strong>
+          <span data-i="123">to save and close.</span></span>
+      </span>
+      <button id="exclusionAddButton" class="fixed-size" data-i="2">Add rule</button>
+      <button id="saveOptions" class="fixed-size primary" disabled="disabled">No changes</button>
+    </div>
+    <div id="blocked-msg" style="box-sizing: border-box; display: none; padding: 8px 20px 12px;">
+      <h4>
+        <span class="Vim">Vim</span><span class="C">+</span><span data-i="125">
+          is </span><span id="state-value" data-i="126">not running</span><span data-i="127"> on this page</span>
+      </h4>
+      <p id="injection-refused" style="display: none;">
+        <span data-i="127_2">
+          On this page runs an extension which supports injection of Vim+, but its ID is not in the allow list.
+        </span><a id="doAllowExt" data-i="127_3">Allow it now</a><span data-i="period">.</span>
+      </p>
+      <div>
+      <p data-i="128">
+        Your browser does not run web extensions like Vimium / Vim+ on certain pages,
+        usually for security reasons.
+      </p>
+      <p data-i="129">
+        Unless your browser's developers change their policy,
+        then unfortunately it is not possible to make Vimium / Vim+
+          (or any other web extension, for that matter) work on this page.
+      </p>
+      <p id="opera-warning" style="display: none;">
+        <span data-i="129_2">Besides,</span><span> Opera </span><span data-i="129_3"
+            >has a special security option preventing extensions (like Vim+)
+            from working on some search result pages. And you can turn it off manually,
+            by enabling "Allow access to search page results" on Opera's extension manager.</span>
+      </p>
+      <br>
+      <p id="refresh-after-install">
+        <span data-i="130">If </span><span class="Vim">Vim</span><span class="C">+</span><span data-i="131">
+        is newly installed, please </span><span class="action" data-i="132">refresh</span><span data-i="133">
+        to get it work.</span><a id="retryInject" href="vimium://status enable" class="decorate-none" role="button"
+            accesskey="z"><span data-i="133_2">Retry</span> (<span class="accesskey">Z</span>)</a><span
+            data-i="period">.</span>
+      </p>
+      </div>
+      <p>
+        </span><span data-i="134">Configure more on the </span><a
+            class="options-link" href="options.html" target="_blank" data-i="135">options</a><span
+            data-i="136"> page. </span><span
+            data-i="VerIs">Version </span><span id="version"></span><span data-i="period">.</span>
+      </p>
+    </div>
+  </body>
+</html>

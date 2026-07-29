@@ -1,0 +1,19 @@
+{{ define "main" }}
+<div class="shell">
+  <aside class="sidebar" aria-label="Docs navigation">
+    {{ partial "sidebar.html" . }}
+  </aside>
+  <div class="main">
+    <h1>{{ .Title }}</h1>
+    {{ with .Content }}{{ . }}{{ end }}
+    <div class="card-grid" style="padding:0;max-width:none;margin-top:1.5rem">
+      {{ range .Pages.ByWeight }}
+      <a class="card" href="{{ .RelPermalink }}">
+        <h3>{{ .Title }}</h3>
+        <p>{{ with .Params.subtitle }}{{ . }}{{ else }}{{ .Summary | plainify | truncate 100 }}{{ end }}</p>
+      </a>
+      {{ end }}
+    </div>
+  </div>
+</div>
+{{ end }}

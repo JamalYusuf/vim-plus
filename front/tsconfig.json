@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    "incremental": true,
+    "outDir": "..",
+    "rootDir": "..",
+    "tsBuildInfoFile": "../scripts/.ts.front.build",
+  },
+  "include": [ "*.ts", "../lib/injector.ts", "../lib/simple_eval.ts" ],
+  "extends": "../tsconfig.base.json"
+}

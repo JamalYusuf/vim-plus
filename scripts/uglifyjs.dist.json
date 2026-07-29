@@ -1,0 +1,103 @@
+{
+  "format": {
+    "ascii_only": true, // if `false` by default, '\xa0' is replaced with '\xc2\xa0', which is wrong
+    "comments": true,
+    "keep_quoted_props": false,
+    "preserve_annotations": true,
+    "wrap_iife": true,
+    "wrap_func_args": false
+  },
+  "compress": {
+    "booleans": true,
+    "collapse_vars": true,
+    "comparisons": true,
+    "conditionals": true,
+    "dead_code": true,
+    "drop_debugger": true,
+    "evaluate": true,
+    "global_defs": {
+      "define.amd": true,
+      "@exports": "undefined",
+      "@__importStar": "function(i){return i}",
+      "@module": "undefined"
+    },
+    "hoist_funs": true,
+    "hoist_props": true,
+    "hoist_vars": true,
+    "if_return": true,
+    "inline": true,
+    "join_vars": true,
+    "keep_fargs": false,
+    "keep_fnames": "/^(startsWith|endsWith|includes|addEventListener|toString|VC)$/",
+    "keep_infinity": false,
+    "lhs_constants": false,
+    "loops": true,
+    "negate_iife": false,
+    "passes": 2,
+    "properties": true,
+    "pure_funcs": ["startsWith", "endsWith", "contains", "indexOf", "lastIndexOf",
+      "substring", "substr", "slice", "charAt", "charCodeAt", "repeat", "concat",
+      "toUpperCase", "toLowerCase", "trim", "trimLeft", "trimRight",
+      "match", "split",
+      "bind", "createElement", "Object.create",
+      "getAttribute", "hasAttribute", "querySelector", "querySelectorAll",
+      "max", "max_", "min", "min_", "isTY", "Lower", "includes_", "floor", "round", "abs", "abs_", "random",
+      "Math.max", "Math.min", "Math.floor", "Math.round", "Math.abs", "Math.random",
+      "safeObj", "safeObj_", "weakRef_", "deref_",
+      "docEl_unsafe_",
+      "__importStar", "sent", "_a.sent", "_b.sent", "_c.sent",
+      "trans_", "pTrans_", "VTr", "contains_s", "attr_s", "getMediaTag",
+      "readyState", "binarySearch_",
+      "getMatchRanges",
+      "activeEl_unsafe_", "querySelector_unsafe_", "querySelectorAll_unsafe_",
+      "getSelected", "getComputedStyle_",
+      "isHTML_", "htmlTag_", "hasTag_", "isInTouchMode_cr_", "_getter_unsafeOnly_not_ff_", "isSafeEl_",
+      "SafeEl_not_ff_", "GetShadowRoot_", "GetParent_unsafe_",
+      "scrollingEl_", "fullscreenEl_unsafe_", "frameElement_", "getEditableType_",
+      "IsAInB_", "getSelectionBoundingBox_",
+      "center_", "isContaining_", "padClientRect_", "boundingRect_", "getVisibleBoundingRect_", "SubtractSequence_",
+      "BgUtils_.escapeText_", "escapeText_", "highlight", "cutTitle", "BgUtils_.unicodeSubstring_", "unicodeSubstring_",
+      "safeObj_", "BgUtils_.safeObj_",
+      "isEscape_", "getKeyStat_", "keybody_", "_getKeyCharUsingKeyIdentifier"
+    ],
+    "pure_getters": true,
+    "reduce_funcs": false,
+    "sequences": 30,
+    "side_effects": true,
+    "toplevel": false,
+    "unsafe_arrows": true,
+    "unsafe_comps": false,
+    "unsafe_math": true,
+    "unsafe_methods": true,
+    "unsafe_proto": true,
+    "unsafe_regexp": true,
+    "unsafe": false,
+    "unused": true,
+    "warnings": false
+    // `true` will remove `/a?/.test("")`
+    // so "unsafe" is not what Vim+ needs
+  },
+  "mangle": {
+    "properties": {
+      "regex": "/^_[^_]|_$/", // not uglify /^__.*$/ like module.__default
+      "builtins": true,
+      "reserved": [ "__proto__", "$_", "_", "_get" ],
+      "undeclared": true
+    },
+    "reserved": [
+      // # globals
+      "browser", "chrome", "define", "__filename", "__importStar",
+      // # expected built-in global variables in content
+      "WeakMap", "WeakSet", "Set", "InputDeviceCapabilities", "visualViewport", "queueMicrotask", "WeakRef",
+      // # content global names:
+      "VimPlusInjector", "VApi",
+      // # front/vomnibar
+      "VCID",
+      // # lib/
+      "MathParser",
+      // # pages/
+      "VData"
+    ],
+    "toplevel": true
+  } //*/
+}

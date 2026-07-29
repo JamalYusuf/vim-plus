@@ -1,0 +1,61 @@
+# OS / editor
+.DS_Store
+Thumbs.db
+*~
+*.bak
+*.swp
+*.old
+*.log
+.env
+.env.*
+
+# Dependencies & build outputs
+node_modules/
+node_modules*
+dist/
+dist
+/dist-*
+*.crx
+*.zip
+*.tar
+*.tgz
+*.gz
+*.tsbuild*
+.ts*
+*.coffee
+package-lock.json
+
+# Media / binary clutter
+*.mp4
+*.wmv
+*.psd
+front/*.png
+icons/*.bin
+
+# Tests / local helpers
+test.*
+!/tests/**
+todo*
+weidu/
+helpers/
+scripts/*public_suffix*
+scripts/*releases*
+scripts/*.pem.enc
+scripts/build*.sh
+
+# Hugo
+site/public/
+site/resources/
+site/.hugo_build.lock
+
+# IDE
+.vscode/
+.idea/
+*.code-workspace
+
+# Keep GitHub config tracked (parent rules may ignore dot-dirs)
+!.github/
+!.github/**
+
+# TypeScript emit is committed so load-unpacked works after clone
+# (run `npm run tsc` after editing sources)

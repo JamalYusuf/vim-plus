@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html spellcheck="false">
+<head>
+  <meta charset="utf-8">
+  <title>Vim+ Wiki</title>
+  <meta name="color-scheme" content="dark light">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script src="theme-boot.js"></script>
+  <link rel="stylesheet" href="vim-plus-theme.css">
+  <link rel="stylesheet" href="wiki.css">
+</head>
+<body>
+  <div id="wiki-app">
+    <aside id="nav">
+      <div class="brand"><span class="Vim">Vim</span><span class="C">+</span> Wiki</div>
+      <div class="brand-sub">In-extension docs</div>
+      <input id="nav-filter" type="search" placeholder="Filter topics…" autocomplete="off" aria-label="Filter topics">
+      <nav id="toc" aria-label="Topics"></nav>
+      <div class="nav-foot">
+        <a href="options.html">Options</a>
+        <a href="sidepanel.html">Command center</a>
+        <a href="wiki.html#home">Home</a>
+      </div>
+    </aside>
+    <main id="content">
+      <header id="page-header">
+        <h1 id="title">Loading…</h1>
+        <p id="subtitle"></p>
+      </header>
+      <article id="body"></article>
+      <div id="related" hidden>
+        <h2>Related</h2>
+        <div class="rel-links" id="rel-links"></div>
+      </div>
+      <footer id="page-footer">
+        <span>Vim+ · v<span id="ver"></span> · keyboard-first Chrome</span>
+        <span>Jamal Yusuf · <a href="https://jamal.dev" target="_blank" rel="noopener">jamal.dev</a></span>
+      </footer>
+    </main>
+  </div>
+  <script type="module" src="wiki.js"></script>
+  <noscript><p style="padding:2rem;color:#fda4af">Enable JavaScript to load the Vim+ wiki.</p></noscript>
+</body>
+</html>

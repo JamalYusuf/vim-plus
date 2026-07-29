@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "incremental": true,
+    "outDir": "..",
+    "rootDir": "..",
+    "tsBuildInfoFile": "../scripts/.ts.background.build",
+  },
+  "include": [
+    "*.ts"
+  ],
+  "extends": "../tsconfig.base.json"
+}

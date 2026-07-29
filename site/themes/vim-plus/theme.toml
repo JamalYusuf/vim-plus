@@ -1,0 +1,9 @@
+name = "vim-plus"
+license = "Apache-2.0"
+description = "Dark-first red accent theme for Vim+ docs"
+homepage = "https://jamal.dev"
+min_version = "0.120.0"
+
+[author]
+  name = "Jamal Yusuf"
+  homepage = "https://jamal.dev"

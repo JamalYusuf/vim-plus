@@ -1,0 +1,57 @@
+{{ define "main" }}
+<section class="hero">
+  <h1>Browse Chrome with the <span class="accent">keyboard</span></h1>
+  <p class="lead">
+    <strong>Vim+</strong> is a Manifest V3 keyboard navigation extension for Google Chrome
+    by {{ .Site.Params.author }}. Link hints, omnibar, command palette, side panel command center,
+    reading tools, and window docking — with docs in the extension wiki and on this site.
+  </p>
+  <div class="hero-actions">
+    <a class="btn primary" href="{{ "guide/getting-started/" | absURL }}">Get started</a>
+    <a class="btn" href="{{ "docs/install/" | absURL }}">Install from source</a>
+    <a class="btn" href="{{ .Site.Params.github }}" rel="noopener">GitHub</a>
+    <a class="btn" href="{{ "legal/permissions/" | absURL }}">Permissions</a>
+  </div>
+</section>
+
+<section class="home-section">
+  <h2>Documentation</h2>
+</section>
+<div class="card-grid">
+  <a class="card" href="{{ "guide/getting-started/" | absURL }}"><h3>Getting started</h3><p>Install, first keys, daily loop.</p></a>
+  <a class="card" href="{{ "guide/keys/" | absURL }}"><h3>Keyboard map</h3><p>Essential defaults and modes.</p></a>
+  <a class="card" href="{{ "guide/omnibar/" | absURL }}"><h3>Omnibar &amp; palette</h3><p>History, hashbangs, <code>:</code> commands.</p></a>
+  <a class="card" href="{{ "guide/command-center/" | absURL }}"><h3>Command center</h3><p>Side panel power user UI.</p></a>
+  <a class="card" href="{{ "guide/reading/" | absURL }}"><h3>Reading tools</h3><p>Progress, Reader View, highlighter.</p></a>
+  <a class="card" href="{{ "docs/features/" | absURL }}"><h3>Features</h3><p>Full product inventory.</p></a>
+  <a class="card" href="{{ "docs/hashbangs/" | absURL }}"><h3>Hashbangs &amp; AI</h3><p>!g, !grok, !gpt, and more.</p></a>
+  <a class="card" href="{{ "docs/troubleshooting/" | absURL }}"><h3>Troubleshooting</h3><p>When keys or UI misbehave.</p></a>
+  <a class="card" href="{{ "dev/architecture/" | absURL }}"><h3>Architecture</h3><p>MV3, ports, settings pipeline.</p></a>
+  <a class="card" href="{{ "dev/protocol/" | absURL }}"><h3>Protocol</h3><p>VimiumPlus tokens &amp; messaging.</p></a>
+  <a class="card" href="{{ "legal/permissions/" | absURL }}"><h3>Permissions</h3><p>Chrome Web Store justifications.</p></a>
+  <a class="card" href="{{ "legal/privacy/" | absURL }}"><h3>Privacy</h3><p>Local-first data handling.</p></a>
+  <a class="card" href="{{ "docs/publishing/" | absURL }}"><h3>Publishing</h3><p>Store checklist and listing copy.</p></a>
+  <a class="card" href="{{ "dev/contributing/" | absURL }}"><h3>Contributing</h3><p>Build, test, document.</p></a>
+</div>
+
+<section class="home-section">
+  <h2>Why Vim+</h2>
+  <p style="color:var(--vp-fg-muted);max-width:42rem">
+    Mouse browsing is precise but slow for the everyday loop: open tabs, scan pages, jump links,
+    switch windows, search history, copy a URL, dock a window. Vim+ keeps that loop on the home row —
+    with an in-extension wiki so help never depends on a dead external page.
+  </p>
+</section>
+
+<section class="home-section" style="max-width:var(--vp-max);margin:0 auto 3rem;padding:0 1.25rem">
+  <h2>Quick keys</h2>
+  <div class="card-grid" style="padding:0;margin:0">
+    <div class="card"><h3><code>f</code></h3><p>Link hints</p></div>
+    <div class="card"><h3><code>o</code></h3><p>Omnibar</p></div>
+    <div class="card"><h3><code>:</code></h3><p>Command palette</p></div>
+    <div class="card"><h3><code>gS</code></h3><p>Side panel</p></div>
+    <div class="card"><h3><code>?</code></h3><p>Help</p></div>
+    <div class="card"><h3><code>Esc</code></h3><p>Cancel / normal</p></div>
+  </div>
+</section>
+{{ end }}

@@ -1,0 +1,50 @@
+baseURL = "https://jamalyusuf.github.io/vim-plus/"
+title = "Vim+"
+theme = "vim-plus"
+enableRobotsTXT = true
+enableGitInfo = false
+disableKinds = ["taxonomy", "term"]
+canonifyURLs = true
+
+[params]
+  description = "Keyboard-first navigation for Google Chrome by Jamal Yusuf"
+  author = "Jamal Yusuf"
+  authorUrl = "https://jamal.dev"
+  github = "https://github.com/JamalYusuf/vim-plus"
+  accent = "#e11d48"
+  version = "1.0.0"
+
+[menu]
+  [[menu.main]]
+    name = "Home"
+    url = "./"
+    weight = 1
+  [[menu.main]]
+    name = "Guide"
+    url = "guide/"
+    weight = 2
+  [[menu.main]]
+    name = "Features"
+    url = "docs/features/"
+    weight = 3
+  [[menu.main]]
+    name = "Docs"
+    url = "docs/"
+    weight = 4
+  [[menu.main]]
+    name = "Developers"
+    url = "dev/"
+    weight = 5
+  [[menu.main]]
+    name = "Permissions"
+    url = "legal/permissions/"
+    weight = 6
+  [[menu.main]]
+    name = "GitHub"
+    url = "https://github.com/JamalYusuf/vim-plus"
+    weight = 10
+
+[markup]
+  [markup.goldmark]
+    [markup.goldmark.renderer]
+      unsafe = true

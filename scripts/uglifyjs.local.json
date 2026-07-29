@@ -1,0 +1,43 @@
+{
+  "format": {
+    "ascii_only": true, // if `false` by default, '\xa0' is replaced with '\xc2\xa0', which is wrong
+    "beautify": true,
+    "braces": true,
+    "comments": "/^(?!\\/) ?(?!eslint-(dis|en)able)\\S+[ .]\\S|\\n|^[!#]/",
+    "indent_level": 2,
+    "keep_quoted_props": false,
+    "semicolons": true,
+    "wrap_func_args": false,
+    "wrap_iife": true
+  },
+  "compress": {
+    "booleans": true,
+    "conditionals": true,
+    "dead_code": true,
+    "defaults": false,
+    "evaluate": true,
+    "hoist_vars": false,
+    "join_vars": false,
+    "keep_fargs": false,
+    "keep_fnames": true,
+    "lhs_constants": false,
+    "passes": 2,
+    "properties": true,
+    "pure_getters": true,
+    "pure_funcs": null,
+    "side_effects": true,
+    "unsafe_arrows": true,
+    "unsafe_comps": false,
+    "unsafe_math": true,
+    "unsafe_methods": true,
+    "unsafe_proto": true,
+    "unsafe_regexp": true,
+    "unsafe": false,
+    "unused": true,
+    "warnings": true
+    // `true` will remove `/a?/.test("")`
+    // so "unsafe" is not what Vim+ needs
+  },
+  "ecma": 2017,
+  "mangle": false //*/
+}

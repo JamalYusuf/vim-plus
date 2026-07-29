@@ -1,0 +1,242 @@
+/**
+ * Vim+ visual system — dark-first, red accent, sharp corners
+ */
+:root {
+  /* Brand */
+  --vp-red: #e11d48;
+  --vp-red-hover: #f43f5e;
+  --vp-red-dim: rgba(225, 29, 72, 0.14);
+  --vp-red-glow: rgba(225, 29, 72, 0.35);
+  --vp-radius: 0;
+  --vp-font: "Inter", "SF Pro Text", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  --vp-mono: "JetBrains Mono", "SF Mono", ui-monospace, Menlo, Consolas, monospace;
+  --vp-border: 1px;
+
+  /* Light (fallback) */
+  --vp-bg: #f4f4f5;
+  --vp-bg-elevated: #ffffff;
+  --vp-bg-panel: #ececee;
+  --vp-fg: #18181b;
+  --vp-fg-muted: #52525b;
+  --vp-border-color: #d4d4d8;
+  --vp-input-bg: #ffffff;
+  --vp-input-fg: #18181b;
+  --vp-kbd-bg: #18181b;
+  --vp-kbd-fg: #fafafa;
+  --vp-hover: rgba(0, 0, 0, 0.04);
+  --vp-shadow: none;
+  color-scheme: light dark;
+}
+
+/* Prefer dark when system does */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --vp-bg: #0a0a0b;
+    --vp-bg-elevated: #111113;
+    --vp-bg-panel: #161618;
+    --vp-fg: #f4f4f5;
+    --vp-fg-muted: #a1a1aa;
+    --vp-border-color: #27272a;
+    --vp-input-bg: #0c0c0e;
+    --vp-input-fg: #e4e4e7;
+    --vp-kbd-bg: #e11d48;
+    --vp-kbd-fg: #fff;
+    --vp-hover: rgba(225, 29, 72, 0.08);
+    --vp-shadow: none;
+  }
+}
+
+/* Force dark class (optional) */
+html.dark, html.vp-dark {
+  --vp-bg: #0a0a0b;
+  --vp-bg-elevated: #111113;
+  --vp-bg-panel: #161618;
+  --vp-fg: #f4f4f5;
+  --vp-fg-muted: #a1a1aa;
+  --vp-border-color: #27272a;
+  --vp-input-bg: #0c0c0e;
+  --vp-input-fg: #e4e4e7;
+  --vp-kbd-bg: #e11d48;
+  --vp-kbd-fg: #fff;
+  --vp-hover: rgba(225, 29, 72, 0.08);
+}
+
+/* Map into existing Vimium C CSS variables — high contrast on dark */
+html {
+  --vc-background-color: var(--vp-bg);
+  --vc-panel-background-color: var(--vp-bg-panel);
+  --vc-plain-color: var(--vp-fg);
+  --vc-heading-color: var(--vp-fg);
+  --vc-heading-border-color: var(--vp-border-color);
+  --vc-item-caption-color: var(--vp-fg);
+  --vc-link-color: var(--vp-red);
+  --vc-link-hover-color: var(--vp-red-hover);
+  --vc-link-active-color: var(--vp-red-hover);
+  --vc-input-color: var(--vp-input-fg);
+  --vc-input-border-color: var(--vp-border-color);
+  --vc-input-focus-border-color: var(--vp-red);
+  --vc-button-color: var(--vp-fg);
+  --vc-button-background-color: var(--vp-bg-elevated);
+  --vc-button-border-color: var(--vp-border-color);
+  --vc-tip-color: #fda4af;
+  --vc-deprecated-color: #a1a1aa;
+  --vc-help-hover-color: var(--vp-fg);
+  --vc-code-block-border-color: var(--vp-red);
+  --vc-button-hover-color: #fff;
+  --vc-button-hover-background-color: var(--vp-red);
+  --vc-button-hover-border-color: var(--vp-red);
+  --vc-button-active-background-color: #be123c;
+  --vc-button-disabled-color: var(--vp-fg-muted);
+  --vc-icon-button-hover-color: var(--vp-red);
+  --vc-icon-button-active-color: var(--vp-red-hover);
+  --vc-state-color: var(--vp-red);
+  --vc-vim-color: var(--vp-red);
+  --vc-c-char-color: var(--vp-red-hover);
+  --vc-placeholder-color: var(--vp-fg-muted);
+  --vc-read-only-background-color: var(--vp-bg-panel);
+  --vc-read-only-color: var(--vp-fg-muted);
+  --vc-highlight-background-color: var(--vp-red-dim);
+  --vc-error-background-color: #3f0a12;
+  --vc-select-option-background-color: var(--vp-bg-elevated);
+  --vc-tiny: 1px;
+  color: var(--vp-fg);
+  background: var(--vp-bg);
+}
+
+body {
+  font-family: var(--vp-font);
+  background: var(--vp-bg);
+  color: var(--vp-fg);
+}
+
+/* Sharp corners everywhere */
+button, select, input, textarea, .code, pre, kbd,
+#keys, #tabs, #status, #quick-actions button, #quick-actions a.qa,
+#exclusionTable, .exclusionRule, #footer, #wrapper, header {
+  border-radius: var(--vp-radius) !important;
+}
+
+button, select {
+  border-width: var(--vp-border);
+  border-style: solid;
+  letter-spacing: 0.01em;
+  transition: background-color 0.12s ease, border-color 0.12s ease, color 0.12s ease;
+}
+
+button.primary, button#saveOptions:not(:disabled) {
+  background: var(--vp-red) !important;
+  border-color: var(--vp-red) !important;
+  color: #fff !important;
+}
+button.primary:hover, button#saveOptions:not(:disabled):hover {
+  background: var(--vp-red-hover) !important;
+  border-color: var(--vp-red-hover) !important;
+}
+
+input[type="text"], input[type="search"], input[type="number"], textarea, input:not([type]) {
+  background: var(--vp-input-bg);
+  color: var(--vp-input-fg);
+  border: var(--vp-border) solid var(--vp-border-color);
+  border-radius: var(--vp-radius);
+}
+input:focus, textarea:focus {
+  border-color: var(--vp-red);
+  outline: none;
+  box-shadow: 0 0 0 1px var(--vp-red);
+}
+
+/* Brand mark */
+.Vim, .brand .Vim {
+  color: var(--vp-red) !important;
+  font-weight: 700;
+}
+.C, .brand .C {
+  color: var(--vp-red-hover) !important;
+  font-weight: 800;
+}
+
+/* Keyboard chips */
+kbd {
+  background: var(--vp-kbd-bg);
+  color: var(--vp-kbd-fg);
+  border: none;
+  border-radius: var(--vp-radius);
+  padding: 1px 5px;
+  font-family: var(--vp-mono);
+  font-size: 0.9em;
+  box-shadow: none;
+}
+
+header {
+  border-bottom: 2px solid var(--vp-red) !important;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+a, a:visited {
+  color: var(--vp-red);
+}
+a:hover {
+  color: var(--vp-red-hover);
+}
+
+/* Code / pre accent bar */
+pre, .help-block {
+  border-left: 2px solid var(--vp-red) !important;
+}
+
+/* Selection */
+::selection {
+  background: var(--vp-red);
+  color: #fff;
+}
+
+/* Scrollbars (Chromium) */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--vp-red) var(--vp-bg-panel);
+}
+
+/* ── Dark-mode readability: never light-gray-on-dark-gray ── */
+@media (prefers-color-scheme: dark) {
+  html, html.dark, html.vp-dark,
+  body, td, .help-inner, .info, .caption, .exclusionHeader,
+  #helpText, #status, #footer, pre, code, kbd, label, span, p, div {
+    color: inherit;
+  }
+  .caption, td.caption {
+    color: #f4f4f5 !important;
+    font-weight: 600;
+  }
+  .help-inner, .info, .line-help, #helpText, .tip, #toast, #status-line, #meta {
+    color: #e4e4e7 !important;
+  }
+  .help-inner a, .info a, a {
+    color: #fb7185 !important;
+  }
+  .status-of-related, .ref-text {
+    color: #fda4af !important;
+  }
+  /* GitHub-like dense UI areas sometimes get washed out; force readable FG in extension chrome only */
+  #wrapper, #footer, #footerWrapper, #mainHeader, #advanced, .booleanOption, .checkboxHint {
+    color: #f4f4f5 !important;
+  }
+  input, textarea, select {
+    color: #f4f4f5 !important;
+    background: #0c0c0e !important;
+    border-color: #3f3f46 !important;
+  }
+  input::placeholder, textarea::placeholder {
+    color: #a1a1aa !important;
+    opacity: 1;
+  }
+  .checkboxHint, [class*="checkbox"], [class*="Hint"] {
+    color: #e4e4e7 !important;
+  }
+}
+html.dark .caption, html.vp-dark .caption,
+html.dark .help-inner, html.vp-dark .help-inner,
+html.dark .info, html.vp-dark .info {
+  color: #e4e4e7 !important;
+}
+html.dark .caption, html.vp-dark .caption { color: #fafafa !important; font-weight: 600; }

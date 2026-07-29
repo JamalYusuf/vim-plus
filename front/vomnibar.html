@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html data-version="1.73">
+<head>
+	<meta charset="utf-8">
+	<title>Vomnibar of Vim+</title>
+	<script defer src="vomnibar.js"></script>
+	<style>
+html{overflow:hidden;}
+body{background:#fafafa;border-radius:0;box-shadow:0 12px 40px rgba(0,0,0,.5);contain:content;margin:9px 12px 10px;
+overflow:hidden;padding:0;position:relative;white-space:nowrap;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;}
+body::after{border:1px solid #e11d48;border-radius:0;bottom:0;left:0;pointer-events:none;position:fixed;right:0;top:0;content:"";}
+.inactive{opacity:.7;transition:opacity 160ms;}
+/* Header tips — high-contrast in light & dark (no white-on-red) */
+#tips{background:#18181b;border-bottom:2px solid #e11d48;box-sizing:border-box;color:#e4e4e7;font:12.5px/1.4 system-ui,sans-serif;
+padding:8px 14px 7px;white-space:normal;min-height:30px;}
+#tips b{color:#fda4af;font-weight:700;}
+#tips kbd{background:#27272a;border:1px solid #52525b;color:#fafafa;font:11px/1.2 ui-monospace,Menlo,monospace;
+padding:1px 5px;margin:0 1px;border-radius:0;}
+#tips .tip-mode{float:right;background:#e11d48;color:#fff;font-weight:700;font-size:10px;letter-spacing:.08em;
+text-transform:uppercase;padding:3px 8px;margin-left:10px;}
+#bar{background:#f4f4f5;border-bottom:1px solid #e4e4e7;border-radius:0;
+contain:strict;font-size:0;height:34px;padding:10px 12px;}#bar.empty{border-radius:0;border:none;}
+#toolbar{color:#71717a;opacity:0;padding-right:8px;position:absolute;right:12px;top:17px;transition:opacity 120ms 80ms;}
+#toolbar,.label{-webkit-user-select:none;user-select:none;}#toolbar:hover,.inactive #toolbar{opacity:1;}
+.button{contain:strict;cursor:default;display:inline-block;fill:currentColor;height:20px;margin-left:8px;
+stroke:currentColor;width:20px;}.button:hover{background:#e4e4e7;color:#e11d48;}
+#input{background:#fff;border:1px solid #d4d4d8;border-radius:0;box-shadow:none;box-sizing:border-box;
+color:#18181b;contain:strict;font-size:18px;height:34px;outline:none;padding:4px 10px;width:100%;}
+#input:focus{border-color:#e11d48;box-shadow:0 0 0 1px #e11d48;}
+#input::placeholder{color:#a1a1aa;font-size:15px;}
+/* Scroll long result lists — keep scrollbar usable (no contain:content on scroller) */
+#list-wrap{position:relative;max-height:480px;overflow:hidden}
+#list{border-radius:0;background:#fafafa;max-height:480px;overflow-x:hidden;overflow-y:auto;
+scrollbar-width:thin;scrollbar-color:#e11d48 #ececee;position:relative;overscroll-behavior:contain;
+-webkit-overflow-scrolling:touch}
+#list::-webkit-scrollbar{width:10px}
+#list::-webkit-scrollbar-thumb{background:#e11d48;border-radius:0;min-height:32px}
+#list::-webkit-scrollbar-track{background:#ececee}
+/* Scroll affordance: gradient fades — never cover the scrollbar (right:12px) */
+#list-wrap::after,#list-wrap::before{content:"";pointer-events:none;position:absolute;left:0;right:12px;height:20px;
+z-index:2;opacity:0;transition:opacity 120ms}
+#list-wrap.more-below::after{opacity:1;bottom:0;
+background:linear-gradient(to bottom,transparent,rgba(250,250,250,.95));}
+#list-wrap.more-above::before{opacity:1;top:0;
+background:linear-gradient(to top,transparent,rgba(250,250,250,.95));}
+#list-scroll-hint{display:none;position:absolute;left:50%;bottom:3px;transform:translateX(-50%);
+z-index:2;pointer-events:none;font:10px/1 system-ui,sans-serif;font-weight:700;letter-spacing:.06em;
+text-transform:uppercase;color:#e11d48;background:rgba(255,255,255,.92);padding:3px 8px;
+border:1px solid #fda4af}
+#list-wrap.more-below #list-scroll-hint{display:block}
+#footer-tip{background:#f4f4f5;border-top:1px solid #e4e4e7;color:#52525b;font:11.5px/1.35 system-ui,sans-serif;
+padding:6px 14px 7px;white-space:normal;}
+#footer-tip kbd{background:#e4e4e7;border:1px solid #d4d4d8;color:#18181b;font:10.5px ui-monospace,Menlo,monospace;
+padding:0 4px;margin:0 1px;}
+.item{border-bottom:1px solid #ececee;box-sizing:border-box;contain:strict;height:48px;padding:5px 16px 0;position:relative;}
+.b{border-bottom-style:none;border-radius:0;height:50px;}
+.item:hover{background-color:#fff1f2;border-style:solid;border-color:#ececee;}
+/* Cmd/Alt numbered pick badges */
+.alt .alt-index::after{background:#e11d48;border-radius:0;color:#fff;font-weight:800;
+content:attr(data-alt-index);font-size:18px;box-shadow:0 2px 8px rgba(0,0,0,.35);
+height:32px;line-height:32px;position:absolute;left:12px;text-align:center;top:8px;width:32px;z-index:2}
+.p{border-color:#fda4af;}.item.s{background-color:#ffe4e6;border-left:3px solid #e11d48;border-style:solid;border-color:#fda4af;}
+.top{height:20px;overflow:hidden;font:15px/20px system-ui,-apple-system,"Segoe UI",sans-serif;font-weight:600;color:#18181b;}
+.icon{background:20px 0/16px no-repeat;fill:#71717a;fill:var(--vc-c,#71717a);height:16px;
+margin:1.5px 4px 0 0;padding-right:20px;width:16px;vertical-align:top;}
+.tab,.math{stroke:#71717a;stroke:var(--vc-c,#71717a);stroke-width:4;fill:none;}
+.no-favicon .icon{margin-right:-16px;background:none !important;}
+.label,.time{color:#71717a;display:inline-block;font-size:11px;font-weight:600;letter-spacing:.03em;
+background:#f4f4f5;border:1px solid #e4e4e7;padding:0 6px;margin-left:6px;vertical-align:middle;}
+.label-Privacy{color:#166534;background:#dcfce7;border-color:#86efac}
+.label-History{color:#92400e;background:#fef3c7;border-color:#fcd34d}
+.label-View{color:#5b21b6;background:#ede9fe;border-color:#c4b5fd}
+.label-Read{color:#92400e;background:#fef3c7;border-color:#fbbf24}
+.label-Tab{color:#075985;background:#e0f2fe;border-color:#7dd3fc}
+.label-Window{color:#1d4ed8;background:#dbeafe;border-color:#93c5fd}
+.label-Nav{color:#065f46;background:#d1fae5;border-color:#6ee7b7}
+.label-Clip{color:#9d174d;background:#fce7f3;border-color:#f9a8d4}
+.label-Chrome{color:#9f1239;background:#ffe4e6;border-color:#fda4af}
+.label-Vimplus,.label-Vim{color:#9f1239;background:#ffe4e6;border-color:#e11d48}
+.label-Category,.label-Action,.label-Help{color:#475569;background:#f1f5f9;border-color:#cbd5e1}
+.item .label{border-radius:0}
+.undo{font-family:sans-serif,STIXGeneral;}
+.bottom{height:18px;line-height:16px;margin-left:20px;overflow:hidden;}
+a{color:#52525b;cursor:default;font:12.5px/16px system-ui,sans-serif;text-decoration:none;}
+.mono-url a{font-family:ui-monospace,Menlo,Monaco,Consolas,monospace;}
+match{color:#e11d48;font-weight:700;}.title>match{text-decoration:none;}
+#toggle-dark{stroke-linecap:round;stroke-linejoin:bevel;}.i-moon{fill:none;stroke-width:1.4;}
+.i-sun{stroke-width:2.1}#toggle-dark:not(.toggled) .i-sun,#toggle-dark.toggled .i-moon{visibility:hidden;}
+#close{stroke-linecap:round;stroke-linejoin:round;stroke-width:2.4;}
+.level-2{padding-right:32px;}.level-3{padding-right:48px;}.level-4{padding-right:60px;}.level-5{padding-right:72px;}
+.less-motion .inactive, .less-motion #toolbar{transition:none;}
+.tab{d:path("M2 22v36h44V22zm8 0v-8h44v36h-6m8 -8h6V6H18v6");}
+.math{d:path("M2 2h60v60H2zm8 8H54V22H10zm0 20h8v8h-8zm0 16h8v8h-8zm16 0h8v8h-8zm0-16h8v8h-8zm16 0h12v24H42z");}
+.bookm{d:path("M32 0l8 20 24 2-20 14 6 26-18-14-20 14 8-26L0 22l24-2");}
+.search{d:path("M46 41h-3l-1-1a24 24 1 1 0-2 2l1.1 1.1v3L59 64l5-5zm-10-4a18 18 0 1 1 1-1");}
+.domain{d:path("M4,16v4h4l12,36h4L32,32l8,24h4L56,20h4v-4H46v4h4L42,48L34,24h-4l-8,24L14,20h4v-4");}
+.history{d:path("M8 10.8A32 32 0 1 1 0 32h6a26 26 1 1 0 6.25-17L20 23H0V3zM28 18v21l15 8 4-5-13-7V18");}
+/* Quick-action category icons (color matches meaning) */
+.qa-priv{d:path("M32 4l20 8v14c0 14-8 26-20 34C20 52 12 40 12 26V12z");fill:#22c55e}
+.qa-hist{d:path("M8 10.8A32 32 0 1 1 0 32h6a26 26 1 1 0 6.25-17L20 23H0V3zM28 18v21l15 8 4-5-13-7V18");fill:#f59e0b}
+.qa-view{d:path("M4 32s10-18 28-18 28 18 28 18-10 18-28 18S4 32 4 32zm28-10a10 10 0 1 0 0 20 10 10 0 0 0 0-20z");fill:#a78bfa}
+.qa-read{d:path("M8 8h20c6 0 12 4 12 12v36c0-6-6-10-12-10H8zm28 0h20v38c6 0 12 4 12 10V20c0-8-6-12-12-12H36z");fill:#fbbf24}
+.qa-tab{d:path("M2 22v36h44V22zm8 0v-8h44v36h-6m8 -8h6V6H18v6");fill:#38bdf8}
+.qa-win{d:path("M6 10h52v44H6zm4 8h44v32H10z");fill:#60a5fa}
+.qa-nav{d:path("M32 4l20 36H12zm0 14v22");fill:#34d399}
+.qa-clip{d:path("M20 8h24v8H20zm-4 8h32v40H16zm8 8h16v4H24z");fill:#f472b6}
+.qa-chrome{d:path("M32 4a28 28 0 1 1 0 56 28 28 0 0 1 0-56zm0 12a16 16 0 1 0 0 32 16 16 0 0 0 0-32z");fill:#e11d48}
+.qa-vim{d:path("M8 8h12l12 32 12-32h12L36 56H28z");fill:#e11d48}
+.qa-cat{d:path("M8 12h48v8H8zm0 16h48v8H8zm0 16h32v8H8z");fill:#94a3b8}
+.qa-act{d:path("M32 6l6 18h18l-14 12 6 18-16-12-16 12 6-18L8 24h18z");fill:#e11d48}
+</style>
+	<style data-media="(forced-colors: active)" id="high-contrast">
+*{border-radius:0 !important;}body::after{content:"";border-radius:0;}
+.inactive,#toolbar{opacity:1;}#toggle-dark{display:none;}.btn_svg{stroke:#999;}:hover>.btn_svg{stroke:currentColor;}
+.s,.item:hover{border-bottom-style:solid;}.s>.top,:hover>.top{font-weight:bold;--vc-c:currentColor;}
+</style>
+	<style id="dark">
+body{background:#0a0a0b;}
+body::after{content:"";border-color:#e11d48;}
+/* Dark header: charcoal + rose accents, never pale text on red */
+#tips{background:#111113;border-bottom-color:#e11d48;color:#e4e4e7;}
+#tips b{color:#fda4af;}
+#tips kbd{background:#27272a;border-color:#3f3f46;color:#f4f4f5;}
+#tips .tip-mode{background:#e11d48;color:#fff;}
+#footer-tip{background:#111113;border-top-color:#27272a;color:#a1a1aa;}
+#footer-tip kbd{background:#27272a;border-color:#3f3f46;color:#f4f4f5;}
+#bar{background:#161618;border-bottom-color:#27272a;}
+#list{background:#0a0a0b;scrollbar-color:#e11d48 #18181b;}
+#list::-webkit-scrollbar-track{background:#18181b}
+#input{background:#0c0c0e;border-color:#3f3f46;color:#f4f4f5;}
+#input:focus{border-color:#e11d48;box-shadow:0 0 0 1px #e11d48;}
+#input::placeholder{color:#71717a;}
+#toolbar{color:#a1a1aa;opacity:1;}.button:hover{background:#27272a;color:#fb7185;}
+.item{border-color:#18181b;}.item:hover{background-color:rgba(225,29,72,.1);border-color:#18181b;}
+.p{border-color:#9f1239;}.item.s{background-color:rgba(225,29,72,.18);border-left-color:#e11d48;border-color:#3f3f46;}
+.top{color:#fafafa;}match{color:#fb7185;}a{color:#a1a1aa;}
+.label,.time{color:#fda4af;background:#18181b;border-color:#3f3f46;}
+.alt .alt-index::after{background:#e11d48;color:#fff;}
+.icon{fill:#a1a1aa;}.tab,.math{stroke:#a1a1aa;}
+#list-wrap.more-below::after{background:linear-gradient(to bottom,transparent,rgba(10,10,11,.96))}
+#list-wrap.more-above::before{background:linear-gradient(to top,transparent,rgba(10,10,11,.96))}
+#list-scroll-hint{background:rgba(24,24,27,.95);border-color:#9f1239;color:#fda4af}
+.label-Privacy{color:#86efac;background:#14532d;border-color:#166534}
+.label-History{color:#fcd34d;background:#78350f;border-color:#92400e}
+.label-View{color:#c4b5fd;background:#2e1065;border-color:#5b21b6}
+.label-Read{color:#fbbf24;background:#78350f;border-color:#a16207}
+.label-Tab{color:#7dd3fc;background:#0c4a6e;border-color:#0369a1}
+.label-Window{color:#93c5fd;background:#1e3a8a;border-color:#1d4ed8}
+.label-Nav{color:#6ee7b7;background:#064e3b;border-color:#047857}
+.label-Clip{color:#f9a8d4;background:#831843;border-color:#9d174d}
+.label-Chrome,.label-Vimplus,.label-Vim{color:#fda4af;background:#4c0519;border-color:#e11d48}
+.label-Category,.label-Action,.label-Help{color:#cbd5e1;background:#1e293b;border-color:#475569}
+</style>
+	<style id="time">.time{float:right;}.time:hover{color:currentColor}</style>
+	<style id="filtered">
+body::after{content:"";}body{box-shadow:none;}
+#toolbar{opacity:0;}#bar{background:#ccc}.has-dark>#bar{background:#0e0e0e}
+	</style>
+</head>
+<body style="display: none;">
+<div id="tips" role="status" aria-live="polite">
+	<span class="tip-mode" id="tip-mode">OMNI</span>
+	<span id="tip-text"><b>Command palette</b> · type <kbd>:</kbd> · hold <kbd>⌘</kbd>/<kbd>Alt</kbd> for 1–9 hints · <kbd>!g</kbd> search</span>
+</div>
+<div id="bar">
+	<input type="text" id="input" spellcheck="false" autocomplete="off" autocapitalize="off"
+			inputmode="search" enterkeyhint="Go" placeholder="Search or type : for commands  (e.g. :gray :h1 :sh)" />
+	<div id="toolbar">
+		<span role="button" class="button" id="toggle-dark" title="Toggle Dark"><svg class="btn_svg" viewBox="0 0 20 20">
+			<path class="i-moon" d="M5.4 3A7.2 7.3 0 1 1 5.4 17A6.4 7 0 1 0 5.4 3z"></path>
+			<circle class="i-sun" cx="10" cy="10" r="3.2"></circle><path class="i-sun"
+					d="M2 10h2m6 6v2m6-8h2M10 2v2M4.3 4.3l1.4 1.4M15.7 4.3l-1.4 1.4M4.3 15.7l1.4-1.4M14.3 14.3l1.4 1.4"></path>
+		</svg></span><span role="button" class="button" id="close" title="Close"><svg class="btn_svg" viewBox="0 0 20 20">
+			<path d="M6 6l8 8zM6 14L14 6"></path></svg></span>
+	</div>
+</div>
+<div id="list-wrap">
+<div id="list">
+	<script type="text/x-template" id="template">
+	<div class="item" data-alt-index="{{altIndex}}">
+		<div class="top">
+			<svg class="icon{{level}}{{favIcon}}" viewBox="0 0 64 64">
+				<path class="{{typeIcon}}"></path>
+			</svg><span class="title">{{title}}</span>{{label}}{{time}}
+		</div>
+		<div class="bottom">
+			<a>{{textSplit}}</a>
+		</div>
+	</div></script>
+</div>
+<div id="list-scroll-hint" aria-hidden="true">more ↓</div>
+</div>
+<div id="footer-tip"><kbd>↑</kbd><kbd>↓</kbd> · <kbd>Enter</kbd> · hold <kbd>⌘</kbd>/<kbd>Alt</kbd> + <kbd>1</kbd>–<kbd>9</kbd> · <kbd>:</kbd> palette · <kbd>Esc</kbd></div>
+</body>
+</html>

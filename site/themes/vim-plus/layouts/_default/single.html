@@ -1,0 +1,16 @@
+{{ define "main" }}
+<div class="shell">
+  <aside class="sidebar" aria-label="Docs navigation">
+    {{ partial "sidebar.html" . }}
+  </aside>
+  <article class="main">
+    <h1>{{ .Title }}</h1>
+    {{ with .Params.subtitle }}<p class="subtitle">{{ . }}</p>{{ end }}
+    {{ .Content }}
+    <div class="page-footer">
+      <span>Vim+ documentation</span>
+      <span><a href="{{ .Site.Params.github }}">Edit on GitHub</a> · <a href="{{ .Site.Params.authorUrl }}">{{ .Site.Params.author }}</a></span>
+    </div>
+  </article>
+</div>
+{{ end }}
