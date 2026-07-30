@@ -1,0 +1,304 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Reference docs on Vim+</title><link>https://jamalyusuf.github.io/vim-plus/docs/</link><description>Recent content in Reference docs on Vim+</description><generator>Hugo</generator><language>en</language><atom:link href="https://jamalyusuf.github.io/vim-plus/docs/index.xml" rel="self" type="application/rss+xml"/><item><title>Install &amp; build</title><link>https://jamalyusuf.github.io/vim-plus/docs/install/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://jamalyusuf.github.io/vim-plus/docs/install/</guid><description>&lt;h2 id="requirements">Requirements&lt;/h2>
+&lt;ul>
+&lt;li>&lt;strong>Google Chrome&lt;/strong> 121+ (Manifest V3)&lt;/li>
+&lt;li>&lt;strong>Node.js&lt;/strong> ≥ 14 and &lt;strong>npm&lt;/strong> ≥ 7&lt;/li>
+&lt;li>macOS, Linux, or Windows with a POSIX-friendly shell recommended for scripts&lt;/li>
+&lt;/ul>
+&lt;p>This product build targets &lt;strong>Chrome only&lt;/strong> for distribution (not Firefox/Edge store packages).&lt;/p>
+&lt;h2 id="clone--compile">Clone &amp;amp; compile&lt;/h2>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>git clone https://github.com/JamalYusuf/vim-plus.git
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>cd vim-plus
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>npm ci
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>npm run tsc
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;code>npm run tsc&lt;/code> typechecks and emits JavaScript next to TypeScript sources for &lt;code>background/&lt;/code>, &lt;code>content/&lt;/code>, &lt;code>pages/&lt;/code>, and &lt;code>front/&lt;/code>.&lt;/p>
+&lt;h2 id="load-unpacked">Load unpacked&lt;/h2>
+&lt;ol>
+&lt;li>&lt;code>chrome://extensions&lt;/code> → &lt;strong>Developer mode&lt;/strong>&lt;/li>
+&lt;li>&lt;strong>Load unpacked&lt;/strong> → repository root (&lt;code>manifest.json&lt;/code> present)&lt;/li>
+&lt;li>Pin the action icon&lt;/li>
+&lt;li>Set &lt;strong>Open side panel&lt;/strong> under shortcuts&lt;/li>
+&lt;/ol>
+&lt;p>After source edits: &lt;code>npm run tsc&lt;/code> → click &lt;strong>Reload&lt;/strong> on the extension card.&lt;/p></description></item><item><title>Features</title><link>https://jamalyusuf.github.io/vim-plus/docs/features/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://jamalyusuf.github.io/vim-plus/docs/features/</guid><description>&lt;p>Vim+ &lt;strong>1.0&lt;/strong> feature inventory for users, reviewers, and listing copy.&lt;/p>
+&lt;h2 id="core-navigation">Core navigation&lt;/h2>
+&lt;ul>
+&lt;li>Link hints (open, new tab, copy, hover, download, queue, and related modes)&lt;/li>
+&lt;li>Keyboard scrolling (line, page, top/bottom, smooth scroll option)&lt;/li>
+&lt;li>Find mode and visual / visual-line selection&lt;/li>
+&lt;li>Marks, focus input, pass keys / insert mode&lt;/li>
+&lt;li>Frame navigation (next / main frame)&lt;/li>
+&lt;li>Pagination patterns (next / previous page heuristics)&lt;/li>
+&lt;/ul>
+&lt;h2 id="omnibar-vomnibar">Omnibar (Vomnibar)&lt;/h2>
+&lt;ul>
+&lt;li>Omni search: history, domains, bookmarks, open tabs&lt;/li>
+&lt;li>Window switcher mode&lt;/li>
+&lt;li>Search engines + &lt;strong>hashbangs&lt;/strong> (web + AI prompt URLs)&lt;/li>
+&lt;li>Command palette entry via &lt;code>:&lt;/code>&lt;/li>
+&lt;li>Favicons, mono-URL style, dark style toggle (&lt;code>gn&lt;/code>)&lt;/li>
+&lt;li>Configurable match count, debounce, geometry&lt;/li>
+&lt;/ul>
+&lt;h2 id="command-palette-">Command palette (&lt;code>:&lt;/code>)&lt;/h2>
+&lt;table>
+ &lt;thead>
+ &lt;tr>
+ &lt;th>Category&lt;/th>
+ &lt;th>Examples&lt;/th>
+ &lt;/tr>
+ &lt;/thead>
+ &lt;tbody>
+ &lt;tr>
+ &lt;td>Privacy&lt;/td>
+ &lt;td>Shred domain, clear site cookies/cache&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>History&lt;/td>
+ &lt;td>Clear last 15m / 1h / 24h / 7d, pause history&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>View&lt;/td>
+ &lt;td>Grayscale, dim, invert, spotlight, lens, zen, device frames, hide images&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Read&lt;/td>
+ &lt;td>Progress, Reader View, highlighter&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Tab&lt;/td>
+ &lt;td>Pin, mute, duplicate, sleep, close others, restore closed&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Window&lt;/td>
+ &lt;td>Dock edges, maximize, center, cycle windows&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Nav&lt;/td>
+ &lt;td>Back/forward, top/bottom, zoom, stop, hints, find, visual&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Clip&lt;/td>
+ &lt;td>URL, title, markdown, article MD, headings, tables&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Chrome&lt;/td>
+ &lt;td>Downloads, history page, extensions, flags, settings…&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Vim+&lt;/td>
+ &lt;td>Side panel, options, wiki, help&lt;/td>
+ &lt;/tr>
+ &lt;/tbody>
+&lt;/table>
+&lt;h2 id="side-panel-command-center">Side panel (command center)&lt;/h2>
+&lt;ul>
+&lt;li>Keys / commands / tabs / closed sessions / reading list / page actions&lt;/li>
+&lt;li>Site power toggle (exclude current host)&lt;/li>
+&lt;li>Works when content scripts cannot (with a user gesture)&lt;/li>
+&lt;/ul>
+&lt;h2 id="reading--focus">Reading &amp;amp; focus&lt;/h2>
+&lt;ul>
+&lt;li>Reading progress bar (default on)&lt;/li>
+&lt;li>Reader View (Mozilla Readability)&lt;/li>
+&lt;li>Highlighter + comments, per-URL persistence&lt;/li>
+&lt;li>Spotlight / focus lens&lt;/li>
+&lt;li>Zen app window (no URL bar)&lt;/li>
+&lt;li>Device viewport frames (iPhone, Pixel, iPad, …)&lt;/li>
+&lt;/ul>
+&lt;h2 id="tabs--windows">Tabs &amp;amp; windows&lt;/h2>
+&lt;ul>
+&lt;li>Pin, mute, discard (sleep), duplicate, close ranges&lt;/li>
+&lt;li>Tab groups&lt;/li>
+&lt;li>Restore closed tabs/sessions&lt;/li>
+&lt;li>Dock window to display edges with progressive shrink&lt;/li>
+&lt;li>Maximize / center / cycle browser windows&lt;/li>
+&lt;li>Move tab to next window, mute other tabs&lt;/li>
+&lt;/ul>
+&lt;h2 id="chrome-integration">Chrome integration&lt;/h2>
+&lt;ul>
+&lt;li>Downloads (page + last download)&lt;/li>
+&lt;li>Reading List&lt;/li>
+&lt;li>Picture-in-Picture command&lt;/li>
+&lt;li>Bookmarks toggle&lt;/li>
+&lt;li>Incognito window&lt;/li>
+&lt;li>Omnibox keyword &lt;code>v&lt;/code>&lt;/li>
+&lt;li>Global commands (side panel shortcut, etc.)&lt;/li>
+&lt;/ul>
+&lt;h2 id="customization">Customization&lt;/h2>
+&lt;ul>
+&lt;li>Full key map language (&lt;code>map&lt;/code> / &lt;code>unmap&lt;/code> / &lt;code>mapKey&lt;/code>)&lt;/li>
+&lt;li>Site-specific maps and exclusion rules&lt;/li>
+&lt;li>User-defined CSS for HUD / hints / vomnibar&lt;/li>
+&lt;li>Hashbangs and search engines&lt;/li>
+&lt;li>New tab URL for extension-created tabs&lt;/li>
+&lt;li>Theme: dark / light / system + &lt;code>gn&lt;/code> vomnibar dark&lt;/li>
+&lt;/ul>
+&lt;h2 id="documentation-product">Documentation product&lt;/h2>
+&lt;ul>
+&lt;li>In-extension wiki (options deep dives, architecture, permissions)&lt;/li>
+&lt;li>Options with section tabs and reset-to-defaults&lt;/li>
+&lt;li>Help dialog with working wiki links&lt;/li>
+&lt;li>This Hugo site for public docs&lt;/li>
+&lt;/ul>
+&lt;h2 id="privacy-tools-user-initiated">Privacy tools (user-initiated)&lt;/h2>
+&lt;ul>
+&lt;li>Shred domain history + site data&lt;/li>
+&lt;li>Pause history for a time window&lt;/li>
+&lt;li>Clear cookies / cache for current origin (where permitted)&lt;/li>
+&lt;/ul>
+&lt;hr>
+&lt;p>Implementation notes: &lt;a href="https://jamalyusuf.github.io/vim-plus/dev/architecture/">Architecture&lt;/a> · &lt;a href="https://jamalyusuf.github.io/vim-plus/dev/page-enhance/">Page enhance&lt;/a>.&lt;/p></description></item><item><title>Hashbangs &amp; AI</title><link>https://jamalyusuf.github.io/vim-plus/docs/hashbangs/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://jamalyusuf.github.io/vim-plus/docs/hashbangs/</guid><description>&lt;p>Hashbangs are &lt;strong>&lt;code>!token&lt;/code>&lt;/strong> prefixes in the omnibar. They expand to search URLs or AI chat URLs with your query encoded.&lt;/p>
+&lt;h2 id="web-search-examples">Web search (examples)&lt;/h2>
+&lt;table>
+ &lt;thead>
+ &lt;tr>
+ &lt;th>Token&lt;/th>
+ &lt;th>Engine&lt;/th>
+ &lt;/tr>
+ &lt;/thead>
+ &lt;tbody>
+ &lt;tr>
+ &lt;td>&lt;code>!g&lt;/code>&lt;/td>
+ &lt;td>Google&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;code>!w&lt;/code>&lt;/td>
+ &lt;td>Wikipedia&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;code>!gh&lt;/code>&lt;/td>
+ &lt;td>GitHub&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;code>!yt&lt;/code>&lt;/td>
+ &lt;td>YouTube (if configured)&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;code>!so&lt;/code>&lt;/td>
+ &lt;td>Stack Overflow (if configured)&lt;/td>
+ &lt;/tr>
+ &lt;/tbody>
+&lt;/table>
+&lt;p>Defaults favor &lt;strong>Google-centric&lt;/strong> engines in this product build (no Baidu/Gitee-oriented defaults).&lt;/p>
+&lt;h2 id="ai-prompt-send">AI prompt send&lt;/h2>
+&lt;p>These open the provider’s web UI with your text as a prompt (URL templates — &lt;strong>no API keys leave your machine&lt;/strong>; you use the site as a logged-in user):&lt;/p></description></item><item><title>Key mappings</title><link>https://jamalyusuf.github.io/vim-plus/docs/key-mappings/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://jamalyusuf.github.io/vim-plus/docs/key-mappings/</guid><description>&lt;h2 id="language">Language&lt;/h2>
+&lt;p>Options → &lt;strong>Custom key mappings&lt;/strong> accepts a line-oriented language:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-text" data-lang="text">&lt;span style="display:flex;">&lt;span># comment
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>map j scrollDown
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>map &amp;lt;c-d&amp;gt; scrollPageDown
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>unmap x
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>mapKey &amp;lt;D-c&amp;gt; &amp;lt;c-c&amp;gt;
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;table>
+ &lt;thead>
+ &lt;tr>
+ &lt;th>Directive&lt;/th>
+ &lt;th>Meaning&lt;/th>
+ &lt;/tr>
+ &lt;/thead>
+ &lt;tbody>
+ &lt;tr>
+ &lt;td>&lt;code>map &amp;lt;keys&amp;gt; &amp;lt;command&amp;gt;&lt;/code>&lt;/td>
+ &lt;td>Bind keys to a command id&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;code>unmap &amp;lt;keys&amp;gt;&lt;/code>&lt;/td>
+ &lt;td>Remove a binding&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;code>mapKey &amp;lt;from&amp;gt; &amp;lt;to&amp;gt;&lt;/code>&lt;/td>
+ &lt;td>Translate a physical key to another before matching&lt;/td>
+ &lt;/tr>
+ &lt;/tbody>
+&lt;/table>
+&lt;h2 id="safe-customization">Safe customization&lt;/h2>
+&lt;ol>
+&lt;li>Change one binding at a time&lt;/li>
+&lt;li>Prefer &lt;code>unmap&lt;/code> then &lt;code>map&lt;/code> so intent is clear&lt;/li>
+&lt;li>Test on a normal HTTPS page&lt;/li>
+&lt;li>Keep a backup export of Options&lt;/li>
+&lt;/ol>
+&lt;h2 id="site-specific-maps">Site-specific maps&lt;/h2>
+&lt;p>Patterns can scope maps to hosts (see wiki &lt;strong>Site-specific mappings&lt;/strong>). Use when a site’s own shortcuts conflict globally.&lt;/p></description></item><item><title>Exclusions</title><link>https://jamalyusuf.github.io/vim-plus/docs/exclusions/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://jamalyusuf.github.io/vim-plus/docs/exclusions/</guid><description>&lt;h2 id="why-exclude">Why exclude&lt;/h2>
+&lt;p>Editors, email, IDEs-in-browser, and design tools often need their own keyboard shortcuts. Vim+ should get out of the way.&lt;/p>
+&lt;h2 id="fast-path">Fast path&lt;/h2>
+&lt;p>Side panel → &lt;strong>Off for this site&lt;/strong> — excludes the current host with a sensible rule.&lt;/p>
+&lt;h2 id="rules">Rules&lt;/h2>
+&lt;p>Options → excluded URL patterns:&lt;/p>
+&lt;ul>
+&lt;li>Match by URL pattern&lt;/li>
+&lt;li>&lt;strong>Pass keys&lt;/strong> — allow listed keys through to the page&lt;/li>
+&lt;li>Empty passKeys on a full-disable rule — Vim+ does not capture on matches&lt;/li>
+&lt;/ul>
+&lt;h2 id="theory">Theory&lt;/h2>
+&lt;p>Exclusions are evaluated before normal key handling. Prefer narrow host rules over broad &lt;code>*&lt;/code> patterns so you do not disable the extension everywhere by accident.&lt;/p></description></item><item><title>Publishing</title><link>https://jamalyusuf.github.io/vim-plus/docs/publishing/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://jamalyusuf.github.io/vim-plus/docs/publishing/</guid><description>&lt;h2 id="product-identity">Product identity&lt;/h2>
+&lt;table>
+ &lt;thead>
+ &lt;tr>
+ &lt;th>Field&lt;/th>
+ &lt;th>Value&lt;/th>
+ &lt;/tr>
+ &lt;/thead>
+ &lt;tbody>
+ &lt;tr>
+ &lt;td>Name&lt;/td>
+ &lt;td>Vim+&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Author&lt;/td>
+ &lt;td>Jamal Yusuf&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>License&lt;/td>
+ &lt;td>Apache-2.0&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Source&lt;/td>
+ &lt;td>&lt;a href="https://github.com/JamalYusuf/vim-plus">https://github.com/JamalYusuf/vim-plus&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Docs site&lt;/td>
+ &lt;td>&lt;a href="https://jamalyusuf.github.io/vim-plus/">https://jamalyusuf.github.io/vim-plus/&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Privacy&lt;/td>
+ &lt;td>This site → Privacy · repo &lt;code>PRIVACY-POLICY.md&lt;/code>&lt;/td>
+ &lt;/tr>
+ &lt;/tbody>
+&lt;/table>
+&lt;h2 id="store-listing-essentials">Store listing essentials&lt;/h2>
+&lt;ul>
+&lt;li>&lt;strong>Single purpose:&lt;/strong> keyboard-first navigation and productivity for Chrome&lt;/li>
+&lt;li>&lt;strong>Permission justifications:&lt;/strong> &lt;a href="https://jamalyusuf.github.io/vim-plus/legal/permissions/">Permissions&lt;/a>&lt;/li>
+&lt;li>&lt;strong>Privacy policy URL:&lt;/strong> must be a &lt;strong>public HTTPS&lt;/strong> URL (GitHub Pages privacy page or raw policy)&lt;/li>
+&lt;li>Screenshots: omnibar, hints, side panel, options, reader/progress&lt;/li>
+&lt;li>Category: Productivity&lt;/li>
+&lt;/ul>
+&lt;h2 id="technical-checklist">Technical checklist&lt;/h2>
+&lt;ul>
+&lt;li>&lt;input disabled="" type="checkbox"> &lt;code>npm run tsc&lt;/code> clean&lt;/li>
+&lt;li>&lt;input disabled="" type="checkbox"> Load unpacked smoke test: hints, omnibar, &lt;code>:&lt;/code>, side panel, options save&lt;/li>
+&lt;li>&lt;input disabled="" type="checkbox"> Privacy URL live&lt;/li>
+&lt;li>&lt;input disabled="" type="checkbox"> No stale third-party branding in UI strings&lt;/li>
+&lt;li>&lt;input disabled="" type="checkbox"> Manifest version / package version aligned&lt;/li>
+&lt;li>&lt;input disabled="" type="checkbox"> Icons 16/32/48/128&lt;/li>
+&lt;/ul>
+&lt;h2 id="package">Package&lt;/h2>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>npm run dist &lt;span style="color:#75715e"># or npm run chrome — see package.json&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Upload the zip produced by the dist pipeline. Do not include &lt;code>node_modules&lt;/code> or &lt;code>.git&lt;/code>.&lt;/p></description></item><item><title>Advanced customization</title><link>https://jamalyusuf.github.io/vim-plus/docs/advanced/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://jamalyusuf.github.io/vim-plus/docs/advanced/</guid><description>&lt;h2 id="user-defined-css">User-defined CSS&lt;/h2>
+&lt;p>Style HUD, hints, and vomnibar within supported scopes. Prefer small overrides; large CSS can fight dark mode. Options → Look / CSS fields; wiki &lt;strong>User-defined CSS&lt;/strong>.&lt;/p>
+&lt;h2 id="clipboard-substitution-clipsub">Clipboard substitution (&lt;code>clipSub&lt;/code>)&lt;/h2>
+&lt;p>Sed-like rewrite rules for copy/paste text (research and ticket workflows). Misconfigured rules can mangle passwords — keep rules narrow.&lt;/p>
+&lt;h2 id="new-tab-url">New tab URL&lt;/h2>
+&lt;p>Controls what opens when &lt;strong>Vim+&lt;/strong> creates tabs. Chrome still owns Ctrl/Cmd+T for the browser new tab page unless the user changes Chrome settings separately.&lt;/p></description></item><item><title>Troubleshooting</title><link>https://jamalyusuf.github.io/vim-plus/docs/troubleshooting/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://jamalyusuf.github.io/vim-plus/docs/troubleshooting/</guid><description>&lt;h2 id="keys-do-nothing">Keys do nothing&lt;/h2>
+&lt;ol>
+&lt;li>Is the URL &lt;code>chrome://&lt;/code>, Web Store, or PDF viewer? Use side panel / shortcuts.&lt;/li>
+&lt;li>Is the site excluded? Side panel site power / Options exclusions.&lt;/li>
+&lt;li>Is focus in an iframe or input? &lt;code>Esc&lt;/code>, then try again.&lt;/li>
+&lt;li>Reload the extension after upgrading.&lt;/li>
+&lt;/ol>
+&lt;h2 id="omnibar-empty-or-weak-results">Omnibar empty or weak results&lt;/h2>
+&lt;ul>
+&lt;li>History permission and browser history must exist&lt;/li>
+&lt;li>Try a broader query substring&lt;/li>
+&lt;li>Check search engine / hashbang config&lt;/li>
+&lt;/ul>
+&lt;h2 id="command-palette-error">Command palette error&lt;/h2>
+&lt;p>Some commands need a normal tab; others run in the service worker. If a tool fails only from the page, try the side panel. Check service worker DevTools for errors (&lt;code>chrome://extensions&lt;/code> → service worker link).&lt;/p></description></item></channel></rss>

@@ -1,0 +1,40 @@
+<!doctype html><html lang=en><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><title>Command center · Vim+</title>
+<meta name=description content="Vim+ — keyboard-first navigation for Google Chrome. Link hints, omnibar, command palette, side panel, reading tools. Open source by Jamal Yusuf."><meta name=author content="Jamal Yusuf"><meta name=theme-color content="#0a0a0b"><meta property="og:title" content="Command center · Vim+"><meta property="og:description" content="Vim+ — keyboard-first navigation for Google Chrome. Link hints, omnibar, command palette, side panel, reading tools. Open source by Jamal Yusuf."><meta property="og:type" content="website"><meta property="og:url" content="https://jamalyusuf.github.io/vim-plus/guide/command-center/"><meta property="og:image" content="https://jamalyusuf.github.io/vim-plus/media/demo-poster.svg"><meta name=twitter:card content="summary_large_image"><link rel=stylesheet href=https://jamalyusuf.github.io/vim-plus/css/site.css><link rel=canonical href=https://jamalyusuf.github.io/vim-plus/guide/command-center/></head><body class=page-docs><header class=site-header><div class=header-inner><a class=brand href=https://jamalyusuf.github.io/vim-plus/><span class=v>Vim</span><span class=p>+</span></a>
+<span class=brand-sub>Keyboard-first Chrome</span><nav class=nav aria-label=Main><a href=https://jamalyusuf.github.io/vim-plus/>Home</a>
+<a href=https://jamalyusuf.github.io/vim-plus/#why>Why</a>
+<a href=https://jamalyusuf.github.io/vim-plus/#demo>Demo</a>
+<a href=https://jamalyusuf.github.io/vim-plus/#install>Download</a>
+<a href=https://jamalyusuf.github.io/vim-plus/#faq>FAQ</a>
+<a href=https://jamalyusuf.github.io/vim-plus/docs/>Docs</a>
+<a href=https://jamalyusuf.github.io/vim-plus/guide/>Guide</a>
+<a href=https://github.com/JamalYusuf/vim-plus rel=noopener>GitHub</a></nav></div></header><div class=shell><aside class=sidebar aria-label="Docs navigation"><div class=group>Guide</div><a href=https://jamalyusuf.github.io/vim-plus/guide/>Overview</a>
+<a href=https://jamalyusuf.github.io/vim-plus/guide/getting-started/>Getting started</a>
+<a href=https://jamalyusuf.github.io/vim-plus/guide/concepts/>Vim concepts</a>
+<a href=https://jamalyusuf.github.io/vim-plus/guide/modes/>Modes</a>
+<a href=https://jamalyusuf.github.io/vim-plus/guide/keys/>Keyboard map</a>
+<a href=https://jamalyusuf.github.io/vim-plus/guide/omnibar/>Omnibar</a>
+<a href=https://jamalyusuf.github.io/vim-plus/guide/command-center/ class=active>Command center</a>
+<a href=https://jamalyusuf.github.io/vim-plus/guide/options/>Options</a>
+<a href=https://jamalyusuf.github.io/vim-plus/guide/reading/>Reading tools</a>
+<a href=https://jamalyusuf.github.io/vim-plus/guide/windows/>Windows & tabs</a><div class=group>Reference</div><a href=https://jamalyusuf.github.io/vim-plus/docs/>Docs index</a>
+<a href=https://jamalyusuf.github.io/vim-plus/docs/install/>Install & build</a>
+<a href=https://jamalyusuf.github.io/vim-plus/docs/features/>Features</a>
+<a href=https://jamalyusuf.github.io/vim-plus/docs/hashbangs/>Hashbangs & AI</a>
+<a href=https://jamalyusuf.github.io/vim-plus/docs/key-mappings/>Key mappings</a>
+<a href=https://jamalyusuf.github.io/vim-plus/docs/exclusions/>Exclusions</a>
+<a href=https://jamalyusuf.github.io/vim-plus/docs/advanced/>Advanced</a>
+<a href=https://jamalyusuf.github.io/vim-plus/docs/troubleshooting/>Troubleshooting</a>
+<a href=https://jamalyusuf.github.io/vim-plus/docs/publishing/>Publishing</a><div class=group>Developers</div><a href=https://jamalyusuf.github.io/vim-plus/dev/>Overview</a>
+<a href=https://jamalyusuf.github.io/vim-plus/dev/architecture/>Architecture</a>
+<a href=https://jamalyusuf.github.io/vim-plus/dev/message-flow/>Message flow</a>
+<a href=https://jamalyusuf.github.io/vim-plus/dev/settings/>Settings pipeline</a>
+<a href=https://jamalyusuf.github.io/vim-plus/dev/page-enhance/>Page enhance</a>
+<a href=https://jamalyusuf.github.io/vim-plus/dev/protocol/>Protocol tokens</a>
+<a href=https://jamalyusuf.github.io/vim-plus/dev/contributing/>Contributing</a><div class=group>Legal</div><a href=https://jamalyusuf.github.io/vim-plus/legal/permissions/>Permissions</a>
+<a href=https://jamalyusuf.github.io/vim-plus/legal/privacy/>Privacy</a>
+<a href=https://jamalyusuf.github.io/vim-plus/legal/license/>License</a></aside><article class=main><h1>Command center</h1><p class=subtitle>Side panel power-user UI</p><p>The <strong>command center</strong> is Vim+’s side panel: a persistent surface for keys, commands, tabs, sessions, Reading List, and page actions — including when content scripts cannot run.</p><h2 id=open>Open</h2><ul><li>Toolbar icon (default action opens the side panel)</li><li>Context menu</li><li><code>gS</code> (if mapped)</li><li>Global command <strong>Open side panel</strong> (<code>chrome://extensions/shortcuts</code>, suggested <code>Alt+Shift+V</code>)</li><li>Palette / wiki links that call into the panel</li></ul><h2 id=modes>Modes</h2><table><thead><tr><th>Mode</th><th>Purpose</th></tr></thead><tbody><tr><td><strong>Keys</strong></td><td>Bound keys for the current context</td></tr><tr><td><strong>Cmds</strong></td><td>Full command catalog / quick actions</td></tr><tr><td><strong>Tabs</strong></td><td>Open tabs — jump, close, organize</td></tr><tr><td><strong>Closed</strong></td><td>Recently closed / session restore</td></tr><tr><td><strong>Later</strong></td><td>Chrome Reading List</td></tr><tr><td><strong>Page</strong></td><td>Page-local actions</td></tr></tbody></table><p>Header actions typically include <strong>Options</strong>, <strong>Wiki</strong>, <strong>Help</strong>, and <strong>Off for this site</strong>.</p><h2 id=why-it-exists>Why it exists</h2><ol><li><strong>chrome:// and restricted pages</strong> — content scripts are blocked; the side panel still works with a user gesture</li><li><strong>Discoverability</strong> — browse commands without memorizing maps</li><li><strong>Session power</strong> — tabs / closed / reading list without leaving the keyboard workflow</li></ol><h2 id=site-power-toggle>Site power toggle</h2><p><strong>Off for this site</strong> adds an exclusion for the current host so page keys pass through. Re-enable from Options → exclusions or by reversing the rule.</p><h2 id=relationship-to-palette>Relationship to palette</h2><table><thead><tr><th>Surface</th><th>Best for</th></tr></thead><tbody><tr><td><code>:</code> palette</td><td>Fast named commands while reading a page</td></tr><tr><td>Side panel</td><td>Browse, multi-step, restricted URLs, tab/session work</td></tr><tr><td>Omnibar</td><td>URLs, history, engines, AI</td></tr></tbody></table><h2 id=permissions-note>Permissions note</h2><p>Side panel APIs require the <code>sidePanel</code> permission declared in the manifest. Opening the panel is always a user-driven action.</p><div class=page-footer><span>Vim+ documentation</span>
+<span><a href=https://github.com/JamalYusuf/vim-plus>Edit on GitHub</a> · <a href=https://jamal.dev>Jamal Yusuf</a></span></div></article></div><footer class=site-footer><p><strong>Vim+</strong> v1.0.0 · by
+<a href=https://jamal.dev rel=noopener>Jamal Yusuf</a>
+· <a href=https://github.com/JamalYusuf/vim-plus rel=noopener>GitHub</a>
+· <a href=https://jamalyusuf.github.io/vim-plus/legal/privacy/>Privacy</a>
+· Apache-2.0</p></footer></body></html>

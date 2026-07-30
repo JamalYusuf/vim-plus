@@ -1,0 +1,40 @@
+<!doctype html><html lang=en><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><title>Permissions · Vim+</title>
+<meta name=description content="Vim+ — keyboard-first navigation for Google Chrome. Link hints, omnibar, command palette, side panel, reading tools. Open source by Jamal Yusuf."><meta name=author content="Jamal Yusuf"><meta name=theme-color content="#0a0a0b"><meta property="og:title" content="Permissions · Vim+"><meta property="og:description" content="Vim+ — keyboard-first navigation for Google Chrome. Link hints, omnibar, command palette, side panel, reading tools. Open source by Jamal Yusuf."><meta property="og:type" content="website"><meta property="og:url" content="https://jamalyusuf.github.io/vim-plus/legal/permissions/"><meta property="og:image" content="https://jamalyusuf.github.io/vim-plus/media/demo-poster.svg"><meta name=twitter:card content="summary_large_image"><link rel=stylesheet href=https://jamalyusuf.github.io/vim-plus/css/site.css><link rel=canonical href=https://jamalyusuf.github.io/vim-plus/legal/permissions/></head><body class=page-docs><header class=site-header><div class=header-inner><a class=brand href=https://jamalyusuf.github.io/vim-plus/><span class=v>Vim</span><span class=p>+</span></a>
+<span class=brand-sub>Keyboard-first Chrome</span><nav class=nav aria-label=Main><a href=https://jamalyusuf.github.io/vim-plus/>Home</a>
+<a href=https://jamalyusuf.github.io/vim-plus/#why>Why</a>
+<a href=https://jamalyusuf.github.io/vim-plus/#demo>Demo</a>
+<a href=https://jamalyusuf.github.io/vim-plus/#install>Download</a>
+<a href=https://jamalyusuf.github.io/vim-plus/#faq>FAQ</a>
+<a href=https://jamalyusuf.github.io/vim-plus/docs/>Docs</a>
+<a href=https://jamalyusuf.github.io/vim-plus/guide/>Guide</a>
+<a href=https://github.com/JamalYusuf/vim-plus rel=noopener>GitHub</a></nav></div></header><div class=shell><aside class=sidebar aria-label="Docs navigation"><div class=group>Guide</div><a href=https://jamalyusuf.github.io/vim-plus/guide/>Overview</a>
+<a href=https://jamalyusuf.github.io/vim-plus/guide/getting-started/>Getting started</a>
+<a href=https://jamalyusuf.github.io/vim-plus/guide/concepts/>Vim concepts</a>
+<a href=https://jamalyusuf.github.io/vim-plus/guide/modes/>Modes</a>
+<a href=https://jamalyusuf.github.io/vim-plus/guide/keys/>Keyboard map</a>
+<a href=https://jamalyusuf.github.io/vim-plus/guide/omnibar/>Omnibar</a>
+<a href=https://jamalyusuf.github.io/vim-plus/guide/command-center/>Command center</a>
+<a href=https://jamalyusuf.github.io/vim-plus/guide/options/>Options</a>
+<a href=https://jamalyusuf.github.io/vim-plus/guide/reading/>Reading tools</a>
+<a href=https://jamalyusuf.github.io/vim-plus/guide/windows/>Windows & tabs</a><div class=group>Reference</div><a href=https://jamalyusuf.github.io/vim-plus/docs/>Docs index</a>
+<a href=https://jamalyusuf.github.io/vim-plus/docs/install/>Install & build</a>
+<a href=https://jamalyusuf.github.io/vim-plus/docs/features/>Features</a>
+<a href=https://jamalyusuf.github.io/vim-plus/docs/hashbangs/>Hashbangs & AI</a>
+<a href=https://jamalyusuf.github.io/vim-plus/docs/key-mappings/>Key mappings</a>
+<a href=https://jamalyusuf.github.io/vim-plus/docs/exclusions/>Exclusions</a>
+<a href=https://jamalyusuf.github.io/vim-plus/docs/advanced/>Advanced</a>
+<a href=https://jamalyusuf.github.io/vim-plus/docs/troubleshooting/>Troubleshooting</a>
+<a href=https://jamalyusuf.github.io/vim-plus/docs/publishing/>Publishing</a><div class=group>Developers</div><a href=https://jamalyusuf.github.io/vim-plus/dev/>Overview</a>
+<a href=https://jamalyusuf.github.io/vim-plus/dev/architecture/>Architecture</a>
+<a href=https://jamalyusuf.github.io/vim-plus/dev/message-flow/>Message flow</a>
+<a href=https://jamalyusuf.github.io/vim-plus/dev/settings/>Settings pipeline</a>
+<a href=https://jamalyusuf.github.io/vim-plus/dev/page-enhance/>Page enhance</a>
+<a href=https://jamalyusuf.github.io/vim-plus/dev/protocol/>Protocol tokens</a>
+<a href=https://jamalyusuf.github.io/vim-plus/dev/contributing/>Contributing</a><div class=group>Legal</div><a href=https://jamalyusuf.github.io/vim-plus/legal/permissions/ class=active>Permissions</a>
+<a href=https://jamalyusuf.github.io/vim-plus/legal/privacy/>Privacy</a>
+<a href=https://jamalyusuf.github.io/vim-plus/legal/license/>License</a></aside><article class=main><h1>Permissions</h1><p class=subtitle>Chrome Web Store justifications</p><p>Vim+ requests only permissions required for keyboard navigation, omnibar completion, tab/window control, and optional privacy tools. Below is a reviewer-oriented summary; keep the live <code>manifest.json</code> as the source of truth.</p><h2 id=typical-capabilities>Typical capabilities</h2><table><thead><tr><th>Permission / host</th><th>Why</th></tr></thead><tbody><tr><td><strong>Storage</strong></td><td>Save settings, maps, highlighter data, exclusions</td></tr><tr><td><strong>Tabs / windows</strong></td><td>Switch, mute, pin, dock, session restore, command targets</td></tr><tr><td><strong>History</strong></td><td>Omnibar ranking and user-initiated history clear / shred</td></tr><tr><td><strong>Bookmarks</strong></td><td>Omnibar bookmark mode / toggle commands</td></tr><tr><td><strong>Sessions</strong></td><td>Restore closed tabs/windows</td></tr><tr><td><strong>Search</strong> / omnibox</td><td>Optional default-search integration; omnibox keyword <code>v</code></td></tr><tr><td><strong>Clipboard</strong></td><td>Copy URL/title/markdown/article commands</td></tr><tr><td><strong>Scripting / content scripts</strong></td><td>Inject keyboard UI on ordinary web pages</td></tr><tr><td><strong>Side panel</strong></td><td>Command center UI</td></tr><tr><td><strong>Downloads</strong></td><td>Open downloads UI / last download helpers</td></tr><tr><td><strong>Reading list</strong></td><td>Later mode in side panel</td></tr><tr><td><strong>Favicon</strong></td><td>Omnibar icons where available</td></tr><tr><td><strong>Host access</strong></td><td>Content scripts and completion on https/http pages the user visits</td></tr></tbody></table><p>Exact optional vs required split is defined in the manifest and Options permission UI.</p><h2 id=user-initiated-sensitive-actions>User-initiated sensitive actions</h2><p>Clearing history, cookies, or cache for a site runs <strong>only</strong> when the user invokes a command (palette / UI). Vim+ does not schedule silent wipes.</p><h2 id=incognito>Incognito</h2><p>Requires the user to enable “Allow in incognito” on the extension details page.</p><h2 id=side-panel>Side panel</h2><p>Opened by user gesture (icon, shortcut, command). Not used for background ads or unrelated UX.</p><h2 id=content-scripts>Content scripts</h2><p>Run on normal web pages to provide hints, scroll, find, and page enhance. They do not run on most <code>chrome://</code> URLs by browser policy.</p><h2 id=store-single-purpose>Store single purpose</h2><p>Keyboard-first browser navigation and productivity. Features like Reader View and window dock support that purpose; they are not unrelated product bundles.</p><p>For the long form used in store submission, see <code>docs/permissions.md</code> in the repository.</p><div class=page-footer><span>Vim+ documentation</span>
+<span><a href=https://github.com/JamalYusuf/vim-plus>Edit on GitHub</a> · <a href=https://jamal.dev>Jamal Yusuf</a></span></div></article></div><footer class=site-footer><p><strong>Vim+</strong> v1.0.0 · by
+<a href=https://jamal.dev rel=noopener>Jamal Yusuf</a>
+· <a href=https://github.com/JamalYusuf/vim-plus rel=noopener>GitHub</a>
+· <a href=https://jamalyusuf.github.io/vim-plus/legal/privacy/>Privacy</a>
+· Apache-2.0</p></footer></body></html>

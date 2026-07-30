@@ -1,0 +1,40 @@
+<!doctype html><html lang=en><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><title>Modes · Vim+</title>
+<meta name=description content="Vim+ — keyboard-first navigation for Google Chrome. Link hints, omnibar, command palette, side panel, reading tools. Open source by Jamal Yusuf."><meta name=author content="Jamal Yusuf"><meta name=theme-color content="#0a0a0b"><meta property="og:title" content="Modes · Vim+"><meta property="og:description" content="Vim+ — keyboard-first navigation for Google Chrome. Link hints, omnibar, command palette, side panel, reading tools. Open source by Jamal Yusuf."><meta property="og:type" content="website"><meta property="og:url" content="https://jamalyusuf.github.io/vim-plus/guide/modes/"><meta property="og:image" content="https://jamalyusuf.github.io/vim-plus/media/demo-poster.svg"><meta name=twitter:card content="summary_large_image"><link rel=stylesheet href=https://jamalyusuf.github.io/vim-plus/css/site.css><link rel=canonical href=https://jamalyusuf.github.io/vim-plus/guide/modes/></head><body class=page-docs><header class=site-header><div class=header-inner><a class=brand href=https://jamalyusuf.github.io/vim-plus/><span class=v>Vim</span><span class=p>+</span></a>
+<span class=brand-sub>Keyboard-first Chrome</span><nav class=nav aria-label=Main><a href=https://jamalyusuf.github.io/vim-plus/>Home</a>
+<a href=https://jamalyusuf.github.io/vim-plus/#why>Why</a>
+<a href=https://jamalyusuf.github.io/vim-plus/#demo>Demo</a>
+<a href=https://jamalyusuf.github.io/vim-plus/#install>Download</a>
+<a href=https://jamalyusuf.github.io/vim-plus/#faq>FAQ</a>
+<a href=https://jamalyusuf.github.io/vim-plus/docs/>Docs</a>
+<a href=https://jamalyusuf.github.io/vim-plus/guide/>Guide</a>
+<a href=https://github.com/JamalYusuf/vim-plus rel=noopener>GitHub</a></nav></div></header><div class=shell><aside class=sidebar aria-label="Docs navigation"><div class=group>Guide</div><a href=https://jamalyusuf.github.io/vim-plus/guide/>Overview</a>
+<a href=https://jamalyusuf.github.io/vim-plus/guide/getting-started/>Getting started</a>
+<a href=https://jamalyusuf.github.io/vim-plus/guide/concepts/>Vim concepts</a>
+<a href=https://jamalyusuf.github.io/vim-plus/guide/modes/ class=active>Modes</a>
+<a href=https://jamalyusuf.github.io/vim-plus/guide/keys/>Keyboard map</a>
+<a href=https://jamalyusuf.github.io/vim-plus/guide/omnibar/>Omnibar</a>
+<a href=https://jamalyusuf.github.io/vim-plus/guide/command-center/>Command center</a>
+<a href=https://jamalyusuf.github.io/vim-plus/guide/options/>Options</a>
+<a href=https://jamalyusuf.github.io/vim-plus/guide/reading/>Reading tools</a>
+<a href=https://jamalyusuf.github.io/vim-plus/guide/windows/>Windows & tabs</a><div class=group>Reference</div><a href=https://jamalyusuf.github.io/vim-plus/docs/>Docs index</a>
+<a href=https://jamalyusuf.github.io/vim-plus/docs/install/>Install & build</a>
+<a href=https://jamalyusuf.github.io/vim-plus/docs/features/>Features</a>
+<a href=https://jamalyusuf.github.io/vim-plus/docs/hashbangs/>Hashbangs & AI</a>
+<a href=https://jamalyusuf.github.io/vim-plus/docs/key-mappings/>Key mappings</a>
+<a href=https://jamalyusuf.github.io/vim-plus/docs/exclusions/>Exclusions</a>
+<a href=https://jamalyusuf.github.io/vim-plus/docs/advanced/>Advanced</a>
+<a href=https://jamalyusuf.github.io/vim-plus/docs/troubleshooting/>Troubleshooting</a>
+<a href=https://jamalyusuf.github.io/vim-plus/docs/publishing/>Publishing</a><div class=group>Developers</div><a href=https://jamalyusuf.github.io/vim-plus/dev/>Overview</a>
+<a href=https://jamalyusuf.github.io/vim-plus/dev/architecture/>Architecture</a>
+<a href=https://jamalyusuf.github.io/vim-plus/dev/message-flow/>Message flow</a>
+<a href=https://jamalyusuf.github.io/vim-plus/dev/settings/>Settings pipeline</a>
+<a href=https://jamalyusuf.github.io/vim-plus/dev/page-enhance/>Page enhance</a>
+<a href=https://jamalyusuf.github.io/vim-plus/dev/protocol/>Protocol tokens</a>
+<a href=https://jamalyusuf.github.io/vim-plus/dev/contributing/>Contributing</a><div class=group>Legal</div><a href=https://jamalyusuf.github.io/vim-plus/legal/permissions/>Permissions</a>
+<a href=https://jamalyusuf.github.io/vim-plus/legal/privacy/>Privacy</a>
+<a href=https://jamalyusuf.github.io/vim-plus/legal/license/>License</a></aside><article class=main><h1>Modes</h1><p class=subtitle>What mode you’re in and what to press</p><h2 id=normal-mode>Normal mode</h2><p>Default on ordinary pages. Single keys and sequences run commands. HUD (heads-up display) may show multi-key progress.</p><p><strong>Leave:</strong> stay here most of the time. Enter other modes with explicit keys (<code>i</code>, <code>/</code>, <code>v</code>, <code>f</code>, <code>o</code>, <code>:</code>).</p><h2 id=insert-mode>Insert mode</h2><p>Typing goes to the page. Enter via <code>i</code>, focusing an input, or some site behaviors.</p><p><strong>Leave:</strong> <code>Esc</code> (or your mapped exit). After leaving, scroll and hints work again.</p><h2 id=find-mode->Find mode (<code>/</code>)</h2><p>Search visible text. Typical flow:</p><ol><li><code>/</code> → type query</li><li>Enter to commit / jump</li><li><code>n</code> / <code>N</code> next / previous match</li><li><code>Esc</code> exit</li></ol><p>Options control case sensitivity and related find behavior.</p><h2 id=visual--visual-line>Visual / visual-line</h2><p>Select text with keyboard motions (similar spirit to Vim visual mode). Useful for copy workflows and clipboard commands (<code>:clip</code> family).</p><h2 id=link-hints-f--variants>Link hints (<code>f</code> / variants)</h2><p>Every clickable (or configurable) target gets a short label. Type the label to activate. Variants open in new tab, copy URL, hover, download, queue, etc. — see default maps and Options → Hints.</p><h2 id=omnibar--command-palette>Omnibar & command palette</h2><p>These are <strong>UI modes</strong>: focus is in the vomnibar or palette until you confirm or cancel (<code>Esc</code>). They do not leave the page’s content script in “insert”; they overlay the browser chrome area Vim+ owns.</p><h2 id=hud-feedback>HUD feedback</h2><p>When a multi-key chord is partial, the HUD shows what you’ve typed. Wrong prefix? <code>Esc</code> and restart.</p><h2 id=mode-troubleshooting>Mode troubleshooting</h2><table><thead><tr><th>Symptom</th><th>Try</th></tr></thead><tbody><tr><td>Keys type into the page</td><td><code>Esc</code>; check insert; check exclusions</td></tr><tr><td>Nothing happens</td><td>Not a chrome:// page? Focus in iframe? Site excluded?</td></tr><tr><td>Hints missing</td><td>Page still loading; shadow DOM; exclusion; try reload</td></tr><tr><td>Palette command failed</td><td>Side panel / global shortcut path; see DevTools for SW errors</td></tr></tbody></table><div class=page-footer><span>Vim+ documentation</span>
+<span><a href=https://github.com/JamalYusuf/vim-plus>Edit on GitHub</a> · <a href=https://jamal.dev>Jamal Yusuf</a></span></div></article></div><footer class=site-footer><p><strong>Vim+</strong> v1.0.0 · by
+<a href=https://jamal.dev rel=noopener>Jamal Yusuf</a>
+· <a href=https://github.com/JamalYusuf/vim-plus rel=noopener>GitHub</a>
+· <a href=https://jamalyusuf.github.io/vim-plus/legal/privacy/>Privacy</a>
+· Apache-2.0</p></footer></body></html>

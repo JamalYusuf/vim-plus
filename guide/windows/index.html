@@ -1,0 +1,40 @@
+<!doctype html><html lang=en><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><title>Windows & tabs · Vim+</title>
+<meta name=description content="Vim+ — keyboard-first navigation for Google Chrome. Link hints, omnibar, command palette, side panel, reading tools. Open source by Jamal Yusuf."><meta name=author content="Jamal Yusuf"><meta name=theme-color content="#0a0a0b"><meta property="og:title" content="Windows & tabs · Vim+"><meta property="og:description" content="Vim+ — keyboard-first navigation for Google Chrome. Link hints, omnibar, command palette, side panel, reading tools. Open source by Jamal Yusuf."><meta property="og:type" content="website"><meta property="og:url" content="https://jamalyusuf.github.io/vim-plus/guide/windows/"><meta property="og:image" content="https://jamalyusuf.github.io/vim-plus/media/demo-poster.svg"><meta name=twitter:card content="summary_large_image"><link rel=stylesheet href=https://jamalyusuf.github.io/vim-plus/css/site.css><link rel=canonical href=https://jamalyusuf.github.io/vim-plus/guide/windows/></head><body class=page-docs><header class=site-header><div class=header-inner><a class=brand href=https://jamalyusuf.github.io/vim-plus/><span class=v>Vim</span><span class=p>+</span></a>
+<span class=brand-sub>Keyboard-first Chrome</span><nav class=nav aria-label=Main><a href=https://jamalyusuf.github.io/vim-plus/>Home</a>
+<a href=https://jamalyusuf.github.io/vim-plus/#why>Why</a>
+<a href=https://jamalyusuf.github.io/vim-plus/#demo>Demo</a>
+<a href=https://jamalyusuf.github.io/vim-plus/#install>Download</a>
+<a href=https://jamalyusuf.github.io/vim-plus/#faq>FAQ</a>
+<a href=https://jamalyusuf.github.io/vim-plus/docs/>Docs</a>
+<a href=https://jamalyusuf.github.io/vim-plus/guide/>Guide</a>
+<a href=https://github.com/JamalYusuf/vim-plus rel=noopener>GitHub</a></nav></div></header><div class=shell><aside class=sidebar aria-label="Docs navigation"><div class=group>Guide</div><a href=https://jamalyusuf.github.io/vim-plus/guide/>Overview</a>
+<a href=https://jamalyusuf.github.io/vim-plus/guide/getting-started/>Getting started</a>
+<a href=https://jamalyusuf.github.io/vim-plus/guide/concepts/>Vim concepts</a>
+<a href=https://jamalyusuf.github.io/vim-plus/guide/modes/>Modes</a>
+<a href=https://jamalyusuf.github.io/vim-plus/guide/keys/>Keyboard map</a>
+<a href=https://jamalyusuf.github.io/vim-plus/guide/omnibar/>Omnibar</a>
+<a href=https://jamalyusuf.github.io/vim-plus/guide/command-center/>Command center</a>
+<a href=https://jamalyusuf.github.io/vim-plus/guide/options/>Options</a>
+<a href=https://jamalyusuf.github.io/vim-plus/guide/reading/>Reading tools</a>
+<a href=https://jamalyusuf.github.io/vim-plus/guide/windows/ class=active>Windows & tabs</a><div class=group>Reference</div><a href=https://jamalyusuf.github.io/vim-plus/docs/>Docs index</a>
+<a href=https://jamalyusuf.github.io/vim-plus/docs/install/>Install & build</a>
+<a href=https://jamalyusuf.github.io/vim-plus/docs/features/>Features</a>
+<a href=https://jamalyusuf.github.io/vim-plus/docs/hashbangs/>Hashbangs & AI</a>
+<a href=https://jamalyusuf.github.io/vim-plus/docs/key-mappings/>Key mappings</a>
+<a href=https://jamalyusuf.github.io/vim-plus/docs/exclusions/>Exclusions</a>
+<a href=https://jamalyusuf.github.io/vim-plus/docs/advanced/>Advanced</a>
+<a href=https://jamalyusuf.github.io/vim-plus/docs/troubleshooting/>Troubleshooting</a>
+<a href=https://jamalyusuf.github.io/vim-plus/docs/publishing/>Publishing</a><div class=group>Developers</div><a href=https://jamalyusuf.github.io/vim-plus/dev/>Overview</a>
+<a href=https://jamalyusuf.github.io/vim-plus/dev/architecture/>Architecture</a>
+<a href=https://jamalyusuf.github.io/vim-plus/dev/message-flow/>Message flow</a>
+<a href=https://jamalyusuf.github.io/vim-plus/dev/settings/>Settings pipeline</a>
+<a href=https://jamalyusuf.github.io/vim-plus/dev/page-enhance/>Page enhance</a>
+<a href=https://jamalyusuf.github.io/vim-plus/dev/protocol/>Protocol tokens</a>
+<a href=https://jamalyusuf.github.io/vim-plus/dev/contributing/>Contributing</a><div class=group>Legal</div><a href=https://jamalyusuf.github.io/vim-plus/legal/permissions/>Permissions</a>
+<a href=https://jamalyusuf.github.io/vim-plus/legal/privacy/>Privacy</a>
+<a href=https://jamalyusuf.github.io/vim-plus/legal/license/>License</a></aside><article class=main><h1>Windows & tabs</h1><p class=subtitle>Docking, sessions, tab power</p><h2 id=tabs>Tabs</h2><p>Common capabilities (via keys, palette, or side panel):</p><ul><li>Pin, mute, duplicate</li><li>Discard (“sleep”) to free memory</li><li>Close others / close range</li><li>Tab groups (Chrome tab group APIs)</li><li>Restore closed tabs and sessions</li></ul><p>Side panel <strong>Tabs</strong> and <strong>Closed</strong> modes are the visual way to drive this.</p><h2 id=window-docking>Window docking</h2><p>Dock the browser window to display edges with progressive shrink, maximize, center, and cycle windows.</p><table><thead><tr><th>Entry</th><th>Notes</th></tr></thead><tbody><tr><td><code>Alt</code>+arrows</td><td>If mapped and OS allows</td></tr><tr><td><code>:win</code> family</td><td>Palette discoverable names</td></tr><tr><td>Quick actions</td><td>Background <code>quick_actions</code> handlers</td></tr></tbody></table><p>Docking uses Chrome <code>windows</code> APIs — not simulated CSS. Multi-monitor setups use the display of the current window.</p><h2 id=moving-across-windows>Moving across windows</h2><ul><li>Move tab to next window</li><li>Mute other tabs</li><li>Window picker omnibar (<code>gA</code>)</li></ul><h2 id=incognito>Incognito</h2><p>Commands can open an incognito window when the extension is allowed in incognito (<code>chrome://extensions</code> → details).</p><h2 id=limitations>Limitations</h2><ul><li>OS window manager rules still apply</li><li>Some corporate policies restrict window bounds</li><li>On restricted pages, prefer side panel / global shortcuts over content-script keys</li></ul><div class=page-footer><span>Vim+ documentation</span>
+<span><a href=https://github.com/JamalYusuf/vim-plus>Edit on GitHub</a> · <a href=https://jamal.dev>Jamal Yusuf</a></span></div></article></div><footer class=site-footer><p><strong>Vim+</strong> v1.0.0 · by
+<a href=https://jamal.dev rel=noopener>Jamal Yusuf</a>
+· <a href=https://github.com/JamalYusuf/vim-plus rel=noopener>GitHub</a>
+· <a href=https://jamalyusuf.github.io/vim-plus/legal/privacy/>Privacy</a>
+· Apache-2.0</p></footer></body></html>

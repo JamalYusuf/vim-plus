@@ -1,0 +1,482 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>User guide on Vim+</title><link>https://jamalyusuf.github.io/vim-plus/guide/</link><description>Recent content in User guide on Vim+</description><generator>Hugo</generator><language>en</language><atom:link href="https://jamalyusuf.github.io/vim-plus/guide/index.xml" rel="self" type="application/rss+xml"/><item><title>Getting started</title><link>https://jamalyusuf.github.io/vim-plus/guide/getting-started/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://jamalyusuf.github.io/vim-plus/guide/getting-started/</guid><description>&lt;h2 id="install-from-source">Install from source&lt;/h2>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>git clone https://github.com/JamalYusuf/vim-plus.git
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>cd vim-plus
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>npm ci
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>npm run tsc
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;ol>
+&lt;li>Open &lt;code>chrome://extensions&lt;/code>&lt;/li>
+&lt;li>Enable &lt;strong>Developer mode&lt;/strong>&lt;/li>
+&lt;li>&lt;strong>Load unpacked&lt;/strong> → select the repository root (the folder that contains &lt;code>manifest.json&lt;/code>)&lt;/li>
+&lt;li>Pin the toolbar icon&lt;/li>
+&lt;li>Under &lt;code>chrome://extensions/shortcuts&lt;/code>, assign &lt;strong>Open side panel&lt;/strong> (suggested: &lt;code>Alt+Shift+V&lt;/code>)&lt;/li>
+&lt;/ol>
+&lt;p>Reload the extension after every &lt;code>npm run tsc&lt;/code> when you change TypeScript sources.&lt;/p>
+&lt;h2 id="first-keys-normal-webpage">First keys (normal webpage)&lt;/h2>
+&lt;table>
+ &lt;thead>
+ &lt;tr>
+ &lt;th>Key&lt;/th>
+ &lt;th>Action&lt;/th>
+ &lt;/tr>
+ &lt;/thead>
+ &lt;tbody>
+ &lt;tr>
+ &lt;td>&lt;code>j&lt;/code> / &lt;code>k&lt;/code>&lt;/td>
+ &lt;td>Scroll down / up&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;code>h&lt;/code> / &lt;code>l&lt;/code>&lt;/td>
+ &lt;td>Scroll left / right&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;code>d&lt;/code> / &lt;code>u&lt;/code>&lt;/td>
+ &lt;td>Half-page down / up&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;code>gg&lt;/code> / &lt;code>G&lt;/code>&lt;/td>
+ &lt;td>Top / bottom&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;code>f&lt;/code> / &lt;code>F&lt;/code>&lt;/td>
+ &lt;td>Link hints — current tab / new tab&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;code>o&lt;/code> / &lt;code>O&lt;/code>&lt;/td>
+ &lt;td>Omnibar — current / new tab&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;code>:&lt;/code>&lt;/td>
+ &lt;td>Command palette&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;code>/&lt;/code>&lt;/td>
+ &lt;td>Find mode&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;code>v&lt;/code>&lt;/td>
+ &lt;td>Visual mode&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;code>?&lt;/code>&lt;/td>
+ &lt;td>Help overlay&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;code>i&lt;/code>&lt;/td>
+ &lt;td>Insert mode (type into the page)&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;code>r&lt;/code>&lt;/td>
+ &lt;td>Reload&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;code>x&lt;/code> / &lt;code>X&lt;/code>&lt;/td>
+ &lt;td>Close tab / restore closed&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;code>gS&lt;/code>&lt;/td>
+ &lt;td>Side panel command center&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;code>gA&lt;/code>&lt;/td>
+ &lt;td>Window picker (omnibar)&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;code>gn&lt;/code>&lt;/td>
+ &lt;td>Toggle dark UI style (vomnibar + theme)&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;code>Esc&lt;/code>&lt;/td>
+ &lt;td>Cancel / leave insert&lt;/td>
+ &lt;/tr>
+ &lt;/tbody>
+&lt;/table>
+&lt;p>Exact bindings depend on your key map. Side panel → &lt;strong>Keys&lt;/strong> lists what is active for the current page.&lt;/p></description></item><item><title>Vim concepts</title><link>https://jamalyusuf.github.io/vim-plus/guide/concepts/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://jamalyusuf.github.io/vim-plus/guide/concepts/</guid><description>&lt;p>Vim+ is &lt;strong>not&lt;/strong> a full Vim editor inside Chrome. It borrows &lt;strong>modal control&lt;/strong>, &lt;strong>counts&lt;/strong>, and &lt;strong>composable keys&lt;/strong> so browsing stays on the home row.&lt;/p>
+&lt;h2 id="modes-mental-model">Modes (mental model)&lt;/h2>
+&lt;table>
+ &lt;thead>
+ &lt;tr>
+ &lt;th>Mode&lt;/th>
+ &lt;th>What keys do&lt;/th>
+ &lt;/tr>
+ &lt;/thead>
+ &lt;tbody>
+ &lt;tr>
+ &lt;td>&lt;strong>Normal&lt;/strong>&lt;/td>
+ &lt;td>Keys are commands: scroll, hints, open omnibar&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;strong>Insert&lt;/strong>&lt;/td>
+ &lt;td>Keys type into the focused field (or the page)&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;strong>Find&lt;/strong>&lt;/td>
+ &lt;td>Type a search string; &lt;code>n&lt;/code>/&lt;code>N&lt;/code> jump matches&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;strong>Visual&lt;/strong>&lt;/td>
+ &lt;td>Select text with motions; copy/act on the selection&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;strong>Hints&lt;/strong>&lt;/td>
+ &lt;td>Type labels over clickable targets&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;strong>Omnibar / palette&lt;/strong>&lt;/td>
+ &lt;td>A focused UI owns the keyboard until Esc&lt;/td>
+ &lt;/tr>
+ &lt;/tbody>
+&lt;/table>
+&lt;p>Press &lt;strong>&lt;code>Esc&lt;/code>&lt;/strong> often: leave insert-like focus, cancel multi-key sequences, close overlays.&lt;/p></description></item><item><title>Modes</title><link>https://jamalyusuf.github.io/vim-plus/guide/modes/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://jamalyusuf.github.io/vim-plus/guide/modes/</guid><description>&lt;h2 id="normal-mode">Normal mode&lt;/h2>
+&lt;p>Default on ordinary pages. Single keys and sequences run commands. HUD (heads-up display) may show multi-key progress.&lt;/p>
+&lt;p>&lt;strong>Leave:&lt;/strong> stay here most of the time. Enter other modes with explicit keys (&lt;code>i&lt;/code>, &lt;code>/&lt;/code>, &lt;code>v&lt;/code>, &lt;code>f&lt;/code>, &lt;code>o&lt;/code>, &lt;code>:&lt;/code>).&lt;/p>
+&lt;h2 id="insert-mode">Insert mode&lt;/h2>
+&lt;p>Typing goes to the page. Enter via &lt;code>i&lt;/code>, focusing an input, or some site behaviors.&lt;/p>
+&lt;p>&lt;strong>Leave:&lt;/strong> &lt;code>Esc&lt;/code> (or your mapped exit). After leaving, scroll and hints work again.&lt;/p>
+&lt;h2 id="find-mode-">Find mode (&lt;code>/&lt;/code>)&lt;/h2>
+&lt;p>Search visible text. Typical flow:&lt;/p></description></item><item><title>Keyboard map</title><link>https://jamalyusuf.github.io/vim-plus/guide/keys/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://jamalyusuf.github.io/vim-plus/guide/keys/</guid><description>&lt;p>Defaults can change with your &lt;strong>Custom key mappings&lt;/strong>. Use side panel → &lt;strong>Keys&lt;/strong> as the live truth for the current tab.&lt;/p>
+&lt;h2 id="scrolling--page">Scrolling &amp;amp; page&lt;/h2>
+&lt;table>
+ &lt;thead>
+ &lt;tr>
+ &lt;th>Keys&lt;/th>
+ &lt;th>Action&lt;/th>
+ &lt;/tr>
+ &lt;/thead>
+ &lt;tbody>
+ &lt;tr>
+ &lt;td>&lt;code>j&lt;/code> &lt;code>k&lt;/code> &lt;code>h&lt;/code> &lt;code>l&lt;/code>&lt;/td>
+ &lt;td>Down / up / left / right&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;code>d&lt;/code> &lt;code>u&lt;/code>&lt;/td>
+ &lt;td>Half page down / up&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;code>gg&lt;/code> &lt;code>G&lt;/code>&lt;/td>
+ &lt;td>Top / bottom&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;code>r&lt;/code>&lt;/td>
+ &lt;td>Reload&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;code>yy&lt;/code>&lt;/td>
+ &lt;td>Often copy URL (check maps)&lt;/td>
+ &lt;/tr>
+ &lt;/tbody>
+&lt;/table>
+&lt;h2 id="links--navigation">Links &amp;amp; navigation&lt;/h2>
+&lt;table>
+ &lt;thead>
+ &lt;tr>
+ &lt;th>Keys&lt;/th>
+ &lt;th>Action&lt;/th>
+ &lt;/tr>
+ &lt;/thead>
+ &lt;tbody>
+ &lt;tr>
+ &lt;td>&lt;code>f&lt;/code>&lt;/td>
+ &lt;td>Link hints — current tab&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;code>F&lt;/code>&lt;/td>
+ &lt;td>Link hints — new tab&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;code>H&lt;/code> &lt;code>L&lt;/code>&lt;/td>
+ &lt;td>History back / forward (common maps)&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;code>[[&lt;/code> &lt;code>]]&lt;/code>&lt;/td>
+ &lt;td>Previous / next page heuristics&lt;/td>
+ &lt;/tr>
+ &lt;/tbody>
+&lt;/table>
+&lt;h2 id="tabs--ui">Tabs &amp;amp; UI&lt;/h2>
+&lt;table>
+ &lt;thead>
+ &lt;tr>
+ &lt;th>Keys&lt;/th>
+ &lt;th>Action&lt;/th>
+ &lt;/tr>
+ &lt;/thead>
+ &lt;tbody>
+ &lt;tr>
+ &lt;td>&lt;code>o&lt;/code> &lt;code>O&lt;/code>&lt;/td>
+ &lt;td>Omnibar current / new tab&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;code>b&lt;/code> &lt;code>B&lt;/code>&lt;/td>
+ &lt;td>Bookmarks modes (if mapped)&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;code>T&lt;/code>&lt;/td>
+ &lt;td>Tab switcher / related&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;code>x&lt;/code> &lt;code>X&lt;/code>&lt;/td>
+ &lt;td>Close / restore&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;code>t&lt;/code>&lt;/td>
+ &lt;td>New tab (mapped command)&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;code>gS&lt;/code>&lt;/td>
+ &lt;td>Side panel&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;code>gA&lt;/code>&lt;/td>
+ &lt;td>Windows omnibar&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;code>?&lt;/code>&lt;/td>
+ &lt;td>Help&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;code>:&lt;/code>&lt;/td>
+ &lt;td>Command palette entry&lt;/td>
+ &lt;/tr>
+ &lt;/tbody>
+&lt;/table>
+&lt;h2 id="find-visual-insert">Find, visual, insert&lt;/h2>
+&lt;table>
+ &lt;thead>
+ &lt;tr>
+ &lt;th>Keys&lt;/th>
+ &lt;th>Action&lt;/th>
+ &lt;/tr>
+ &lt;/thead>
+ &lt;tbody>
+ &lt;tr>
+ &lt;td>&lt;code>/&lt;/code>&lt;/td>
+ &lt;td>Find&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;code>n&lt;/code> &lt;code>N&lt;/code>&lt;/td>
+ &lt;td>Next / previous find&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;code>v&lt;/code>&lt;/td>
+ &lt;td>Visual&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;code>i&lt;/code>&lt;/td>
+ &lt;td>Insert&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;code>Esc&lt;/code>&lt;/td>
+ &lt;td>Exit / cancel&lt;/td>
+ &lt;/tr>
+ &lt;/tbody>
+&lt;/table>
+&lt;h2 id="window-docking-common">Window docking (common)&lt;/h2>
+&lt;table>
+ &lt;thead>
+ &lt;tr>
+ &lt;th>Keys&lt;/th>
+ &lt;th>Action&lt;/th>
+ &lt;/tr>
+ &lt;/thead>
+ &lt;tbody>
+ &lt;tr>
+ &lt;td>&lt;code>Alt&lt;/code>+arrows&lt;/td>
+ &lt;td>Dock to edges (if mapped / OS allows)&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Palette &lt;code>:win&lt;/code>&lt;/td>
+ &lt;td>Dock, maximize, center, cycle&lt;/td>
+ &lt;/tr>
+ &lt;/tbody>
+&lt;/table>
+&lt;h2 id="customizing-safely">Customizing safely&lt;/h2>
+&lt;ol>
+&lt;li>Export or screenshot current maps&lt;/li>
+&lt;li>Change &lt;strong>one&lt;/strong> binding&lt;/li>
+&lt;li>Save Options and hard-reload a test page&lt;/li>
+&lt;li>Prefer &lt;code>unmap&lt;/code> then &lt;code>map&lt;/code> over silent overrides you forget&lt;/li>
+&lt;/ol>
+&lt;p>Deep dive: &lt;a href="https://jamalyusuf.github.io/vim-plus/docs/key-mappings/">Key mappings&lt;/a> and the in-extension wiki &lt;strong>Key mappings&lt;/strong>.&lt;/p></description></item><item><title>Omnibar</title><link>https://jamalyusuf.github.io/vim-plus/guide/omnibar/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://jamalyusuf.github.io/vim-plus/guide/omnibar/</guid><description>&lt;p>The &lt;strong>omnibar&lt;/strong> (Vomnibar) is Vim+’s address-bar replacement: search history, domains, bookmarks, open tabs, windows, and run engines / AI hashbangs without touching the mouse.&lt;/p>
+&lt;h2 id="open">Open&lt;/h2>
+&lt;table>
+ &lt;thead>
+ &lt;tr>
+ &lt;th>Key&lt;/th>
+ &lt;th>Typical behavior&lt;/th>
+ &lt;/tr>
+ &lt;/thead>
+ &lt;tbody>
+ &lt;tr>
+ &lt;td>&lt;code>o&lt;/code>&lt;/td>
+ &lt;td>Omnibar → open in current tab&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;code>O&lt;/code>&lt;/td>
+ &lt;td>Omnibar → open in new tab&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;code>b&lt;/code> / others&lt;/td>
+ &lt;td>Mode-specific (bookmarks, etc.)&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;code>gA&lt;/code>&lt;/td>
+ &lt;td>Window switcher flavor&lt;/td>
+ &lt;/tr>
+ &lt;/tbody>
+&lt;/table>
+&lt;h2 id="how-to-use">How to use&lt;/h2>
+&lt;ol>
+&lt;li>Open the omnibar&lt;/li>
+&lt;li>Type a query — results rank history, domains, bookmarks, tabs&lt;/li>
+&lt;li>Use arrow keys or &lt;code>Ctrl-n&lt;/code> / &lt;code>Ctrl-p&lt;/code> style motion if mapped&lt;/li>
+&lt;li>&lt;strong>Enter&lt;/strong> opens the selection&lt;/li>
+&lt;li>&lt;strong>Esc&lt;/strong> closes&lt;/li>
+&lt;/ol>
+&lt;h2 id="hashbangs">Hashbangs&lt;/h2>
+&lt;p>Prefix with &lt;code>!&lt;/code> for engines and AI prompt send:&lt;/p></description></item><item><title>Command center</title><link>https://jamalyusuf.github.io/vim-plus/guide/command-center/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://jamalyusuf.github.io/vim-plus/guide/command-center/</guid><description>&lt;p>The &lt;strong>command center&lt;/strong> is Vim+’s side panel: a persistent surface for keys, commands, tabs, sessions, Reading List, and page actions — including when content scripts cannot run.&lt;/p>
+&lt;h2 id="open">Open&lt;/h2>
+&lt;ul>
+&lt;li>Toolbar icon (default action opens the side panel)&lt;/li>
+&lt;li>Context menu&lt;/li>
+&lt;li>&lt;code>gS&lt;/code> (if mapped)&lt;/li>
+&lt;li>Global command &lt;strong>Open side panel&lt;/strong> (&lt;code>chrome://extensions/shortcuts&lt;/code>, suggested &lt;code>Alt+Shift+V&lt;/code>)&lt;/li>
+&lt;li>Palette / wiki links that call into the panel&lt;/li>
+&lt;/ul>
+&lt;h2 id="modes">Modes&lt;/h2>
+&lt;table>
+ &lt;thead>
+ &lt;tr>
+ &lt;th>Mode&lt;/th>
+ &lt;th>Purpose&lt;/th>
+ &lt;/tr>
+ &lt;/thead>
+ &lt;tbody>
+ &lt;tr>
+ &lt;td>&lt;strong>Keys&lt;/strong>&lt;/td>
+ &lt;td>Bound keys for the current context&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;strong>Cmds&lt;/strong>&lt;/td>
+ &lt;td>Full command catalog / quick actions&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;strong>Tabs&lt;/strong>&lt;/td>
+ &lt;td>Open tabs — jump, close, organize&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;strong>Closed&lt;/strong>&lt;/td>
+ &lt;td>Recently closed / session restore&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;strong>Later&lt;/strong>&lt;/td>
+ &lt;td>Chrome Reading List&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;strong>Page&lt;/strong>&lt;/td>
+ &lt;td>Page-local actions&lt;/td>
+ &lt;/tr>
+ &lt;/tbody>
+&lt;/table>
+&lt;p>Header actions typically include &lt;strong>Options&lt;/strong>, &lt;strong>Wiki&lt;/strong>, &lt;strong>Help&lt;/strong>, and &lt;strong>Off for this site&lt;/strong>.&lt;/p></description></item><item><title>Options</title><link>https://jamalyusuf.github.io/vim-plus/guide/options/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://jamalyusuf.github.io/vim-plus/guide/options/</guid><description>&lt;p>Open Options from:&lt;/p>
+&lt;ul>
+&lt;li>Side panel gear&lt;/li>
+&lt;li>&lt;code>:opts&lt;/code> / wiki links&lt;/li>
+&lt;li>&lt;code>chrome://extensions&lt;/code> → Vim+ → &lt;strong>Extension options&lt;/strong>&lt;/li>
+&lt;/ul>
+&lt;h2 id="tabs-simplified">Tabs (simplified)&lt;/h2>
+&lt;table>
+ &lt;thead>
+ &lt;tr>
+ &lt;th>Tab&lt;/th>
+ &lt;th>Contents&lt;/th>
+ &lt;/tr>
+ &lt;/thead>
+ &lt;tbody>
+ &lt;tr>
+ &lt;td>&lt;strong>Start&lt;/strong>&lt;/td>
+ &lt;td>Welcome, exclusions entry points&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;strong>Keys&lt;/strong>&lt;/td>
+ &lt;td>Custom key mappings, layouts, hint/find options&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;strong>Search&lt;/strong>&lt;/td>
+ &lt;td>Default search, hashbangs, search engine rules&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;strong>Look&lt;/strong>&lt;/td>
+ &lt;td>Dark mode, HUD, CSS, &lt;strong>reading progress&lt;/strong>, motion&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;strong>Advanced&lt;/strong>&lt;/td>
+ &lt;td>New tab URL, sync, permissions-related, power options&lt;/td>
+ &lt;/tr>
+ &lt;/tbody>
+&lt;/table>
+&lt;h2 id="save--reset">Save &amp;amp; reset&lt;/h2>
+&lt;ul>
+&lt;li>&lt;strong>Save&lt;/strong> writes dirty fields to Chrome storage&lt;/li>
+&lt;li>&lt;strong>Reset to defaults&lt;/strong> restores the author template — &lt;strong>export a backup first&lt;/strong>&lt;/li>
+&lt;li>Sync is &lt;strong>opt-in&lt;/strong> (Advanced / synchronize settings)&lt;/li>
+&lt;/ul>
+&lt;h2 id="reading-progress-look">Reading progress (Look)&lt;/h2>
+&lt;p>Enabled by default on web pages:&lt;/p></description></item><item><title>Reading tools</title><link>https://jamalyusuf.github.io/vim-plus/guide/reading/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://jamalyusuf.github.io/vim-plus/guide/reading/</guid><description>&lt;h2 id="reading-progress">Reading progress&lt;/h2>
+&lt;p>A thin track at the top (or configured edge) fills as you scroll. &lt;strong>On by default.&lt;/strong>&lt;/p>
+&lt;table>
+ &lt;thead>
+ &lt;tr>
+ &lt;th>Control&lt;/th>
+ &lt;th>Where&lt;/th>
+ &lt;/tr>
+ &lt;/thead>
+ &lt;tbody>
+ &lt;tr>
+ &lt;td>Global on/off, color, height&lt;/td>
+ &lt;td>Options → Look&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Custom CSS&lt;/td>
+ &lt;td>Look → progress CSS fields&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Per-tab toggle&lt;/td>
+ &lt;td>&lt;code>:prog&lt;/code>&lt;/td>
+ &lt;/tr>
+ &lt;/tbody>
+&lt;/table>
+&lt;p>Implementation uses a CSS variable / &lt;code>scaleX&lt;/code> fill so the bar is not a static gray slab — if you only see an empty track, scroll the page or confirm the feature is enabled.&lt;/p></description></item><item><title>Windows &amp; tabs</title><link>https://jamalyusuf.github.io/vim-plus/guide/windows/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://jamalyusuf.github.io/vim-plus/guide/windows/</guid><description>&lt;h2 id="tabs">Tabs&lt;/h2>
+&lt;p>Common capabilities (via keys, palette, or side panel):&lt;/p>
+&lt;ul>
+&lt;li>Pin, mute, duplicate&lt;/li>
+&lt;li>Discard (“sleep”) to free memory&lt;/li>
+&lt;li>Close others / close range&lt;/li>
+&lt;li>Tab groups (Chrome tab group APIs)&lt;/li>
+&lt;li>Restore closed tabs and sessions&lt;/li>
+&lt;/ul>
+&lt;p>Side panel &lt;strong>Tabs&lt;/strong> and &lt;strong>Closed&lt;/strong> modes are the visual way to drive this.&lt;/p>
+&lt;h2 id="window-docking">Window docking&lt;/h2>
+&lt;p>Dock the browser window to display edges with progressive shrink, maximize, center, and cycle windows.&lt;/p>
+&lt;table>
+ &lt;thead>
+ &lt;tr>
+ &lt;th>Entry&lt;/th>
+ &lt;th>Notes&lt;/th>
+ &lt;/tr>
+ &lt;/thead>
+ &lt;tbody>
+ &lt;tr>
+ &lt;td>&lt;code>Alt&lt;/code>+arrows&lt;/td>
+ &lt;td>If mapped and OS allows&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;code>:win&lt;/code> family&lt;/td>
+ &lt;td>Palette discoverable names&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Quick actions&lt;/td>
+ &lt;td>Background &lt;code>quick_actions&lt;/code> handlers&lt;/td>
+ &lt;/tr>
+ &lt;/tbody>
+&lt;/table>
+&lt;p>Docking uses Chrome &lt;code>windows&lt;/code> APIs — not simulated CSS. Multi-monitor setups use the display of the current window.&lt;/p></description></item></channel></rss>

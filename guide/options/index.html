@@ -1,0 +1,43 @@
+<!doctype html><html lang=en><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><title>Options · Vim+</title>
+<meta name=description content="Vim+ — keyboard-first navigation for Google Chrome. Link hints, omnibar, command palette, side panel, reading tools. Open source by Jamal Yusuf."><meta name=author content="Jamal Yusuf"><meta name=theme-color content="#0a0a0b"><meta property="og:title" content="Options · Vim+"><meta property="og:description" content="Vim+ — keyboard-first navigation for Google Chrome. Link hints, omnibar, command palette, side panel, reading tools. Open source by Jamal Yusuf."><meta property="og:type" content="website"><meta property="og:url" content="https://jamalyusuf.github.io/vim-plus/guide/options/"><meta property="og:image" content="https://jamalyusuf.github.io/vim-plus/media/demo-poster.svg"><meta name=twitter:card content="summary_large_image"><link rel=stylesheet href=https://jamalyusuf.github.io/vim-plus/css/site.css><link rel=canonical href=https://jamalyusuf.github.io/vim-plus/guide/options/></head><body class=page-docs><header class=site-header><div class=header-inner><a class=brand href=https://jamalyusuf.github.io/vim-plus/><span class=v>Vim</span><span class=p>+</span></a>
+<span class=brand-sub>Keyboard-first Chrome</span><nav class=nav aria-label=Main><a href=https://jamalyusuf.github.io/vim-plus/>Home</a>
+<a href=https://jamalyusuf.github.io/vim-plus/#why>Why</a>
+<a href=https://jamalyusuf.github.io/vim-plus/#demo>Demo</a>
+<a href=https://jamalyusuf.github.io/vim-plus/#install>Download</a>
+<a href=https://jamalyusuf.github.io/vim-plus/#faq>FAQ</a>
+<a href=https://jamalyusuf.github.io/vim-plus/docs/>Docs</a>
+<a href=https://jamalyusuf.github.io/vim-plus/guide/>Guide</a>
+<a href=https://github.com/JamalYusuf/vim-plus rel=noopener>GitHub</a></nav></div></header><div class=shell><aside class=sidebar aria-label="Docs navigation"><div class=group>Guide</div><a href=https://jamalyusuf.github.io/vim-plus/guide/>Overview</a>
+<a href=https://jamalyusuf.github.io/vim-plus/guide/getting-started/>Getting started</a>
+<a href=https://jamalyusuf.github.io/vim-plus/guide/concepts/>Vim concepts</a>
+<a href=https://jamalyusuf.github.io/vim-plus/guide/modes/>Modes</a>
+<a href=https://jamalyusuf.github.io/vim-plus/guide/keys/>Keyboard map</a>
+<a href=https://jamalyusuf.github.io/vim-plus/guide/omnibar/>Omnibar</a>
+<a href=https://jamalyusuf.github.io/vim-plus/guide/command-center/>Command center</a>
+<a href=https://jamalyusuf.github.io/vim-plus/guide/options/ class=active>Options</a>
+<a href=https://jamalyusuf.github.io/vim-plus/guide/reading/>Reading tools</a>
+<a href=https://jamalyusuf.github.io/vim-plus/guide/windows/>Windows & tabs</a><div class=group>Reference</div><a href=https://jamalyusuf.github.io/vim-plus/docs/>Docs index</a>
+<a href=https://jamalyusuf.github.io/vim-plus/docs/install/>Install & build</a>
+<a href=https://jamalyusuf.github.io/vim-plus/docs/features/>Features</a>
+<a href=https://jamalyusuf.github.io/vim-plus/docs/hashbangs/>Hashbangs & AI</a>
+<a href=https://jamalyusuf.github.io/vim-plus/docs/key-mappings/>Key mappings</a>
+<a href=https://jamalyusuf.github.io/vim-plus/docs/exclusions/>Exclusions</a>
+<a href=https://jamalyusuf.github.io/vim-plus/docs/advanced/>Advanced</a>
+<a href=https://jamalyusuf.github.io/vim-plus/docs/troubleshooting/>Troubleshooting</a>
+<a href=https://jamalyusuf.github.io/vim-plus/docs/publishing/>Publishing</a><div class=group>Developers</div><a href=https://jamalyusuf.github.io/vim-plus/dev/>Overview</a>
+<a href=https://jamalyusuf.github.io/vim-plus/dev/architecture/>Architecture</a>
+<a href=https://jamalyusuf.github.io/vim-plus/dev/message-flow/>Message flow</a>
+<a href=https://jamalyusuf.github.io/vim-plus/dev/settings/>Settings pipeline</a>
+<a href=https://jamalyusuf.github.io/vim-plus/dev/page-enhance/>Page enhance</a>
+<a href=https://jamalyusuf.github.io/vim-plus/dev/protocol/>Protocol tokens</a>
+<a href=https://jamalyusuf.github.io/vim-plus/dev/contributing/>Contributing</a><div class=group>Legal</div><a href=https://jamalyusuf.github.io/vim-plus/legal/permissions/>Permissions</a>
+<a href=https://jamalyusuf.github.io/vim-plus/legal/privacy/>Privacy</a>
+<a href=https://jamalyusuf.github.io/vim-plus/legal/license/>License</a></aside><article class=main><h1>Options</h1><p class=subtitle>How the Options UI is organized</p><p>Open Options from:</p><ul><li>Side panel gear</li><li><code>:opts</code> / wiki links</li><li><code>chrome://extensions</code> → Vim+ → <strong>Extension options</strong></li></ul><h2 id=tabs-simplified>Tabs (simplified)</h2><table><thead><tr><th>Tab</th><th>Contents</th></tr></thead><tbody><tr><td><strong>Start</strong></td><td>Welcome, exclusions entry points</td></tr><tr><td><strong>Keys</strong></td><td>Custom key mappings, layouts, hint/find options</td></tr><tr><td><strong>Search</strong></td><td>Default search, hashbangs, search engine rules</td></tr><tr><td><strong>Look</strong></td><td>Dark mode, HUD, CSS, <strong>reading progress</strong>, motion</td></tr><tr><td><strong>Advanced</strong></td><td>New tab URL, sync, permissions-related, power options</td></tr></tbody></table><h2 id=save--reset>Save & reset</h2><ul><li><strong>Save</strong> writes dirty fields to Chrome storage</li><li><strong>Reset to defaults</strong> restores the author template — <strong>export a backup first</strong></li><li>Sync is <strong>opt-in</strong> (Advanced / synchronize settings)</li></ul><h2 id=reading-progress-look>Reading progress (Look)</h2><p>Enabled by default on web pages:</p><ul><li>Master on/off</li><li>Color and height</li><li>Optional custom CSS for <code>#vp-read-progress-track</code> / <code>#vp-read-progress-fill</code></li><li>Per-tab toggle via <code>:prog</code></li></ul><h2 id=theme>Theme</h2><ul><li><strong>Auto dark mode</strong> follows system / setting</li><li><strong><code>gn</code></strong> toggles vomnibar dark and keeps wiki / options / side panel aligned (<code>vpUiDark</code> + <code>autoDarkMode</code>)</li></ul><h2 id=key-mapping-editor>Key mapping editor</h2><p>Use the multiline map language:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-text data-lang=text><span style=display:flex><span>map &lt;c-e&gt; scrollDown
+</span></span><span style=display:flex><span>unmap j
+</span></span><span style=display:flex><span>mapKey &lt;D-c&gt; &lt;c-c&gt;
+</span></span></code></pre></div><p>See <a href=https://jamalyusuf.github.io/vim-plus/docs/key-mappings/>Key mappings</a> for theory and safety.</p><h2 id=exclusions>Exclusions</h2><p>Patterns decide where Vim+ captures keys. Empty passKeys on a pattern typically means full disable for matching URLs. Prefer the side panel <strong>Off for this site</strong> for a single host.</p><div class=page-footer><span>Vim+ documentation</span>
+<span><a href=https://github.com/JamalYusuf/vim-plus>Edit on GitHub</a> · <a href=https://jamal.dev>Jamal Yusuf</a></span></div></article></div><footer class=site-footer><p><strong>Vim+</strong> v1.0.0 · by
+<a href=https://jamal.dev rel=noopener>Jamal Yusuf</a>
+· <a href=https://github.com/JamalYusuf/vim-plus rel=noopener>GitHub</a>
+· <a href=https://jamalyusuf.github.io/vim-plus/legal/privacy/>Privacy</a>
+· Apache-2.0</p></footer></body></html>

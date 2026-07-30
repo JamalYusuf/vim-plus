@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Developers on Vim+</title><link>https://jamalyusuf.github.io/vim-plus/dev/</link><description>Recent content in Developers on Vim+</description><generator>Hugo</generator><language>en</language><atom:link href="https://jamalyusuf.github.io/vim-plus/dev/index.xml" rel="self" type="application/rss+xml"/><item><title>Architecture</title><link>https://jamalyusuf.github.io/vim-plus/dev/architecture/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://jamalyusuf.github.io/vim-plus/dev/architecture/</guid><description>&lt;h2 id="process-model">Process model&lt;/h2>
+&lt;table>
+ &lt;thead>
+ &lt;tr>
+ &lt;th>Process&lt;/th>
+ &lt;th>Role&lt;/th>
+ &lt;/tr>
+ &lt;/thead>
+ &lt;tbody>
+ &lt;tr>
+ &lt;td>&lt;strong>Service worker&lt;/strong> (&lt;code>background/worker.js&lt;/code>)&lt;/td>
+ &lt;td>Settings, commands, completion, tabs/windows APIs, ports, quick actions, side panel wiring&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;strong>Content scripts&lt;/strong> (&lt;code>content/*&lt;/code>)&lt;/td>
+ &lt;td>Keys, hints, scroll, find, visual, page_enhance on ordinary pages&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;strong>Extension pages&lt;/strong> (&lt;code>pages/*&lt;/code>, &lt;code>front/*&lt;/code>)&lt;/td>
+ &lt;td>Options, wiki, sidepanel, vomnibar, help — privileged UI&lt;/td>
+ &lt;/tr>
+ &lt;/tbody>
+&lt;/table>
+&lt;p>MV3 workers can sleep; long-lived work uses ports, alarms, and event-driven handlers rather than forever-running background pages.&lt;/p>
+&lt;h2 id="module-style">Module style&lt;/h2>
+&lt;p>Background code historically used a custom AMD-like &lt;code>define&lt;/code>/&lt;code>require&lt;/code> pattern compiled for the worker. &lt;strong>Important:&lt;/strong> in the service worker, dynamic &lt;code>require&lt;/code> is not always available the way Node expects — critical paths (e.g. quick actions running Vim commands) use &lt;strong>static imports&lt;/strong> such as &lt;code>executeExternalCmd&lt;/code>.&lt;/p></description></item><item><title>Message flow</title><link>https://jamalyusuf.github.io/vim-plus/dev/message-flow/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://jamalyusuf.github.io/vim-plus/dev/message-flow/</guid><description>&lt;h2 id="high-level">High level&lt;/h2>
+&lt;pre tabindex="0">&lt;code>Key event (content)
+ → key_handler / mode state
+ → port message to service worker
+ → command resolution (maps, counts)
+ → Chrome API or response to content / UI
+&lt;/code>&lt;/pre>&lt;p>Omnibar and Options pages use extension messaging similarly, with &lt;strong>ports&lt;/strong> for streaming completion results.&lt;/p>
+&lt;h2 id="ports">Ports&lt;/h2>
+&lt;p>Long-lived connections carry:&lt;/p>
+&lt;ul>
+&lt;li>Frame registration&lt;/li>
+&lt;li>Completion queries / results&lt;/li>
+&lt;li>Status and HUD updates&lt;/li>
+&lt;li>Injector / protocol handshakes&lt;/li>
+&lt;/ul>
+&lt;p>Port names and mark keys use &lt;strong>VimiumPlus&lt;/strong> protocol tokens (not legacy third-party names). See &lt;a href="../protocol/">Protocol tokens&lt;/a>.&lt;/p></description></item><item><title>Settings pipeline</title><link>https://jamalyusuf.github.io/vim-plus/dev/settings/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://jamalyusuf.github.io/vim-plus/dev/settings/</guid><description>&lt;h2 id="flow">Flow&lt;/h2>
+&lt;pre tabindex="0">&lt;code>settings-template.json / code defaults
+ → chrome.storage (local / sync if enabled)
+ → background caches
+ → broadcast / port update to frames &amp;amp; pages
+&lt;/code>&lt;/pre>&lt;h2 id="defaults">Defaults&lt;/h2>
+&lt;p>Author defaults live in the settings template and &lt;code>background/settings.ts&lt;/code> (search engines, hashbangs, feature flags). Product defaults are &lt;strong>Google-centric&lt;/strong> for search.&lt;/p>
+&lt;h2 id="update-hooks">Update hooks&lt;/h2>
+&lt;p>Changing Options triggers:&lt;/p>
+&lt;ol>
+&lt;li>Persist to storage&lt;/li>
+&lt;li>Recompute derived structures (maps, exclusion regexes, engines)&lt;/li>
+&lt;li>Notify open content scripts and UI pages&lt;/li>
+&lt;/ol>
+&lt;h2 id="sync">Sync&lt;/h2>
+&lt;p>Opt-in. Not all keys may sync; large blobs can hit quotas. Always keep an export before experimental resets.&lt;/p></description></item><item><title>Page enhance</title><link>https://jamalyusuf.github.io/vim-plus/dev/page-enhance/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://jamalyusuf.github.io/vim-plus/dev/page-enhance/</guid><description>&lt;h2 id="module">Module&lt;/h2>
+&lt;p>&lt;code>content/page_enhance.ts&lt;/code> injects page-level UI that is not part of classic Vimium navigation:&lt;/p>
+&lt;ul>
+&lt;li>Reading progress track/fill&lt;/li>
+&lt;li>Reader View host&lt;/li>
+&lt;li>Highlighter overlays&lt;/li>
+&lt;li>Spotlight / lens / dim FX&lt;/li>
+&lt;li>Related DOM observers&lt;/li>
+&lt;/ul>
+&lt;h2 id="progress-bar">Progress bar&lt;/h2>
+&lt;ul>
+&lt;li>Early bind scroll / resize listeners&lt;/li>
+&lt;li>Fill via &lt;strong>CSS transform scale&lt;/strong> / CSS variable (&lt;code>--vp-read-p&lt;/code>) so layout width stays correct&lt;/li>
+&lt;li>Avoid &lt;code>width: 0 !important&lt;/code> patterns that leave a gray-only track&lt;/li>
+&lt;/ul>
+&lt;h2 id="reader">Reader&lt;/h2>
+&lt;p>Mozilla &lt;strong>Readability&lt;/strong> (bundled) parses the document; Vim+ presents a simplified reading surface.&lt;/p></description></item><item><title>Protocol tokens</title><link>https://jamalyusuf.github.io/vim-plus/dev/protocol/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://jamalyusuf.github.io/vim-plus/dev/protocol/</guid><description>&lt;h2 id="why-rename">Why rename&lt;/h2>
+&lt;p>Internal protocol strings identify ports, storage marks, and injector handshakes. Vim+ uses &lt;strong>&lt;code>VimiumPlus&lt;/code>&lt;/strong> tokens so the fork does not collide with unrelated extensions or legacy names.&lt;/p>
+&lt;h2 id="where-they-appear">Where they appear&lt;/h2>
+&lt;ul>
+&lt;li>Content ↔ background port naming&lt;/li>
+&lt;li>Marks / local storage keys for extension-owned state&lt;/li>
+&lt;li>Injector helpers in &lt;code>lib/injector.ts&lt;/code>&lt;/li>
+&lt;li>Typings under &lt;code>typings/&lt;/code> and &lt;code>lib/base*.d.ts&lt;/code>&lt;/li>
+&lt;/ul>
+&lt;h2 id="contributor-rule">Contributor rule&lt;/h2>
+&lt;p>Do &lt;strong>not&lt;/strong> reintroduce third-party GitHub identities or old protocol prefixes in new code. Search for &lt;code>VimiumPlus&lt;/code> when adding cross-context messaging.&lt;/p></description></item><item><title>Contributing</title><link>https://jamalyusuf.github.io/vim-plus/dev/contributing/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://jamalyusuf.github.io/vim-plus/dev/contributing/</guid><description>&lt;h2 id="author">Author&lt;/h2>
+&lt;p>&lt;strong>Jamal Yusuf&lt;/strong> — &lt;a href="https://jamal.dev">jamal.dev&lt;/a> · &lt;a href="https://github.com/JamalYusuf/vim-plus">github.com/JamalYusuf/vim-plus&lt;/a>&lt;/p>
+&lt;h2 id="setup">Setup&lt;/h2>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>git clone https://github.com/JamalYusuf/vim-plus.git
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>cd vim-plus
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>npm ci
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>npm run tsc
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Load unpacked from the repo root. Use a separate Chrome profile for development if you already run a stable install.&lt;/p>
+&lt;h2 id="workflow">Workflow&lt;/h2>
+&lt;ol>
+&lt;li>Branch from &lt;code>master&lt;/code>&lt;/li>
+&lt;li>Make focused changes&lt;/li>
+&lt;li>&lt;code>npm run tsc&lt;/code> (and &lt;code>npm run lint&lt;/code> if touching style-sensitive files)&lt;/li>
+&lt;li>Manual test: hints, omnibar, palette, side panel, options save&lt;/li>
+&lt;li>Update docs: &lt;code>docs/&lt;/code> and/or &lt;code>site/content/&lt;/code> and/or &lt;code>pages/wiki-content.ts&lt;/code>&lt;/li>
+&lt;/ol>
+&lt;h2 id="documentation-layers">Documentation layers&lt;/h2>
+&lt;table>
+ &lt;thead>
+ &lt;tr>
+ &lt;th>Layer&lt;/th>
+ &lt;th>Audience&lt;/th>
+ &lt;/tr>
+ &lt;/thead>
+ &lt;tbody>
+ &lt;tr>
+ &lt;td>&lt;code>pages/wiki-content.ts&lt;/code>&lt;/td>
+ &lt;td>In-extension users&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;code>docs/*.md&lt;/code>&lt;/td>
+ &lt;td>GitHub / store reviewers&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;code>site/&lt;/code> Hugo&lt;/td>
+ &lt;td>Public website&lt;/td>
+ &lt;/tr>
+ &lt;/tbody>
+&lt;/table>
+&lt;p>Keep product claims consistent across layers.&lt;/p></description></item></channel></rss>

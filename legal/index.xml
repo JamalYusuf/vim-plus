@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Legal on Vim+</title><link>https://jamalyusuf.github.io/vim-plus/legal/</link><description>Recent content in Legal on Vim+</description><generator>Hugo</generator><language>en</language><atom:link href="https://jamalyusuf.github.io/vim-plus/legal/index.xml" rel="self" type="application/rss+xml"/><item><title>Permissions</title><link>https://jamalyusuf.github.io/vim-plus/legal/permissions/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://jamalyusuf.github.io/vim-plus/legal/permissions/</guid><description>&lt;p>Vim+ requests only permissions required for keyboard navigation, omnibar completion, tab/window control, and optional privacy tools. Below is a reviewer-oriented summary; keep the live &lt;code>manifest.json&lt;/code> as the source of truth.&lt;/p>
+&lt;h2 id="typical-capabilities">Typical capabilities&lt;/h2>
+&lt;table>
+ &lt;thead>
+ &lt;tr>
+ &lt;th>Permission / host&lt;/th>
+ &lt;th>Why&lt;/th>
+ &lt;/tr>
+ &lt;/thead>
+ &lt;tbody>
+ &lt;tr>
+ &lt;td>&lt;strong>Storage&lt;/strong>&lt;/td>
+ &lt;td>Save settings, maps, highlighter data, exclusions&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;strong>Tabs / windows&lt;/strong>&lt;/td>
+ &lt;td>Switch, mute, pin, dock, session restore, command targets&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;strong>History&lt;/strong>&lt;/td>
+ &lt;td>Omnibar ranking and user-initiated history clear / shred&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;strong>Bookmarks&lt;/strong>&lt;/td>
+ &lt;td>Omnibar bookmark mode / toggle commands&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;strong>Sessions&lt;/strong>&lt;/td>
+ &lt;td>Restore closed tabs/windows&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;strong>Search&lt;/strong> / omnibox&lt;/td>
+ &lt;td>Optional default-search integration; omnibox keyword &lt;code>v&lt;/code>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;strong>Clipboard&lt;/strong>&lt;/td>
+ &lt;td>Copy URL/title/markdown/article commands&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;strong>Scripting / content scripts&lt;/strong>&lt;/td>
+ &lt;td>Inject keyboard UI on ordinary web pages&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;strong>Side panel&lt;/strong>&lt;/td>
+ &lt;td>Command center UI&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;strong>Downloads&lt;/strong>&lt;/td>
+ &lt;td>Open downloads UI / last download helpers&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;strong>Reading list&lt;/strong>&lt;/td>
+ &lt;td>Later mode in side panel&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;strong>Favicon&lt;/strong>&lt;/td>
+ &lt;td>Omnibar icons where available&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;strong>Host access&lt;/strong>&lt;/td>
+ &lt;td>Content scripts and completion on https/http pages the user visits&lt;/td>
+ &lt;/tr>
+ &lt;/tbody>
+&lt;/table>
+&lt;p>Exact optional vs required split is defined in the manifest and Options permission UI.&lt;/p></description></item><item><title>Privacy</title><link>https://jamalyusuf.github.io/vim-plus/legal/privacy/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://jamalyusuf.github.io/vim-plus/legal/privacy/</guid><description>&lt;p>&lt;strong>Effective for Vim+ 1.0 · Author: Jamal Yusuf&lt;/strong>&lt;/p>
+&lt;p>This page summarizes how Vim+ handles data. The repository also ships &lt;code>PRIVACY-POLICY.md&lt;/code> and &lt;code>docs/privacy.md&lt;/code>.&lt;/p>
+&lt;h2 id="summary">Summary&lt;/h2>
+&lt;ul>
+&lt;li>Vim+ does &lt;strong>not&lt;/strong> operate a custom analytics or telemetry backend for this product.&lt;/li>
+&lt;li>Settings and feature data live in &lt;strong>Chrome storage&lt;/strong> on your profile.&lt;/li>
+&lt;li>Browsing history used for the omnibar is read through &lt;strong>Chrome APIs&lt;/strong> you authorize; it is not uploaded to the author.&lt;/li>
+&lt;li>AI &lt;strong>hashbangs&lt;/strong> open third-party websites with your query in the URL — that is communication with &lt;strong>those sites&lt;/strong>, not with a Vim+ server.&lt;/li>
+&lt;/ul>
+&lt;h2 id="data-vim-stores-locally">Data Vim+ stores locally&lt;/h2>
+&lt;table>
+ &lt;thead>
+ &lt;tr>
+ &lt;th>Kind&lt;/th>
+ &lt;th>Examples&lt;/th>
+ &lt;/tr>
+ &lt;/thead>
+ &lt;tbody>
+ &lt;tr>
+ &lt;td>Settings&lt;/td>
+ &lt;td>Key maps, exclusions, theme, progress options&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Feature state&lt;/td>
+ &lt;td>Highlighter marks (per URL), UI prefs&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Optional sync&lt;/td>
+ &lt;td>If you enable Chrome sync for extension settings&lt;/td>
+ &lt;/tr>
+ &lt;/tbody>
+&lt;/table>
+&lt;h2 id="data-vim-does-not-collect">Data Vim+ does not collect&lt;/h2>
+&lt;ul>
+&lt;li>No author-operated account system&lt;/li>
+&lt;li>No forced cloud backup of your history&lt;/li>
+&lt;li>No sale of browsing data&lt;/li>
+&lt;/ul>
+&lt;h2 id="third-parties">Third parties&lt;/h2>
+&lt;p>When you navigate to Google, Grok, ChatGPT, etc., those sites’ policies apply. Vim+ only constructs URLs or uses Chrome APIs you triggered.&lt;/p></description></item><item><title>License</title><link>https://jamalyusuf.github.io/vim-plus/legal/license/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://jamalyusuf.github.io/vim-plus/legal/license/</guid><description>&lt;p>Vim+ is licensed under the &lt;strong>Apache License, Version 2.0&lt;/strong>.&lt;/p>
+&lt;pre tabindex="0">&lt;code>Copyright 2024–2026 Jamal Yusuf
+
+Licensed under the Apache License, Version 2.0 (the &amp;#34;License&amp;#34;);
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an &amp;#34;AS IS&amp;#34; BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+&lt;/code>&lt;/pre>&lt;p>Full text: &lt;a href="https://github.com/JamalYusuf/vim-plus/blob/master/LICENSE.txt">LICENSE.txt&lt;/a> in the repository.&lt;/p></description></item></channel></rss>
