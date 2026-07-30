@@ -38,9 +38,13 @@ canonifyURLs = true
     url = "./#install"
     weight = 4
   [[menu.main]]
+    name = "FAQ"
+    url = "./#faq"
+    weight = 5
+  [[menu.main]]
     name = "Guide"
     url = "guide/"
-    weight = 5
+    weight = 7
   [[menu.main]]
     name = "Docs"
     url = "docs/"

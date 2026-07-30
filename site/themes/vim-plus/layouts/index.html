@@ -1,112 +1,137 @@
 {{ define "main" }}
-{{/* Product landing — written for curious engineers (HN / Show HN energy) */}}
 {{ $chrome := .Site.Params.chromeStoreUrl | default "" }}
 {{ $github := .Site.Params.github }}
 {{ $demoMp4 := .Site.Params.demoVideoMp4 | default "media/demo.mp4" }}
 {{ $demoGif := .Site.Params.demoVideoGif | default "media/demo.gif" }}
 {{ $demoPoster := .Site.Params.demoPoster | default "media/demo-poster.svg" }}
+{{ $dl := cond (ne $chrome "") $chrome ("docs/install/" | absURL) }}
 
 <div class="lp">
 
   <!-- ===== HERO ===== -->
   <section class="lp-hero">
+    <div class="lp-hero-bg" aria-hidden="true"></div>
     <div class="lp-wrap lp-hero-grid">
       <div class="lp-hero-copy">
-        <p class="lp-eyebrow">Open source · Chrome MV3 · Apache-2.0</p>
+        <div class="lp-badges">
+          <span class="lp-badge">Open source</span>
+          <span class="lp-badge">Chrome MV3</span>
+          <span class="lp-badge">Apache-2.0</span>
+          <span class="lp-badge lp-badge-accent">Show HN ready</span>
+        </div>
         <h1>
-          Your browser has a mouse problem.<br>
-          <span class="accent">Vim+</span> fixes the loop.
+          Stop aiming.<br>
+          <span class="accent">Start commanding</span> the browser.
         </h1>
         <p class="lp-lead">
-          Vim+ is a keyboard-first Chrome extension for people who live in tabs.
-          Scroll, open links, jump history, run commands, dock windows, and read long pages —
-          without parking your hands on the trackpad fifty times an hour.
+          <strong>Vim+</strong> is a keyboard-first Chrome extension for people who live in tabs —
+          researchers, engineers, and anyone tired of the mouse tax.
+          Link hints, omnibar, command palette, side panel, reading tools, window docking.
+          Local-first. No accounts. Docs that ship inside the product.
         </p>
+
         <div class="lp-actions">
-          {{ if $chrome }}
-          <a class="btn primary btn-lg" href="{{ $chrome }}" rel="noopener">
-            <span class="btn-icon" aria-hidden="true">⬇</span>
+          <a class="btn primary btn-lg" href="{{ $dl }}"{{ if $chrome }} rel="noopener"{{ end }}>
+            <svg class="btn-svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M12 3v12m0 0l-4-4m4 4l4-4M5 21h14"/></svg>
             Download for Chrome
           </a>
-          {{ else }}
-          <a class="btn primary btn-lg" href="{{ "docs/install/" | absURL }}">
-            <span class="btn-icon" aria-hidden="true">⬇</span>
-            Download for Chrome
+          <a class="btn btn-lg" href="{{ $github }}" rel="noopener">
+            <svg class="btn-svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5C5.73.5.5 5.74.5 12.02c0 5.1 3.29 9.43 7.86 10.96.58.1.79-.25.79-.56 0-.28-.01-1.02-.02-2-3.2.7-3.88-1.54-3.88-1.54-.53-1.34-1.3-1.7-1.3-1.7-1.06-.73.08-.72.08-.72 1.17.08 1.79 1.2 1.79 1.2 1.04 1.78 2.73 1.27 3.4.97.1-.75.41-1.27.74-1.56-2.55-.29-5.23-1.28-5.23-5.7 0-1.26.45-2.29 1.19-3.1-.12-.29-.52-1.46.11-3.04 0 0 .97-.31 3.18 1.18a11.1 11.1 0 0 1 5.8 0c2.2-1.49 3.17-1.18 3.17-1.18.64 1.58.24 2.75.12 3.04.74.81 1.18 1.84 1.18 3.1 0 4.43-2.69 5.4-5.25 5.69.42.36.79 1.08.79 2.18 0 1.57-.01 2.84-.01 3.23 0 .31.21.67.8.56A10.52 10.52 0 0 0 23.5 12C23.5 5.74 18.27.5 12 .5z"/></svg>
+            GitHub
           </a>
-          {{ end }}
-          <a class="btn btn-lg" href="{{ $github }}" rel="noopener">View source on GitHub</a>
-          <a class="btn btn-lg ghost" href="{{ "guide/getting-started/" | absURL }}">Read the guide</a>
+          <a class="btn btn-lg ghost" href="#demo">Watch demo</a>
         </div>
+
         <p class="lp-subcta">
           {{ if $chrome }}
             Free on the <a href="{{ $chrome }}" rel="noopener">Chrome Web Store</a>
-            · or <a href="{{ "docs/install/" | absURL }}">install from source</a>
+            · <a href="{{ "docs/install/" | absURL }}">install from source</a>
           {{ else }}
-            Chrome Web Store listing coming soon ·
-            <a href="{{ "docs/install/" | absURL }}"><strong>load unpacked from source</strong></a> today
-            · free &amp; open source
+            Web Store listing soon ·
+            <a href="{{ "docs/install/" | absURL }}"><strong>load unpacked in ~2 minutes</strong></a>
+            · free forever
           {{ end }}
         </p>
-        <ul class="lp-trust">
-          <li>No accounts</li>
-          <li>No telemetry backend</li>
-          <li>Local-first settings</li>
-          <li>Docs inside the product</li>
-        </ul>
+
+        <div class="lp-stats" role="list">
+          <div class="lp-stat" role="listitem">
+            <span class="lp-stat-n">5</span>
+            <span class="lp-stat-l">keys to start<br><code>j k f o Esc</code></span>
+          </div>
+          <div class="lp-stat" role="listitem">
+            <span class="lp-stat-n">0</span>
+            <span class="lp-stat-l">accounts or<br>cloud lock-in</span>
+          </div>
+          <div class="lp-stat" role="listitem">
+            <span class="lp-stat-n">1</span>
+            <span class="lp-stat-l">control plane<br>for the whole loop</span>
+          </div>
+          <div class="lp-stat" role="listitem">
+            <span class="lp-stat-n">∞</span>
+            <span class="lp-stat-l">maps you can<br>shape to your hands</span>
+          </div>
+        </div>
       </div>
 
-      <div class="lp-hero-demo">
-        <figure class="lp-demo" id="demo">
-          <div class="lp-demo-frame">
-            <!-- Prefer MP4 when present; GIF fallback; otherwise poster placeholder -->
-            <video
-              class="lp-demo-video"
-              controls
-              playsinline
-              preload="metadata"
-              poster="{{ $demoPoster | absURL }}"
-              aria-label="Vim+ product demo video">
-              <source src="{{ $demoMp4 | absURL }}" type="video/mp4">
-              <!-- GIF is not a valid video source for <video>; shown via poster / img fallback below -->
-            </video>
-            <div class="lp-demo-placeholder" data-demo-placeholder>
-              <img
-                class="lp-demo-poster"
-                src="{{ $demoPoster | absURL }}"
-                alt="Vim+ demo preview — keyboard-driven browsing mockup"
-                width="1280"
-                height="720">
-              <div class="lp-demo-overlay">
-                <div class="lp-play" aria-hidden="true">
-                  <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
-                </div>
-                <p class="lp-demo-label">
-                  <strong>Demo video placeholder</strong><br>
-                  Drop <code>site/static/media/demo.mp4</code> or <code>demo.gif</code>
-                </p>
-                <p class="lp-demo-hint">
-                  Suggested: 20–40s loop — hints (<code>f</code>), omnibar (<code>o</code>),
-                  palette (<code>:</code>), side panel, dock
-                </p>
+      <!-- Interactive browser mock -->
+      <div class="lp-hero-visual">
+        <div class="lp-browser" id="live-demo" aria-label="Animated preview of Vim+ in action">
+          <div class="lp-browser-bar">
+            <span class="lp-dot"></span><span class="lp-dot"></span><span class="lp-dot"></span>
+            <div class="lp-url">
+              <span class="lp-url-lock" aria-hidden="true">🔒</span>
+              <span data-url-text>news.ycombinator.com</span>
+            </div>
+            <div class="lp-hud" data-hud>NORMAL</div>
+          </div>
+          <div class="lp-progress" aria-hidden="true"><i data-progress></i></div>
+          <div class="lp-browser-body">
+            <div class="lp-page" data-scene="browse">
+              <div class="lp-page-title">Show HN: things that actually ship</div>
+              <div class="lp-lines">
+                <span></span><span></span><span class="w60"></span>
+                <span class="link" data-hint="A">Why keyboard UIs win</span>
+                <span></span><span class="w80"></span>
+                <span class="link" data-hint="S">The mouse tax, quantified</span>
+                <span></span><span class="w50"></span>
+                <span class="link" data-hint="D">Modal control without the cult</span>
               </div>
             </div>
+            <div class="lp-omni" data-omni hidden>
+              <div class="lp-omni-input"><span class="lp-caret"></span><span data-omni-text></span></div>
+              <ul class="lp-omni-list" data-omni-list></ul>
+            </div>
+            <div class="lp-palette" data-palette hidden>
+              <div class="lp-omni-input"><span class="lp-colon">:</span><span data-pal-text></span><span class="lp-caret"></span></div>
+              <ul class="lp-omni-list">
+                <li class="on"><kbd>:read</kbd> Reader View</li>
+                <li><kbd>:prog</kbd> Toggle progress</li>
+                <li><kbd>:zen</kbd> Zen window</li>
+                <li><kbd>:win</kbd> Dock window</li>
+              </ul>
+            </div>
           </div>
-          <figcaption class="lp-demo-caption">
-            Product demo · replace with screen capture when ready ·
-            also supported as animated GIF at <code>media/demo.gif</code>
-          </figcaption>
-        </figure>
+          <div class="lp-keyfeed" aria-live="polite">
+            <span class="lp-keyfeed-label">You press</span>
+            <div class="lp-keys-row" data-keyfeed></div>
+          </div>
+        </div>
+        <p class="lp-visual-caption">
+          Live micro-demo · no video required ·
+          <a href="#demo">full screen recording slot below</a>
+        </p>
       </div>
     </div>
   </section>
 
-  <!-- ===== STRIP: one-liner value ===== -->
-  <section class="lp-strip">
-    <div class="lp-wrap lp-strip-inner">
-      <p>
-        Mouse browsing is precise. It is also a constant context switch.
-        Vim+ keeps the everyday browser loop — navigate, open, search, command, arrange — on the home row.
-      </p>
+  <!-- Logo / audience strip -->
+  <section class="lp-strip lp-strip-tight">
+    <div class="lp-wrap lp-strip-row">
+      <span>Built for people who already think in shortcuts</span>
+      <span class="lp-dot-sep" aria-hidden="true">·</span>
+      <span>Vim · tmux · tiling WMs · 40-tab research days</span>
+      <span class="lp-dot-sep" aria-hidden="true">·</span>
+      <span>Also fine if you only learn five keys</span>
     </div>
   </section>
 
@@ -114,174 +139,279 @@
   <section class="lp-section" id="problem">
     <div class="lp-wrap lp-narrow">
       <p class="lp-kicker">The problem</p>
-      <h2>Browsers were designed for the mouse. Your work was not.</h2>
+      <h2>Browsers optimized for pointing. Your work optimizes for flow.</h2>
       <p class="lp-prose">
         Knowledge work is a rhythm of <em>find → open → read → act → switch</em>.
-        Every time you reach for the mouse to click a link, hit the back button, hunt a tab,
-        or drag a window, you break that rhythm. The cost of each interruption is tiny.
-        The sum, across a day of research, debugging, reading RFCs, and reviewing PRs, is not.
+        Each reach for the mouse is a tiny context switch: find the cursor, aim, click, re-home your hands.
+        Alone, it’s nothing. Across a day of docs, issues, RFCs, and PRs, it’s a tax on attention.
       </p>
       <div class="lp-compare">
         <div class="lp-compare-col">
-          <h3>Without Vim+</h3>
+          <h3>Mouse-first day</h3>
           <ul>
-            <li>Locate cursor → aim → click → re-home hands</li>
-            <li>Tab bar hunting across 40 tabs</li>
-            <li>Address bar for every search</li>
-            <li>Buried menus for “close others”, mute, dock</li>
+            <li>Cursor archaeology on a 4K display</li>
+            <li>Tab bar hunting across dozens of tabs</li>
+            <li>Address bar for every jump</li>
+            <li>Menus for mute, close others, dock</li>
             <li>Help scattered across dead wiki links</li>
           </ul>
         </div>
         <div class="lp-compare-col good">
-          <h3>With Vim+</h3>
+          <h3>Keyboard-first day</h3>
           <ul>
-            <li><code>f</code> labels every link — type two keys to open</li>
-            <li><code>o</code> omnibar ranks history, tabs, bookmarks</li>
-            <li><code>:</code> palette for power actions by name</li>
-            <li>Side panel command center when pages block keys</li>
-            <li>In-extension wiki that ships with the build</li>
+            <li><code>f</code> — labels every link; type to open</li>
+            <li><code>o</code> — omnibar ranks history &amp; tabs</li>
+            <li><code>:</code> — power actions by name</li>
+            <li>Side panel when pages block keys</li>
+            <li>Wiki that ships with the extension</li>
           </ul>
         </div>
+      </div>
+      <blockquote class="lp-pull">
+        “The cost of each interruption is tiny. The sum is not.”
+        <cite>— the reason Vim+ exists</cite>
+      </blockquote>
+    </div>
+  </section>
+
+  <!-- ===== DEMO (video) ===== -->
+  <section class="lp-section lp-alt" id="demo">
+    <div class="lp-wrap">
+      <div class="lp-section-head">
+        <div>
+          <p class="lp-kicker">Demo</p>
+          <h2>See the loop, not a feature list</h2>
+        </div>
+        <p class="lp-section-lead">
+          Screen capture slot for a 20–40s walkthrough: hints → omnibar → palette → side panel → dock.
+          Until the file lands, the interactive preview above shows the same story.
+        </p>
+      </div>
+
+      <figure class="lp-demo lp-demo-wide">
+        <div class="lp-demo-frame">
+          <video
+            class="lp-demo-video"
+            controls
+            playsinline
+            preload="metadata"
+            poster="{{ $demoPoster | absURL }}"
+            aria-label="Vim+ product demo video">
+            <source src="{{ $demoMp4 | absURL }}" type="video/mp4">
+          </video>
+          <div class="lp-demo-placeholder" data-demo-placeholder>
+            <img
+              class="lp-demo-poster"
+              src="{{ $demoPoster | absURL }}"
+              alt="Vim+ demo preview placeholder"
+              width="1280"
+              height="720">
+            <div class="lp-demo-overlay">
+              <div class="lp-play" aria-hidden="true">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+              </div>
+              <p class="lp-demo-label">
+                <strong>Demo video ready when you are</strong><br>
+                Add <code>site/static/media/demo.mp4</code>
+              </p>
+              <p class="lp-demo-hint">
+                Optional GIF: <code>media/demo.gif</code> · poster already ships as SVG
+              </p>
+              <a class="btn primary" href="#live-demo">Replay interactive preview</a>
+            </div>
+          </div>
+        </div>
+        <figcaption class="lp-demo-caption">
+          MP4 preferred · H.264 · 720p+ · keep under ~15MB · see <code>site/static/media/README.md</code>
+        </figcaption>
+      </figure>
+
+      <div class="lp-scene-cards">
+        <button type="button" class="lp-scene on" data-jump-scene="0"><kbd>f</kbd><span>Link hints</span></button>
+        <button type="button" class="lp-scene" data-jump-scene="1"><kbd>o</kbd><span>Omnibar</span></button>
+        <button type="button" class="lp-scene" data-jump-scene="2"><kbd>:</kbd><span>Palette</span></button>
+        <button type="button" class="lp-scene" data-jump-scene="3"><kbd>j k</kbd><span>Read + progress</span></button>
       </div>
     </div>
   </section>
 
   <!-- ===== THEORY ===== -->
-  <section class="lp-section lp-alt" id="theory">
+  <section class="lp-section" id="theory">
     <div class="lp-wrap lp-narrow">
       <p class="lp-kicker">Theory</p>
       <h2>Modal control is a feature, not nostalgia.</h2>
       <p class="lp-prose">
-        Vim+ borrows ideas that editors got right decades ago: <strong>modes</strong>,
-        <strong>counts</strong>, and <strong>composable commands</strong>.
-        It is not “Vim inside Chrome.” It is a browser control plane that stays out of your way
-        until you need it — then gets out of the way again with <code>Esc</code>.
+        Vim+ borrows what editors got right: <strong>modes</strong>, <strong>counts</strong>, and
+        <strong>composable commands</strong>. It is not “Vim inside Chrome.”
+        It is a browser control plane that stays quiet until you need it —
+        then yields again with <code>Esc</code>.
       </p>
       <div class="lp-theory-grid">
         <article class="lp-theory-card">
+          <div class="lp-theory-n">01</div>
           <h3>Normal mode is the default</h3>
-          <p>
-            Keys are commands: scroll, hint, open, search. You are navigating, not typing into the page.
-            Focus an input (or press <code>i</code>) and you enter insert — the page gets the keys again.
-          </p>
+          <p>Keys are commands. Focus an input (or press <code>i</code>) and the page gets the keyboard back.</p>
         </article>
         <article class="lp-theory-card">
+          <div class="lp-theory-n">02</div>
           <h3>Hints beat aim</h3>
-          <p>
-            Link hints turn every clickable into a short label. Your eyes already found the target;
-            your fingers finish the job. No pixel-perfect pointing across a 4K display.
-          </p>
+          <p>Your eyes already found the link. Labels finish the job — no pixel hunting across ultrawide glass.</p>
         </article>
         <article class="lp-theory-card">
+          <div class="lp-theory-n">03</div>
           <h3>Commands are the API</h3>
-          <p>
-            Key maps are convenience. The stable surface is the <strong>command</strong>:
-            run it from a key, the <code>:</code> palette, or the side panel.
-            Discover first, bind later.
-          </p>
+          <p>Keys are convenience. Run the same action from a map, the <code>:</code> palette, or the side panel.</p>
         </article>
         <article class="lp-theory-card">
+          <div class="lp-theory-n">04</div>
           <h3>Escape always works</h3>
-          <p>
-            Partial chords, find mode, hints, omnibar — cancel with <code>Esc</code>.
-            Predictable exit is what makes modal UIs safe for daily use.
-          </p>
+          <p>Partial chords, find, hints, omnibar — cancel cleanly. Predictable exit makes modal UI safe daily.</p>
         </article>
       </div>
-      <p class="lp-prose lp-note">
-        If you already live in Vim, tmux, or a tiling WM, this will feel like finishing the stack.
-        If you don’t: start with five keys (<code>j</code> <code>k</code> <code>f</code> <code>o</code> <code>Esc</code>)
-        and grow only what pays rent.
-      </p>
     </div>
   </section>
 
-  <!-- ===== WHAT IT DOES ===== -->
-  <section class="lp-section" id="what">
+  <!-- ===== WHAT ===== -->
+  <section class="lp-section lp-alt" id="what">
     <div class="lp-wrap">
-      <p class="lp-kicker">What it does</p>
-      <h2 class="lp-center">A control plane for the whole browser loop</h2>
-      <p class="lp-prose lp-center-text">
-        Not a single trick. A coherent set of tools for moving through the web at the speed of thought.
-      </p>
-
+      <div class="lp-section-head">
+        <div>
+          <p class="lp-kicker">What it does</p>
+          <h2>One control plane for the whole browser loop</h2>
+        </div>
+      </div>
       <div class="lp-feature-grid">
         <article class="lp-feature">
           <div class="lp-feature-key"><kbd>f</kbd> <kbd>F</kbd></div>
           <h3>Link hints</h3>
-          <p>Open, new tab, copy, hover, download. Labels appear; type to activate. The classic keyboard browsing superpower, refined.</p>
+          <p>Open, new tab, copy, hover, download. Labels appear; type to activate.</p>
         </article>
         <article class="lp-feature">
           <div class="lp-feature-key"><kbd>o</kbd> <kbd>O</kbd></div>
           <h3>Omnibar</h3>
-          <p>History, domains, bookmarks, open tabs, windows. Hashbangs for search and AI prompt send (<code>!g</code>, <code>!grok</code>, <code>!gpt</code>…).</p>
+          <p>History, domains, bookmarks, tabs, windows. Hashbangs: <code>!g</code> <code>!grok</code> <code>!gpt</code>.</p>
         </article>
         <article class="lp-feature">
           <div class="lp-feature-key"><kbd>:</kbd></div>
           <h3>Command palette</h3>
-          <p>Privacy tools, tab ops, window dock, reader, highlighter, zen mode, clipboard helpers — searchable short names.</p>
+          <p>Privacy tools, tabs, dock, reader, highlighter, zen, clipboard — searchable short names.</p>
         </article>
         <article class="lp-feature">
           <div class="lp-feature-key"><kbd>gS</kbd></div>
           <h3>Command center</h3>
-          <p>Side panel for keys, commands, tabs, closed sessions, Reading List. Works when content scripts can’t (chrome://, etc.).</p>
+          <p>Side panel for keys, commands, sessions, Reading List. Works when content scripts can’t.</p>
         </article>
         <article class="lp-feature">
           <div class="lp-feature-key"><kbd>j</kbd><kbd>k</kbd><kbd>/</kbd><kbd>v</kbd></div>
           <h3>Navigate &amp; select</h3>
-          <p>Scroll, find, visual selection, marks, frames. Counts work: <code>5j</code>, not five presses if you don’t want them.</p>
+          <p>Scroll, find, visual mode, marks, frames. Counts: <code>5j</code> without five presses.</p>
         </article>
         <article class="lp-feature">
           <div class="lp-feature-key"><kbd>:read</kbd></div>
           <h3>Reading tools</h3>
-          <p>Progress bar by default, Mozilla Readability reader view, highlighter with comments, focus FX, zen window.</p>
+          <p>Progress bar by default, Readability reader, highlighter, focus FX, zen window.</p>
         </article>
         <article class="lp-feature">
           <div class="lp-feature-key"><kbd>:win</kbd></div>
           <h3>Windows &amp; tabs</h3>
-          <p>Dock to edges, maximize, center, cycle windows. Pin, mute, discard, restore closed, tab groups — via keys or palette.</p>
+          <p>Dock edges, maximize, cycle. Pin, mute, discard, restore closed, tab groups.</p>
         </article>
         <article class="lp-feature">
           <div class="lp-feature-key"><kbd>map</kbd></div>
-          <h3>Yours, remapped</h3>
-          <p>Full map language, site-specific maps, exclusions, user CSS, hashbang engines. Start stock; shape it to your hands.</p>
+          <h3>Remap everything</h3>
+          <p>Map language, site maps, exclusions, user CSS. Start stock; shape it to your hands.</p>
         </article>
       </div>
     </div>
   </section>
 
-  <!-- ===== WHY YOU WANT IT ===== -->
-  <section class="lp-section lp-alt" id="why">
+  <!-- ===== WHY ===== -->
+  <section class="lp-section" id="why">
     <div class="lp-wrap lp-narrow">
       <p class="lp-kicker">Why you should want it</p>
       <h2>Not faster for screenshots. Faster for real days.</h2>
       <ol class="lp-why-list">
-        <li>
-          <strong>You keep flow while reading technical material.</strong>
-          Scroll and jump links without breaking eye-hand coupling. Progress bar shows how deep you are in a long post.
-        </li>
-        <li>
-          <strong>You stop treating the tab bar as a UI.</strong>
-          Omnibar and side panel find the tab by content. Closed-session restore is a command, not archaeology.
-        </li>
-        <li>
-          <strong>Power features become discoverable.</strong>
-          The palette and command center surface dock, shred, reader, and clipboard tools without a 200-line cheat sheet day one.
-        </li>
-        <li>
-          <strong>Restricted pages don’t brick you.</strong>
-          When Chrome blocks content scripts, the side panel and global shortcuts still reach the extension.
-        </li>
-        <li>
-          <strong>Help doesn’t rot.</strong>
-          The wiki ships inside the extension. This site is the public mirror — not a dependency for day-to-day use.
-        </li>
-        <li>
-          <strong>Privacy defaults match how engineers think.</strong>
-          Local settings, opt-in sync, user-initiated history tools. AI hashbangs open the vendor’s site with your prompt —
-          Vim+ does not proxy your queries through a custom backend.
-        </li>
+        <li><strong>Keep flow while reading technical material.</strong> Scroll and jump links without breaking eye–hand coupling. Progress shows depth in long posts.</li>
+        <li><strong>Stop treating the tab bar as a UI.</strong> Omnibar and side panel find tabs by content. Closed-session restore is a command, not archaeology.</li>
+        <li><strong>Power features become discoverable.</strong> Palette and command center surface dock, shred, reader, and clip tools without a 200-line cheat sheet on day one.</li>
+        <li><strong>Restricted pages don’t brick you.</strong> When Chrome blocks content scripts, the side panel and global shortcuts still reach the extension.</li>
+        <li><strong>Help doesn’t rot.</strong> The wiki ships inside the product. This site is the public mirror — not a dependency for daily use.</li>
+        <li><strong>Privacy defaults match how engineers think.</strong> Local settings, opt-in sync, user-initiated history tools. AI hashbangs open the vendor’s site — Vim+ does not proxy your prompts.</li>
       </ol>
+    </div>
+  </section>
+
+  <!-- ===== VS ===== -->
+  <section class="lp-section lp-alt" id="compare">
+    <div class="lp-wrap">
+      <div class="lp-section-head">
+        <div>
+          <p class="lp-kicker">Positioning</p>
+          <h2>Where Vim+ sits</h2>
+        </div>
+      </div>
+      <div class="lp-table-wrap">
+        <table class="lp-table">
+          <thead>
+            <tr>
+              <th></th>
+              <th>Mouse Chrome</th>
+              <th>Generic shortcuts</th>
+              <th class="hl">Vim+</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Open any link without aiming</td>
+              <td>Click</td>
+              <td>Rare</td>
+              <td class="hl">Hints (<code>f</code>)</td>
+            </tr>
+            <tr>
+              <td>History + tabs + engines UI</td>
+              <td>Address bar</td>
+              <td>Partial</td>
+              <td class="hl">Omnibar (<code>o</code>)</td>
+            </tr>
+            <tr>
+              <td>Discoverable power commands</td>
+              <td>Menus</td>
+              <td>Memorize</td>
+              <td class="hl">Palette <code>:</code> + side panel</td>
+            </tr>
+            <tr>
+              <td>Works on chrome:// gaps</td>
+              <td>Native UI</td>
+              <td>Often no</td>
+              <td class="hl">Side panel / globals</td>
+            </tr>
+            <tr>
+              <td>Reading progress + reader + HL</td>
+              <td>Extensions soup</td>
+              <td>—</td>
+              <td class="hl">Built in</td>
+            </tr>
+            <tr>
+              <td>Window docking</td>
+              <td>OS / drag</td>
+              <td>—</td>
+              <td class="hl"><code>:win</code> family</td>
+            </tr>
+            <tr>
+              <td>Docs that can’t 404</td>
+              <td>Help Center</td>
+              <td>README</td>
+              <td class="hl">In-extension wiki</td>
+            </tr>
+            <tr>
+              <td>Telemetry / accounts</td>
+              <td>Varies</td>
+              <td>Varies</td>
+              <td class="hl">None required</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </section>
 
@@ -295,42 +425,42 @@
           <span class="lp-tl-key">o</span>
           <div>
             <h3>Jump somewhere</h3>
-            <p>Open omnibar, type a fragment of a URL or title, Enter. Or <code>!gh vim-plus</code> / <code>!grok explain …</code>.</p>
+            <p>Omnibar → fragment of a title → Enter. Or <code>!gh issue</code> / <code>!grok explain…</code>.</p>
           </div>
         </div>
         <div class="lp-tl-item">
           <span class="lp-tl-key">f</span>
           <div>
             <h3>Follow the interesting link</h3>
-            <p>Hints paint the page. Two keystrokes. New tab with <code>F</code> if you want to keep your place.</p>
+            <p>Hints paint the page. Two keystrokes. <code>F</code> for a new tab if you want to keep place.</p>
           </div>
         </div>
         <div class="lp-tl-item">
           <span class="lp-tl-key">j k</span>
           <div>
             <h3>Read</h3>
-            <p>Scroll on the home row. <code>/find</code> when scanning. <code>:read</code> when the page is a wall of chrome.</p>
+            <p>Home-row scroll. <code>/</code> to find. <code>:read</code> when the page is a wall of chrome.</p>
           </div>
         </div>
         <div class="lp-tl-item">
           <span class="lp-tl-key">:</span>
           <div>
             <h3>Act</h3>
-            <p>Copy markdown link, dock the window, mute the noisy tab, shred a domain you regret opening — without a menu tour.</p>
+            <p>Copy markdown, dock the window, mute the noisy tab, shred a domain you regret opening.</p>
           </div>
         </div>
         <div class="lp-tl-item">
           <span class="lp-tl-key">gS</span>
           <div>
             <h3>Command center</h3>
-            <p>When you need a map of everything bound, or Chrome’s own pages won’t accept keys — open the side panel.</p>
+            <p>Map of everything bound — or a way in when Chrome’s own pages won’t accept keys.</p>
           </div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- ===== DEMO AGAIN + INSTALL ===== -->
+  <!-- ===== INSTALL ===== -->
   <section class="lp-section lp-alt" id="install">
     <div class="lp-wrap">
       <div class="lp-install-grid">
@@ -338,36 +468,32 @@
           <p class="lp-kicker">Get it</p>
           <h2>Download for Google Chrome</h2>
           <p class="lp-prose">
-            Vim+ targets <strong>Chrome 121+</strong> (Manifest V3). Free, open source, Apache-2.0.
-            Built for people who will read the source — and for people who just want <code>f</code> to work today.
+            Targets <strong>Chrome 121+</strong> (Manifest V3). Free, open source, Apache-2.0.
+            Built for people who will read the source — and for people who just want <code>f</code> today.
           </p>
           <div class="lp-actions">
-            {{ if $chrome }}
-            <a class="btn primary btn-lg" href="{{ $chrome }}" rel="noopener">Download for Chrome — Web Store</a>
-            {{ else }}
-            <a class="btn primary btn-lg" href="{{ "docs/install/" | absURL }}" id="download-chrome">
-              Download for Chrome
-            </a>
-            {{ end }}
+            <a class="btn primary btn-lg" href="{{ $dl }}"{{ if $chrome }} rel="noopener"{{ end }} id="download-chrome">Download for Chrome</a>
             <a class="btn btn-lg" href="{{ $github }}" rel="noopener">GitHub repository</a>
           </div>
           {{ if not $chrome }}
           <div class="lp-store-note">
             <strong>Chrome Web Store:</strong> listing in progress.
-            Until it’s live, use <a href="{{ "docs/install/" | absURL }}">install from source</a>
+            Until it’s live, <a href="{{ "docs/install/" | absURL }}">install from source</a>
             (clone → <code>npm ci</code> → <code>npm run tsc</code> → Load unpacked).
-            The Download button takes you to those steps.
           </div>
           {{ end }}
           <div class="lp-install-steps">
-            <h3>From source (two minutes)</h3>
-            <pre class="lp-code"><code>git clone https://github.com/JamalYusuf/vim-plus.git
+            <h3>From source <span class="lp-time">~2 min</span></h3>
+            <div class="lp-code-wrap">
+              <pre class="lp-code" id="install-code"><code>git clone https://github.com/JamalYusuf/vim-plus.git
 cd vim-plus && npm ci && npm run tsc
 # chrome://extensions → Developer mode → Load unpacked → repo root</code></pre>
+              <button type="button" class="lp-copy" data-copy-target="install-code">Copy</button>
+            </div>
             <p class="lp-muted">
-              Full detail: <a href="{{ "docs/install/" | absURL }}">Install &amp; build</a>
-              · Permissions: <a href="{{ "legal/permissions/" | absURL }}">why we ask</a>
-              · Privacy: <a href="{{ "legal/privacy/" | absURL }}">local-first policy</a>
+              <a href="{{ "docs/install/" | absURL }}">Install &amp; build</a>
+              · <a href="{{ "legal/permissions/" | absURL }}">Permissions</a>
+              · <a href="{{ "legal/privacy/" | absURL }}">Privacy</a>
             </p>
           </div>
         </div>
@@ -383,15 +509,15 @@ cd vim-plus && npm ci && npm run tsc
               <tr><td><kbd>gS</kbd></td><td>Side panel</td></tr>
               <tr><td><kbd>Esc</kbd></td><td>Cancel / normal</td></tr>
             </table>
-            <a class="btn" href="{{ "guide/getting-started/" | absURL }}">Getting started guide →</a>
+            <a class="btn" href="{{ "guide/getting-started/" | absURL }}">Getting started →</a>
           </div>
           <div class="lp-aside-card">
             <h3>For skeptics</h3>
             <ul class="lp-bullets">
-              <li>Works beside your existing habits — exclude any site in one click</li>
-              <li>Not a full Vim emulator; browser-shaped modal UI</li>
+              <li>Exclude any site in one click</li>
+              <li>Not a full Vim emulator — browser-shaped modal UI</li>
               <li>Chrome-only product focus in this build</li>
-              <li>You can audit every permission justification</li>
+              <li>Every permission is documented for review</li>
             </ul>
           </div>
         </div>
@@ -399,79 +525,117 @@ cd vim-plus && npm ci && npm run tsc
     </div>
   </section>
 
+  <!-- ===== FAQ ===== -->
+  <section class="lp-section" id="faq">
+    <div class="lp-wrap lp-narrow">
+      <p class="lp-kicker">FAQ</p>
+      <h2>Questions HN will ask anyway</h2>
+      <div class="lp-faq">
+        <details class="lp-faq-item" open>
+          <summary>Is this just another Vimium fork with a new coat of paint?</summary>
+          <p>
+            Vim+ is a Chrome-first product with its own command palette, side panel command center,
+            reading stack (progress, reader, highlighter), window docking, AI hashbangs, in-extension wiki,
+            and branding/protocol cleanup. The goal is a coherent control plane — not a theme swap.
+          </p>
+        </details>
+        <details class="lp-faq-item">
+          <summary>Do I need to know Vim?</summary>
+          <p>
+            No. Learn <code>j</code> <code>k</code> <code>f</code> <code>o</code> <code>Esc</code> and you’re useful.
+            Vim muscle memory helps later; it is not a prerequisite.
+          </p>
+        </details>
+        <details class="lp-faq-item">
+          <summary>Will it fight Gmail / Docs / IDEs in the browser?</summary>
+          <p>
+            Use <strong>Off for this site</strong> in the side panel, exclusions, or pass-keys.
+            Escape hatches are first-class — not an afterthought.
+          </p>
+        </details>
+        <details class="lp-faq-item">
+          <summary>What about Firefox / Safari / Arc?</summary>
+          <p>
+            This distribution is <strong>Chrome MV3</strong>-focused. Other browsers are out of scope for the product promise here.
+          </p>
+        </details>
+        <details class="lp-faq-item">
+          <summary>Does it phone home?</summary>
+          <p>
+            No author-operated telemetry backend. Settings stay in your Chrome profile; sync is opt-in.
+            AI hashbangs open third-party sites with your query — same as typing there yourself.
+            See the <a href="{{ "legal/privacy/" | absURL }}">privacy policy</a>.
+          </p>
+        </details>
+        <details class="lp-faq-item">
+          <summary>Why so many permissions?</summary>
+          <p>
+            Tabs, history, windows, side panel, and optional privacy tools need explicit Chrome APIs.
+            We publish store-style justifications on the
+            <a href="{{ "legal/permissions/" | absURL }}">permissions page</a> — read them before installing.
+          </p>
+        </details>
+      </div>
+    </div>
+  </section>
+
   <!-- ===== PRINCIPLES ===== -->
-  <section class="lp-section" id="principles">
+  <section class="lp-section lp-alt" id="principles">
     <div class="lp-wrap lp-narrow">
       <p class="lp-kicker">Design principles</p>
       <h2>What we optimize for</h2>
       <div class="lp-principles">
-        <div><strong>Latency of intent</strong><span>From thought to browser action with minimal mode error.</span></div>
-        <div><strong>Discoverability</strong><span>Palette and side panel beat memorizing a novel on day one.</span></div>
-        <div><strong>Local-first</strong><span>Your maps and marks live in your profile; sync is opt-in.</span></div>
+        <div><strong>Latency of intent</strong><span>Thought → action with minimal mode error.</span></div>
+        <div><strong>Discoverability</strong><span>Palette and side panel beat memorizing a novel day one.</span></div>
+        <div><strong>Local-first</strong><span>Maps and marks live in your profile; sync is opt-in.</span></div>
         <div><strong>Docs that ship</strong><span>Wiki in the extension; this site is the public handbook.</span></div>
-        <div><strong>Escape hatches</strong><span>Exclusions and pass-keys when a site needs its own shortcuts.</span></div>
-        <div><strong>Honest scope</strong><span>Chrome MV3, keyboard navigation product — not a second browser.</span></div>
+        <div><strong>Escape hatches</strong><span>Exclusions when a site needs its own shortcuts.</span></div>
+        <div><strong>Honest scope</strong><span>Chrome MV3 keyboard navigation — not a second browser.</span></div>
       </div>
     </div>
   </section>
 
-  <!-- ===== DOCS GATEWAY ===== -->
-  <section class="lp-section lp-alt" id="docs">
+  <!-- ===== DOCS ===== -->
+  <section class="lp-section" id="docs">
     <div class="lp-wrap">
-      <p class="lp-kicker">Documentation</p>
-      <h2 class="lp-center">Go deeper when you’re ready</h2>
+      <div class="lp-section-head">
+        <div>
+          <p class="lp-kicker">Documentation</p>
+          <h2>Go deeper when you’re ready</h2>
+        </div>
+      </div>
       <div class="card-grid lp-docs-grid">
         <a class="card" href="{{ "guide/getting-started/" | absURL }}"><h3>Getting started</h3><p>Install, first keys, daily loop.</p></a>
-        <a class="card" href="{{ "guide/concepts/" | absURL }}"><h3>Vim concepts</h3><p>Modes and mental model in plain English.</p></a>
-        <a class="card" href="{{ "docs/features/" | absURL }}"><h3>Feature inventory</h3><p>Full product surface area.</p></a>
-        <a class="card" href="{{ "docs/hashbangs/" | absURL }}"><h3>Hashbangs &amp; AI</h3><p>Search tokens and prompt send.</p></a>
-        <a class="card" href="{{ "dev/architecture/" | absURL }}"><h3>Architecture</h3><p>MV3, ports, settings pipeline.</p></a>
-        <a class="card" href="{{ "legal/permissions/" | absURL }}"><h3>Permissions</h3><p>Store-ready justifications.</p></a>
-        <a class="card" href="{{ "legal/privacy/" | absURL }}"><h3>Privacy</h3><p>What we store and what we don’t.</p></a>
-        <a class="card" href="{{ "docs/install/" | absURL }}"><h3>Install &amp; build</h3><p>From clone to load-unpacked.</p></a>
+        <a class="card" href="{{ "guide/concepts/" | absURL }}"><h3>Vim concepts</h3><p>Modes in plain English.</p></a>
+        <a class="card" href="{{ "docs/features/" | absURL }}"><h3>Feature inventory</h3><p>Full product surface.</p></a>
+        <a class="card" href="{{ "docs/hashbangs/" | absURL }}"><h3>Hashbangs &amp; AI</h3><p>Search tokens &amp; prompt send.</p></a>
+        <a class="card" href="{{ "dev/architecture/" | absURL }}"><h3>Architecture</h3><p>MV3, ports, settings.</p></a>
+        <a class="card" href="{{ "legal/permissions/" | absURL }}"><h3>Permissions</h3><p>Why we ask for each API.</p></a>
+        <a class="card" href="{{ "legal/privacy/" | absURL }}"><h3>Privacy</h3><p>Local-first policy.</p></a>
+        <a class="card" href="{{ "docs/install/" | absURL }}"><h3>Install &amp; build</h3><p>Clone to load-unpacked.</p></a>
       </div>
     </div>
   </section>
 
-  <!-- ===== FINAL CTA ===== -->
+  <!-- ===== FINAL ===== -->
   <section class="lp-final">
     <div class="lp-wrap lp-final-inner">
+      <p class="lp-kicker" style="justify-self:center">Ship the loop</p>
       <h2>Stop paying the mouse tax.</h2>
       <p>
         Vim+ is free, open source, and built for Chrome by
         <a href="{{ .Site.Params.authorUrl }}" rel="noopener">{{ .Site.Params.author }}</a>.
-        Install it, learn five keys, and reclaim the loop.
+        Install it. Learn five keys. Reclaim the day.
       </p>
       <div class="lp-actions lp-actions-center">
-        {{ if $chrome }}
-        <a class="btn primary btn-lg" href="{{ $chrome }}" rel="noopener">Download for Chrome</a>
-        {{ else }}
-        <a class="btn primary btn-lg" href="{{ "docs/install/" | absURL }}">Download for Chrome</a>
-        {{ end }}
+        <a class="btn primary btn-lg" href="{{ $dl }}"{{ if $chrome }} rel="noopener"{{ end }}>Download for Chrome</a>
         <a class="btn btn-lg" href="{{ $github }}" rel="noopener">Star on GitHub</a>
+        <a class="btn btn-lg ghost" href="{{ "guide/getting-started/" | absURL }}">Read the guide</a>
       </div>
     </div>
   </section>
 
 </div>
 
-<script>
-/* If demo.mp4 fails to load, keep the poster placeholder visible.
-   When an MP4 is present and playable, hide the placeholder overlay. */
-(function () {
-  var video = document.querySelector(".lp-demo-video");
-  var ph = document.querySelector("[data-demo-placeholder]");
-  if (!video || !ph) return;
-  var hide = function () {
-    ph.classList.add("is-hidden");
-    video.classList.add("is-ready");
-  };
-  video.addEventListener("loadeddata", function () {
-    if (video.readyState >= 2 && video.videoWidth > 0) hide();
-  });
-  // Probe: if source 404s, error fires and placeholder stays
-  video.addEventListener("error", function () { /* keep placeholder */ });
-  // Optional GIF: if media/demo.gif exists, could be used as poster replacement by deployers
-})();
-</script>
+<script src="{{ "js/landing.js" | absURL }}" defer></script>
 {{ end }}
