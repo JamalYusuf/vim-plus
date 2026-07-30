@@ -3,14 +3,20 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{{ if .IsHome }}{{ .Site.Title }} — Keyboard-first Chrome{{ else }}{{ .Title }} · {{ .Site.Title }}{{ end }}</title>
+  <title>{{ if .IsHome }}Vim+ — Keyboard-first Chrome for people who live in tabs{{ else }}{{ .Title }} · {{ .Site.Title }}{{ end }}</title>
   <meta name="description" content="{{ with .Description }}{{ . }}{{ else }}{{ .Site.Params.description }}{{ end }}">
   <meta name="author" content="{{ .Site.Params.author }}">
   <meta name="theme-color" content="#0a0a0b">
+  <meta property="og:title" content="{{ if .IsHome }}Vim+ — Keyboard-first Chrome{{ else }}{{ .Title }} · Vim+{{ end }}">
+  <meta property="og:description" content="{{ with .Description }}{{ . }}{{ else }}{{ .Site.Params.description }}{{ end }}">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="{{ .Permalink }}">
+  <meta property="og:image" content="{{ "media/demo-poster.svg" | absURL }}">
+  <meta name="twitter:card" content="summary_large_image">
   <link rel="stylesheet" href="{{ "css/site.css" | absURL }}">
   <link rel="canonical" href="{{ .Permalink }}">
 </head>
-<body>
+<body class="{{ if .IsHome }}page-home{{ else }}page-docs{{ end }}">
   <header class="site-header">
     <div class="header-inner">
       <a class="brand" href="{{ .Site.Home.Permalink }}"><span class="v">Vim</span><span class="p">+</span></a>
@@ -18,7 +24,8 @@
       <nav class="nav" aria-label="Main">
         {{ range .Site.Menus.main }}
           {{ $isExt := or (hasPrefix .URL "http://") (hasPrefix .URL "https://") }}
-          <a href="{{ if $isExt }}{{ .URL }}{{ else }}{{ .URL | absURL }}{{ end }}"{{ if $.IsMenuCurrent "main" . }} class="active"{{ end }}{{ if $isExt }} rel="noopener"{{ end }}>{{ .Name }}</a>
+          {{ $isHash := hasPrefix .URL "./#" }}
+          <a href="{{ if $isExt }}{{ .URL }}{{ else if $isHash }}{{ $.Site.Home.Permalink }}{{ strings.TrimPrefix "./" .URL }}{{ else }}{{ .URL | absURL }}{{ end }}"{{ if $.IsMenuCurrent "main" . }} class="active"{{ end }}{{ if $isExt }} rel="noopener"{{ end }}>{{ .Name }}</a>
         {{ end }}
       </nav>
     </div>
@@ -28,6 +35,7 @@
     <p><strong>Vim+</strong> v{{ .Site.Params.version }} · by
       <a href="{{ .Site.Params.authorUrl }}" rel="noopener">{{ .Site.Params.author }}</a>
       · <a href="{{ .Site.Params.github }}" rel="noopener">GitHub</a>
+      · <a href="{{ "legal/privacy/" | absURL }}">Privacy</a>
       · Apache-2.0</p>
   </footer>
 </body>

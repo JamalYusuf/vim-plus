@@ -7,12 +7,18 @@ disableKinds = ["taxonomy", "term"]
 canonifyURLs = true
 
 [params]
-  description = "Keyboard-first navigation for Google Chrome by Jamal Yusuf"
+  description = "Vim+ — keyboard-first navigation for Google Chrome. Link hints, omnibar, command palette, side panel, reading tools. Open source by Jamal Yusuf."
   author = "Jamal Yusuf"
   authorUrl = "https://jamal.dev"
   github = "https://github.com/JamalYusuf/vim-plus"
   accent = "#e11d48"
   version = "1.0.0"
+  # Set when the Chrome Web Store listing is live, e.g.:
+  # chromeStoreUrl = "https://chromewebstore.google.com/detail/vim-plus/YOUR_ID"
+  chromeStoreUrl = ""
+  demoVideoMp4 = "media/demo.mp4"
+  demoVideoGif = "media/demo.gif"
+  demoPoster = "media/demo-poster.svg"
 
 [menu]
   [[menu.main]]
@@ -20,24 +26,24 @@ canonifyURLs = true
     url = "./"
     weight = 1
   [[menu.main]]
-    name = "Guide"
-    url = "guide/"
+    name = "Why"
+    url = "./#why"
     weight = 2
   [[menu.main]]
-    name = "Features"
-    url = "docs/features/"
+    name = "Demo"
+    url = "./#demo"
     weight = 3
+  [[menu.main]]
+    name = "Download"
+    url = "./#install"
+    weight = 4
+  [[menu.main]]
+    name = "Guide"
+    url = "guide/"
+    weight = 5
   [[menu.main]]
     name = "Docs"
     url = "docs/"
-    weight = 4
-  [[menu.main]]
-    name = "Developers"
-    url = "dev/"
-    weight = 5
-  [[menu.main]]
-    name = "Permissions"
-    url = "legal/permissions/"
     weight = 6
   [[menu.main]]
     name = "GitHub"
