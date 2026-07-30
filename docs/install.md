@@ -31,20 +31,46 @@ npm run tsc
 3. Open the side panel → **Wiki** → Getting started
 4. On a normal website (not `chrome://`), try `j` / `k` / `f` / `o` / `:`
 
-## Production package
+## Chrome Web Store package (recommended)
+
+Zipping the **entire repo** (or an archive of the project tree) is the usual reason Chrome reports:
+
+> Invalid package… make sure … **manifest.json is at the root directory of the zip package**.
+
+Build a clean extension-only package from the repo root:
+
+```bash
+npm ci
+npm run package
+```
+
+| Output | Use |
+|--------|-----|
+| `build/extension/` | Unpacked extension only — **Load unpacked** this folder |
+| `build/vim-plus-<version>-chrome.zip` | **Upload this file** to the Chrome Web Store |
+
+The zip has `manifest.json` at the **archive root** (not nested under a subfolder). It includes only runtime assets (compiled JS, HTML/CSS, icons, locales, etc.) — not `site/`, `docs/`, `tests/`, TypeScript sources, or `node_modules/`.
+
+```bash
+npm run package -- --skip-tsc   # skip recompile if JS is already up to date
+npm run package -- --keep-key   # keep manifest.key for a fixed local extension id
+```
+
+### Legacy production package
 
 ```bash
 npm run chrome
 # alias: npm run dist
 ```
 
-This runs the gulp dist pipeline with Chrome MV3 compile flags and packaging scripts under `scripts/`. Output layout depends on gulp/`make.sh` configuration; use the generated folder or zip for store upload.
+Runs the older gulp dist pipeline + `scripts/make.sh`. Prefer `npm run package` for Web Store uploads.
 
 Other useful commands:
 
 | Command | Use |
 |---------|-----|
 | `npm run tsc` | TypeScript emit only (fast reload cycle) |
+| `npm run package` | Store-ready `build/extension` + zip |
 | `npm run watch` | Watch mode |
 | `npm run build` | Gulp build |
 | `npm run lint` | ESLint |

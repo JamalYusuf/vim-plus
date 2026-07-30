@@ -32,15 +32,25 @@ npm run tsc
 
 After source edits: `npm run tsc` → click **Reload** on the extension card.
 
+## Chrome Web Store package
+
+```bash
+npm run package
+```
+
+Produces `build/extension/` (load unpacked) and `build/vim-plus-<version>-chrome.zip` for the store.
+**Do not zip the whole repository** — `manifest.json` must be at the zip root.
+
 ## npm scripts
 
 | Command | Purpose |
 |---------|---------|
 | `npm run tsc` | Typecheck / emit JS |
+| `npm run package` / `npm run store` | Chrome Web Store zip + `build/extension/` |
 | `npm run watch` / `npm run dev` | Incremental TypeScript watch |
 | `npm run local` / `npm start` | Local gulp pipeline |
 | `npm run build` | Gulp build |
-| `npm run chrome` / `npm run dist` | Production Chrome package |
+| `npm run chrome` / `npm run dist` | Legacy production package |
 | `npm run lint` | ESLint |
 | `npm test` | Gulp test target |
 

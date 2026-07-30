@@ -161,11 +161,22 @@ manifest.json   MV3 extension manifest
 | `npm run watch` / `npm run dev` | Incremental TypeScript watch |
 | `npm run local` / `npm start` | Local build pipeline (gulp) |
 | `npm run build` | Gulp build |
-| `npm run chrome` / `npm run dist` | Production Chrome package |
+| `npm run package` / `npm run store` | **Chrome Web Store package** → `build/extension/` + `build/vim-plus-*-chrome.zip` |
+| `npm run chrome` / `npm run dist` | Legacy gulp dist + make.sh package |
 | `npm run lint` | ESLint |
 | `npm test` | Gulp test target |
 
 After code changes: `npm run tsc` → reload the unpacked extension in `chrome://extensions`.
+
+### Chrome Web Store zip
+
+Do **not** zip the whole repository (that causes “manifest.json must be at the root of the zip”).
+
+```bash
+npm run package
+# upload:  build/vim-plus-<version>-chrome.zip
+# or load: build/extension
+```
 
 ---
 
