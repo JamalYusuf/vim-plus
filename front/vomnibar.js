@@ -32,6 +32,7 @@ var VCID_ = VCID_ || "", VHost_ = VHost_ || "", Vomnibar_ = {
     let scale = parScale, dz = a.docZoom_ = scale < .98 ? 1 / scale : 1;
     const frameElWidth = Math.min(parWidth * a.wndRatioX_ + 24 /* PixelData.MarginH */ , a.maxWidthInPixel_);
     a.onInnerWidth_(frameElWidth);
+    a._hostViewH = parHeight / dz;
     const max = Math.max(3, Math.min(0 | (parHeight / dz - a.baseHeightIfNotEmpty_ - 78 /* GlobalConsts.MaxScrollbarWidth */) / a.itemHeight_, a.maxMatches_));
     a.mode_.r = max;
     a.height_ = +a.isActive_;
@@ -108,6 +109,8 @@ var VCID_ = VCID_ || "", VHost_ = VHost_ || "", Vomnibar_ = {
   docZoom_: 1,
   lastScrolling_: 0,
   height_: 0,
+  /** Parent page viewport height (CSS px) — used to keep the iframe on-screen */
+  _hostViewH: 0,
   _canvas: null,
   input_: null,
   docSt_: null,
@@ -976,6 +979,13 @@ var VCID_ = VCID_ || "", VHost_ = VHost_ || "", Vomnibar_ = {
       a.wheelDelta_ = 0;
       return;
     }
+    // Overflowed result list: native scroll (do not preventDefault / page)
+        const listEl0 = a.list_;
+    if (listEl0 && (target === listEl0 || listEl0.contains(target)) && listEl0.scrollHeight > listEl0.clientHeight + 2) {
+      a.wheelDelta_ = 0;
+      a.updateListScrollHint_(listEl0);
+      return;
+    }
     VUtils_.Stop_(event, 1);
     if (hasXAndY && Math.abs(rawDeltaX - rawDeltaY) < .5 || !absDelta) {
       return;
@@ -1042,14 +1052,24 @@ var VCID_ = VCID_ || "", VHost_ = VHost_ || "", Vomnibar_ = {
     a.updateTips_(a.input_.value, a.mode_.o, a.completions_ ? a.completions_.length : 0);
     a.update_(inputType ? 0 : -1, a.inAlt_ ? a.toggleAlt_ : null);
   },
+  /** Keep the iframe inside the parent viewport; extra rows scroll inside #list. */
+  listFit_() {
+    const a = Vomnibar_;
+    const host = a._hostViewH || (typeof innerHeight === "number" ? innerHeight : 720);
+    const maxFrame = Math.max(a.heightIfEmpty_ + a.itemHeight_ * 3, Math.floor(host - 64 /* PixelData.FrameTop */ - 16));
+    const maxList = Math.max(a.itemHeight_ * 3, maxFrame - a.baseHeightIfNotEmpty_);
+    return {
+      maxList,
+      maxFrame
+    };
+  },
   omni_(response) {
     const a = Vomnibar_, autoSelect = a.options_.autoSelect;
     const completions = response.l, len = completions.length, notEmpty = len > 0, oldH = a.height_, list = a.list_;
-    // Cap visible rows so the iframe stays usable; overflow scrolls inside #list
-        const maxVisibleRows = 10;
+    const fit = a.listFit_();
+    const maxVisibleRows = Math.max(3, fit.maxList / a.itemHeight_ | 0);
     const visibleRows = notEmpty ? Math.min(len, maxVisibleRows) : 0;
-    // Formula is a provisional size; tips/footer wrap and CSS item height can differ from settings.
-        const formulaH = Math.ceil(notEmpty ? visibleRows * a.itemHeight_ + a.baseHeightIfNotEmpty_ : a.heightIfEmpty_);
+    const formulaH = Math.ceil(notEmpty ? Math.min(visibleRows * a.itemHeight_ + a.baseHeightIfNotEmpty_, fit.maxFrame) : a.heightIfEmpty_);
     let height = a.height_ = formulaH;
     const wdZoom = a.docZoom_, msg = {
       N: 2 /* VomnibarNS.kFReq.style */ ,
@@ -1072,8 +1092,7 @@ var VCID_ = VCID_ || "", VHost_ = VHost_ || "", Vomnibar_ = {
     a.isSelOriginal_ = true;
     a.ParseCompletions_(a.completions_);
     a.renderItems_(a.completions_, list);
-    // Scrollport for long lists (~10 rows); always allow auto so scrollbar works when content overflows
-        const listMax = maxVisibleRows * a.itemHeight_;
+    const listMax = fit.maxList;
     list.style.maxHeight = listMax + "px";
     list.style.overflowY = "auto";
     const wrap = document.getElementById("list-wrap");
@@ -1112,9 +1131,7 @@ var VCID_ = VCID_ || "", VHost_ = VHost_ || "", Vomnibar_ = {
       // Prefer full document height; body.offsetHeight alone omits margins the iframe must fit.
             let needed = Math.ceil(Math.max(root.scrollHeight, body.offsetHeight + marginV, formulaH) + 2);
  // +2 for subpixel / border
-      // Cap: provisional already uses maxVisibleRows; don't let measurement blow past that + chrome.
-            const maxH = Math.ceil(maxVisibleRows * a.itemHeight_ + a.baseHeightIfNotEmpty_ + 24);
-      needed > maxH && (needed = maxH);
+            needed > fit.maxFrame && (needed = fit.maxFrame);
       height = a.height_ = needed;
       msg.h = needed * wdZoom;
       VPort_.postToOwner_(msg);
@@ -1315,14 +1332,17 @@ var VCID_ = VCID_ || "", VHost_ = VHost_ || "", Vomnibar_ = {
       VPort_._port = null;
     }
   },
+  /** Numbered 1–9 picks: ⌘ on macOS, Alt on Windows/Linux (matches onKeydown_). */
+  pickMod_() {
+    return Vomnibar_.os_ === 0 /* kOS.mac */ ? "\u2318" : "Alt";
+  },
   updateTips_(query, mode, count) {
     const a = Vomnibar_;
     if (!a.tipTextEl_ || !a.tipModeEl_) {
       return;
     }
     const q = (query || "").trim();
-    const isMac = a.os_ === 0 /* kOS.mac */;
-    const modKey = isMac ? "\u2318" : "Alt";
+    const modKey = a.pickMod_();
     let modeLabel = (mode || a.mode_.o || "omni").toUpperCase();
     let html = "";
     if (q.startsWith(":")) {
@@ -1344,7 +1364,7 @@ var VCID_ = VCID_ || "", VHost_ = VHost_ || "", Vomnibar_ = {
     }
     a.tipModeEl_.textContent = modeLabel;
     a.tipTextEl_.innerHTML = html;
-    a.footerTipEl_ && (a.footerTipEl_.innerHTML = q.startsWith(":") ? "<kbd>\u2191</kbd><kbd>\u2193</kbd> scroll list \xb7 <kbd>Enter</kbd> run \xb7 hold <kbd>" + modKey + "</kbd>+<kbd>1</kbd>\u2013<kbd>9</kbd> \xb7 short form stays in bar" : "<kbd>\u2191</kbd><kbd>\u2193</kbd> \xb7 <kbd>Enter</kbd> \xb7 hold <kbd>" + modKey + "</kbd> + <kbd>1</kbd>\u2013<kbd>9</kbd> jump \xb7 <kbd>Esc</kbd> \xb7 <kbd>:</kbd> palette");
+    a.footerTipEl_ && (a.footerTipEl_.innerHTML = q.startsWith(":") ? "<kbd>\u2191</kbd><kbd>\u2193</kbd> move \xb7 scroll for more \xb7 <kbd>Enter</kbd> run \xb7 hold <kbd>" + modKey + "</kbd>+<kbd>1</kbd>\u2013<kbd>9</kbd>" : "<kbd>\u2191</kbd><kbd>\u2193</kbd> \xb7 <kbd>Enter</kbd> \xb7 hold <kbd>" + modKey + "</kbd> + <kbd>1</kbd>\u2013<kbd>9</kbd> jump \xb7 <kbd>Esc</kbd> \xb7 <kbd>:</kbd> palette");
   },
   init_() {
     const a = Vomnibar_;
@@ -1360,6 +1380,7 @@ var VCID_ = VCID_ || "", VHost_ = VHost_ || "", Vomnibar_ = {
     a.tipTextEl_ = document.getElementById("tip-text");
     a.tipModeEl_ = document.getElementById("tip-mode");
     a.footerTipEl_ = document.getElementById("footer-tip");
+    a.updateTips_("", "omni", 0);
     list.onmouseover = list.oncontextmenu = a.OnMenu_;
     document.getElementById("close").onclick = () => Vomnibar_.hide_();
     listen("keydown", a.HandleKeydown_, true);

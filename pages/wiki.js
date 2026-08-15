@@ -197,8 +197,30 @@ const showRelated = page => {
   relatedEl.hidden = !any;
 };
 
+const pageHaystack = p => (plainText(p.title) + " " + plainText(p.subtitle || "") + " " + (p.html || "").replace(/<[^>]+>/g, " ")).toLowerCase();
+
+const visibleTocLinks = () => {
+  const links = tocEl.querySelectorAll("a[data-id]");
+  const out = [];
+  for (let i = 0; i < links.length; i++) {
+    const a = links[i];
+    (a.getAttribute("class") || "").indexOf("hidden") < 0 && out.push(a);
+  }
+  return out;
+};
+
 const showPage = id => {
-  const page = wikiPageById(id || "home");
+  const raw = WIKI_PAGES.find(p => p.id === (id || "home"));
+  if (!raw && id && id !== "home") {
+    titleEl.textContent = "Not found";
+    subtitleEl.textContent = "";
+    bodyEl.innerHTML = '<p>No wiki page named <code></code>.</p><p><a href="#home">Back home</a></p>';
+    const code = bodyEl.querySelector("code");
+    code && (code.textContent = id);
+    document.title = "Not found \xb7 Vim+ Wiki";
+    return;
+  }
+  const page = raw || wikiPageById(id || "home");
   const title = plainText(page.title);
   const subtitle = plainText(page.subtitle || "");
   titleEl.textContent = title;
@@ -238,7 +260,9 @@ filterEl.addEventListener("input", () => {
   const groups = tocEl.querySelectorAll(".group-label");
   for (let i = 0; i < links.length; i++) {
     const a = links[i];
-    const text = (a.textContent || "").toLowerCase();
+    const id = a.getAttribute("data-id") || "";
+    const page = WIKI_PAGES.find(p => p.id === id);
+    const text = ((a.textContent || "") + " " + (page ? pageHaystack(page) : "")).toLowerCase();
     const hide = !!q && text.indexOf(q) < 0;
     const on = a.getAttribute("data-id") === currentId();
     a.setAttribute("class", (on ? "active" : "") + (hide ? " hidden" : ""));
@@ -277,6 +301,37 @@ document.addEventListener("keydown", ev => {
       filterEl.value = "";
       filterEl.dispatchEvent(new Event("input"));
       filterEl.blur();
+    } else if (inField || ev.key !== "j" && ev.key !== "k" && ev.key !== "Enter") {
+      if (!inField && (ev.key === "n" || ev.key === "p")) {
+        const vis = visibleTocLinks();
+        let i = vis.findIndex(a => (a.getAttribute("class") || "").indexOf("active") >= 0);
+        i < 0 && (i = 0);
+        i = ev.key === "n" ? (i + 1) % vis.length : (i - 1 + vis.length) % vis.length;
+        const next = vis[i];
+        const nid = next && next.getAttribute("data-id");
+        if (nid) {
+          stop(ev);
+          location.hash = nid;
+          showPage(nid);
+        }
+      }
+    } else {
+      const vis = visibleTocLinks();
+      if (!vis.length) {
+        return;
+      }
+      let i = vis.findIndex(a => (a.getAttribute("class") || "").indexOf("active") >= 0);
+      i < 0 && (i = 0);
+      ev.key === "j" ? i = (i + 1) % vis.length : ev.key === "k" && (i = (i - 1 + vis.length) % vis.length);
+      const next = vis[i];
+      if (next) {
+        const nid = next.getAttribute("data-id") || "";
+        if (nid) {
+          stop(ev);
+          location.hash = nid;
+          showPage(nid);
+        }
+      }
     }
   } else {
     stop(ev);

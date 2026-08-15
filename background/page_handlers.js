@@ -1,6 +1,6 @@
 "use strict";
 __filename = "background/page_handlers.js";
-define([ "require", "exports", "./store", "./utils", "./browser", "./normalize_urls", "./parse_urls", "./settings", "./ports", "./exclusions", "./ui_css", "./key_mappings", "./run_commands", "./open_urls", "./frame_commands", "./side_panel" ], (require, exports, store_1, utils_1, browser_1, normalize_urls_1, parse_urls_1, settings_, ports_1, Exclusions, ui_css_1, key_mappings_1, run_commands_1, open_urls_1, frame_commands_1, side_panel_1) => {
+define([ "require", "exports", "./store", "./utils", "./browser", "./normalize_urls", "./parse_urls", "./settings", "./ports", "./exclusions", "./ui_css", "./key_mappings", "./quick_actions", "./run_commands", "./open_urls", "./frame_commands", "./side_panel" ], (require, exports, store_1, utils_1, browser_1, normalize_urls_1, parse_urls_1, settings_, ports_1, Exclusions, ui_css_1, key_mappings_1, quick_actions_1, run_commands_1, open_urls_1, frame_commands_1, side_panel_1) => {
   "use strict";
   Object.defineProperty(exports, "__esModule", {
     value: true
@@ -310,8 +310,19 @@ define([ "require", "exports", "./store", "./utils", "./browser", "./normalize_u
     } catch (_a) {}
     const frames = store_1.framesForTab_.get(tabId);
     const status = frames ? frames.cur_.s.status_ : 0 /* Frames.Status.enabled */;
-    const rules = store_1.settingsCache_.exclusionRules || [];
-    const siteDisabled = !(!host || !rules.some(r => r.passKeys === "" && (r.pattern === ":https://" + host + "/" || r.pattern === ":http://" + host + "/" || r.pattern.indexOf(host) >= 0)));
+    let siteDisabled = false;
+    if (url) {
+      try {
+        const dummySender = {
+          tabId_: tabId,
+          frameId_: 0,
+          url_: url
+        };
+        siteDisabled = Exclusions.getExcluded_(url, dummySender) === "";
+      } catch (_b) {
+        siteDisabled = false;
+      }
+    }
     return {
       ver: store_1.CONST_.VerName_,
       status,
@@ -334,13 +345,14 @@ define([ "require", "exports", "./store", "./utils", "./browser", "./normalize_u
       });
     });
     out.sort((a, b) => a.key < b.key ? -1 : a.key > b.key ? 1 : 0);
-    return out.slice(0, 200);
+    return out;
   }, 
   /** kPgReq.recentTabs: */ () => browser_1.Q_(browser_1.browser_.tabs.query, {}).then(tabs => {
     if (!tabs) {
       return [];
     }
-    return tabs.slice(0, 40).map(t => ({
+    const sorted = tabs.slice().sort((a, b) => (b.lastAccessed || 0) - (a.lastAccessed || 0));
+    return sorted.slice(0, 80).map(t => ({
       id: t.id,
       title: t.title || "",
       url: t.url || "",
@@ -371,27 +383,40 @@ define([ "require", "exports", "./store", "./utils", "./browser", "./normalize_u
       const url = tab ? browser_1.getTabUrl(tab) : "";
       switch (req.action) {
        case "help":
-        // Run on-page help dialog when content script is available
-        try {
-          t && t.id != null && run_commands_1.executeExternalCmd({
-            command: "showHelp",
-            count: 1
-          }, {
-            tab: t,
-            frameId: 0,
-            id: browser_1.browser_.runtime.id
-          });
-        } catch (_a) {
+        {
+          const port = t && t.id != null ? ports_1.indexFrame(t.id, 0) : null;
+          if (!port) {
+            open_urls_1.focusOrLaunch_({
+              u: browser_1.browser_.runtime.getURL("pages/wiki.html#getting-started")
+            });
+            return Promise.resolve({
+              ok: false,
+              message: "No page connection \u2014 opened wiki"
+            });
+          }
           try {
-            frame_commands_1.initHelp({
-              f: true
-            }, null);
-          } catch (_b) {}
+            run_commands_1.executeExternalCmd({
+              command: "showHelp",
+              count: 1
+            }, {
+              tab: t,
+              frameId: 0,
+              id: browser_1.browser_.runtime.id
+            });
+            return Promise.resolve({
+              ok: true,
+              message: "Help"
+            });
+          } catch (_a) {
+            open_urls_1.focusOrLaunch_({
+              u: browser_1.browser_.runtime.getURL("pages/wiki.html#getting-started")
+            });
+            return Promise.resolve({
+              ok: false,
+              message: "Help failed \u2014 opened wiki"
+            });
+          }
         }
-        return Promise.resolve({
-          ok: true,
-          message: "Help (press ? on page \xb7 wiki also available)"
-        });
 
        case "wiki":
         open_urls_1.focusOrLaunch_({
@@ -426,13 +451,50 @@ define([ "require", "exports", "./store", "./utils", "./browser", "./normalize_u
               message: "Reading List needs an http(s) page"
             });
           }
-          return rl.addEntry({
+          const add = () => rl.addEntry({
             title: (t.title || url).slice(0, 255),
             url,
             hasBeenRead: false
           }).then(() => ({
             ok: true,
             message: "Added to Reading List"
+          }), e => ({
+            ok: false,
+            message: e && e.message || "failed"
+          }));
+          if (rl.query && rl.removeEntry) {
+            return rl.query({
+              url
+            }).then(found => {
+              if (found && found.length) {
+                return rl.removeEntry({
+                  url
+                }).then(() => ({
+                  ok: true,
+                  message: "Removed from Reading List"
+                }), add);
+              }
+              return add();
+            }, add);
+          }
+          return add();
+        }
+
+       case "readingListRemove":
+        {
+          const rl = browser_1.browser_.readingList;
+          const target = req.command || url;
+          if (!rl || !rl.removeEntry || !target) {
+            return Promise.resolve({
+              ok: false,
+              message: "Cannot remove"
+            });
+          }
+          return rl.removeEntry({
+            url: target
+          }).then(() => ({
+            ok: true,
+            message: "Removed from Reading List"
           }), e => ({
             ok: false,
             message: e && e.message || "failed"
@@ -518,7 +580,7 @@ define([ "require", "exports", "./store", "./utils", "./browser", "./normalize_u
             frameId: 0,
             id: browser_1.browser_.runtime.id
           });
-        } catch (_c) {}
+        } catch (_b) {}
         open_urls_1.focusOrLaunch_({
           u: "vimium://status/toggle-disabled"
         });
@@ -535,7 +597,7 @@ define([ "require", "exports", "./store", "./utils", "./browser", "./normalize_u
           const rawUrl = url || t.url || "";
           try {
             host = new URL(rawUrl).hostname || "";
-          } catch (_d) {
+          } catch (_c) {
             const m = /^https?:\/\/([^/:]+)/i.exec(rawUrl);
             host = m && m[1] || "";
           }
@@ -548,15 +610,21 @@ define([ "require", "exports", "./store", "./utils", "./browser", "./normalize_u
           const httpsPat = ":https://" + host + "/";
           const httpPat = ":http://" + host + "/";
           const rules = (store_1.settingsCache_.exclusionRules || []).slice();
-          const isOff = rules.some(r => r.passKeys === "" && (r.pattern === httpsPat || r.pattern === httpPat || r.pattern.indexOf(host) >= 0));
+          const isExactOff = r => r.passKeys === "" && (r.pattern === httpsPat || r.pattern === httpPat);
+          const isOff = rules.some(isExactOff);
           if (isOff) {
-            // Turn ON — remove full-site exclusions for this host
-            const next = rules.filter(r => !(r.passKeys === "" && (r.pattern === httpsPat || r.pattern === httpPat || r.pattern.indexOf(host) >= 0 && !r.passKeys)));
+            // Turn ON — remove only the exact full-site rules this toggle wrote
+            const next = rules.filter(r => !isExactOff(r));
             settings_.set_("exclusionRules", next);
+            const still = url ? Exclusions.getExcluded_(rawUrl, {
+              tabId_: t.id,
+              frameId_: 0,
+              url_: rawUrl
+            }) : null;
             return Promise.resolve({
               ok: true,
-              siteDisabled: false,
-              message: "Vim+ ON for " + host
+              siteDisabled: still === "",
+              message: still === "" ? "Removed site toggle \u2014 a custom exclusion still applies (Options)" : "Vim+ ON for " + host
             });
           }
           rules.push({
@@ -660,6 +728,25 @@ define([ "require", "exports", "./store", "./utils", "./browser", "./normalize_u
           });
         }
 
+       case "quickAction":
+        {
+          const id = (req.command || "") + "";
+          if (!id) {
+            return Promise.resolve({
+              ok: false,
+              message: "No action"
+            });
+          }
+          const raw = quick_actions_1.runQuickAction_(id);
+          return Promise.resolve(raw).then(pair => ({
+            ok: true,
+            message: pair && pair[0] || id
+          }), e => ({
+            ok: false,
+            message: "Action failed: " + (e && e.message || e)
+          }));
+        }
+
        case "discard":
         return browser_1.Q_(browser_1.Tabs_.discard, t.id).then(() => ({
           ok: true,
@@ -704,22 +791,17 @@ define([ "require", "exports", "./store", "./utils", "./browser", "./normalize_u
     });
   }, 
   /** kPgReq.commandCatalog: */ () => {
-    const out = [];
-    for (const name of Object.keys(key_mappings_1.availableCommands_)) {
-      if (name === "__proto__") {
-        continue;
-      }
-      const desc = key_mappings_1.availableCommands_[name];
-      if (!desc) {
-        continue;
-      }
-      out.push({
-        name,
-        bg: !!desc[1]
-      });
+    try {
+      return quick_actions_1.QUICK_ACTIONS.map(a => ({
+        name: a.id,
+        bg: true,
+        title: a.title,
+        cmd: a.cmd,
+        cat: a.cat
+      }));
+    } catch (_a) {
+      return [];
     }
-    out.sort((a, b) => a.name < b.name ? -1 : a.name > b.name ? 1 : 0);
-    return out;
   }, 
   /** kPgReq.closedSessions: */ () => {
     const sessions = browser_1.browserSessions_();
@@ -772,7 +854,7 @@ define([ "require", "exports", "./store", "./utils", "./browser", "./normalize_u
   } ];
   const validApis = {
     permissions: [ "contains", "request", "remove" ],
-    tabs: [ "update" ]
+    tabs: [ "update", "remove" ]
   };
   const parseErr = err => ({
     message: err && err.message ? err.message + "" : JSON.stringify(err)

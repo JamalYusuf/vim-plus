@@ -17,7 +17,8 @@ const sitePowerEl = document.getElementById("site-power") as HTMLElement | null
 let mode: Mode = "keys"
 let tabId = -1
 let keys: Array<{ key: string, command: string }> = []
-let cmds: Array<{ name: string, bg: boolean }> = []
+let cmds: Array<{ name: string, bg: boolean, title?: string, cmd?: string, cat?: string }> = []
+let toastTimer = 0
 let tabs: Array<{ id: number, title: string, url: string, active: boolean }> = []
 let reading: Array<{ title: string, url: string, hasBeenRead: boolean }> = []
 let closed: Array<{ title: string, url: string, sessionId: string, isWindow: boolean }> = []
@@ -64,7 +65,11 @@ const setSitePowerUI = (off: boolean): void => {
   }
 }
 
-const toast = (msg: string): void => { toastEl.textContent = msg || "" }
+const toast = (msg: string): void => {
+  toastEl.textContent = msg || ""
+  if (toastTimer) { clearTimeout(toastTimer) }
+  toastTimer = setTimeout((): void => { toastEl.textContent = "" }, 2500)
+}
 
 const statusLabel = (status: number): string =>
   status === 1 ? "PARTIAL" : status === 2 ? "OFF" : "ON"
@@ -81,8 +86,10 @@ const buildRows = (): void => {
     }
   } else if (mode === "cmds") {
     for (const c of cmds) {
-      if (match(c.name)) {
-        rows.push({ kind: "cmds", label: c.name, command: c.name, sub: c.bg ? "bg" : "page" })
+      const title = c.title || c.name
+      const short = c.cmd ? ":" + c.cmd : ""
+      if (match(title) || match(c.name) || match(short) || (c.cat && match(c.cat))) {
+        rows.push({ kind: "cmds", label: title, command: c.name, key: short, sub: c.cat || "" })
       }
     }
   } else if (mode === "tabs") {
@@ -127,7 +134,7 @@ const renderList = (): void => {
   if (!rows.length) {
     const empty = document.createElement("div")
     empty.className = "empty"
-    empty.textContent = mode === "read" ? "Reading list empty — yr or Read later"
+    empty.textContent = mode === "read" ? "Nothing saved for later. Save this page with Enter in Page → Read later."
         : mode === "closed" ? "No closed sessions — close a tab then return here"
         : mode === "keys" ? "No matching keys"
         : "No matches"
@@ -138,6 +145,17 @@ const renderList = (): void => {
   rows.forEach((row, i): void => {
     const el = document.createElement("div")
     el.className = "row" + (i === sel ? " sel" : "")
+    el.setAttribute("role", "option")
+    el.setAttribute("aria-selected", i === sel ? "true" : "false")
+    if (row.kind === "tabs" && row.url && (<RegExpOne> /^https?:/).test(row.url)) {
+      const img = document.createElement("img")
+      img.className = "fav"
+      img.width = 16
+      img.height = 16
+      img.alt = ""
+      img.src = "/_favicon/?pageUrl=" + encodeURIComponent(row.url) + "&size=16"
+      el.appendChild(img)
+    }
     if (row.key) {
       const kbd = document.createElement("kbd")
       kbd.textContent = row.key
@@ -176,6 +194,13 @@ const openExtPage = (path: string, msg: string): void => {
   toast(msg)
 }
 
+const refreshTabId = async (): Promise<void> => {
+  try {
+    const init = await post_(kPgReq.sidePanelInit)
+    if (init && typeof init.tabId === "number" && init.tabId >= 0) { tabId = init.tabId }
+  } catch { /* empty */ }
+}
+
 const runAction = async (action: string, command?: string): Promise<void> => {
   if (action === "options") {
     openExtPage("/pages/options.html", "Opening options…")
@@ -197,6 +222,7 @@ const runAction = async (action: string, command?: string): Promise<void> => {
     toast((res && res.message) || "Help")
     return
   }
+  await refreshTabId()
   const res = await post_(kPgReq.runPageAction, {
     action: action as never, tabId: tabId >= 0 ? tabId : undefined, command
   })
@@ -247,7 +273,11 @@ const activate = async (): Promise<void> => {
     toast("Opening…")
     return
   }
-  if (row.kind === "keys" || row.kind === "cmds") {
+  if (row.kind === "cmds" && row.command) {
+    await runAction("quickAction", row.command)
+    return
+  }
+  if (row.kind === "keys") {
     if (row.command) { await runAction("runCommand", row.command) }
     return
   }
@@ -264,8 +294,8 @@ const setMode = (m: Mode): void => {
   }
   const placeholders: Record<Mode, string> = {
     keys: "Filter keys…  e.g. scroll, f, o",
-    cmds: "Filter commands…  Enter to run",
-    tabs: "Filter tabs…  Enter to activate",
+    cmds: "Filter commands…  :read :hl :zen",
+    tabs: "Filter tabs…  Enter open · x close · p pin · m mute",
     closed: "Filter closed sessions…  Enter to restore",
     read: "Filter reading list…",
     page: "Filter page actions…"
@@ -342,15 +372,17 @@ const stopEv = (ev: Event): void => {
 document.addEventListener("keydown", (ev: KeyboardEvent): void => {
   const t = ev.target as HTMLElement
   const inInput = t === qEl
+  const emptyQ = !qEl.value
   const key = (ev.key || "") + ""
+  const ctrl = ev.ctrlKey || ev.metaKey
   if (key === "Escape") {
     if (qEl.value) { qEl.value = ""; sel = 0; buildRows(); stopEv(ev); return }
   }
-  if (key === "ArrowDown" || (!inInput && key === "j")) {
+  if (key === "ArrowDown" || key === "n" && ctrl || (key === "j" && (emptyQ || !inInput))) {
     if (rows.length) { sel = (sel + 1) % rows.length; highlight(); stopEv(ev) }
     return
   }
-  if (key === "ArrowUp" || (!inInput && key === "k")) {
+  if (key === "ArrowUp" || key === "p" && ctrl || (key === "k" && (emptyQ || !inInput))) {
     if (rows.length) { sel = (sel - 1 + rows.length) % rows.length; highlight(); stopEv(ev) }
     return
   }
@@ -359,8 +391,38 @@ document.addEventListener("keydown", (ev: KeyboardEvent): void => {
     stopEv(ev)
     return
   }
+  if (!ctrl && !ev.altKey && (emptyQ || !inInput)) {
+    const row = rows[sel]
+    if (mode === "tabs" && row && row.tabId != null) {
+      if (key === "x") {
+        void post_(kPgReq.callApi, { module: "tabs", name: "remove" as never, args: [row.tabId] as never })
+        tabs = tabs.filter(tb => tb.id !== row.tabId)
+        buildRows()
+        toast("Closed tab")
+        stopEv(ev)
+        return
+      }
+      if (key === "p") {
+        void runAction("pin")
+        stopEv(ev)
+        return
+      }
+      if (key === "m") {
+        void runAction("mute")
+        stopEv(ev)
+        return
+      }
+    }
+    if (mode === "read" && row && row.url && key === "x") {
+      void runAction("readingListRemove", row.url)
+      reading = reading.filter(r => r.url !== row.url)
+      buildRows()
+      stopEv(ev)
+      return
+    }
+  }
   if (ev.altKey || ev.ctrlKey || ev.metaKey) { return }
-  if (!inInput && key >= "1" && key <= "6") {
+  if (key >= "1" && key <= "6" && (emptyQ || !inInput)) {
     const modes: Mode[] = ["keys", "cmds", "tabs", "closed", "read", "page"]
     setMode(modes[+key - 1])
     stopEv(ev)

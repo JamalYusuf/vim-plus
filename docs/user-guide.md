@@ -60,17 +60,27 @@ Header: Options, Wiki, Help, **Off for this site**.
 
 Open from the side panel gear, `:opts`, or `chrome://extensions` → Vim+ → Extension options.
 
-Tabs (simplified):
+Tabs are conceptual, not a dump of every checkbox:
 
-| Tab | Contents |
-|-----|----------|
-| Start | Welcome, exclusions |
-| Keys | Key maps, layouts, hints, find |
-| Search | Default engine, hashbangs, search engines |
-| Look | Dark mode, HUD, CSS, **reading progress**, motion |
-| Advanced | New tab URL, sync, permissions-related, power options |
+| Tab | Concept | Contents |
+|-----|---------|----------|
+| Start | Where it runs | Welcome, exclusions, permissions |
+| Keys | What you press | Maps, layouts, hints, find |
+| Search | How you look things up | Engines, hashbangs, omnibar |
+| Look | How it looks | Dark mode, HUD, CSS, reading progress, **:view color profiles** |
+| Advanced | Power-user edges | clipSub, sync, other-extension IDs |
+
+`/` filters any option. The Notes column on the right is always visible.
 
 **Save** writes dirty fields. **Reset to defaults** restores the author template (export a backup first).
+
+### Colors
+
+Options → Look → **Colors**. Native color pickers for accent (HUD / flash), link-hint pills, find highlight, reading-progress fill, and the `:hl` 1–5 palette. Defaults are the shipped rose theme.
+
+### `:view` color profiles
+
+Options → Look → `:view color profiles` (`viewFxCss`). Empty = built-in CSS for `:gray`, `:blue`, `:inv`, `:sepia`, `:blur`, `:hicon`, `:dim`, `:focus`. Format: `name: css` per line. Wiki: `#view-fx`.
 
 ## Reading progress
 

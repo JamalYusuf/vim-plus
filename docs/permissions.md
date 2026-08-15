@@ -54,8 +54,9 @@ to implement matching keyboard features. No browsing data is uploaded to Vim+ se
 
 | Permission | When | Why |
 |------------|------|-----|
-| `cookies` | User enables related site-data tools | Fine-grained cookie clearing |
-| `contentSettings` | User enables site media/JS toggles | Mirror Chrome site settings |
+| `contentSettings` | User enables site media/JS toggles (`toggleCS`) | Mirror Chrome site settings |
+
+**Not requested:** `cookies`. Site cookie wipe (`:ck`, shred) uses `browsingData.remove({ cookies: true })`, which does **not** call `chrome.cookies`. Requesting `cookies` without using that API is a Web Store reject.
 
 ## Related manifest fields
 

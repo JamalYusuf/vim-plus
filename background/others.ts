@@ -12,6 +12,7 @@ import { extTrans_, i18nLang_, trans_ } from "./i18n"
 import { convertToUrl_, formatVimiumUrl_ } from "./normalize_urls"
 import { decodeFileURL_ } from "./normalize_urls"
 import { focusOrLaunch_, openUrlReq } from "./open_urls"
+import { openSidePanelImmediate_ } from "./side_panel"
 
 import SugType = CompletersNS.SugType
 import MatchType = CompletersNS.MatchType
@@ -56,10 +57,14 @@ const MENU_IDS = {
   copyLink: "vim-plus-copy-link",
   excludeSite: "vim-plus-exclude-site",
   openOptions: "vim-plus-open-options",
+  openWiki: "vim-plus-open-wiki",
+  openWebsite: "vim-plus-open-website",
   openSidePanel: "vim-plus-open-side-panel",
   readingList: "vim-plus-reading-list",
   bookmark: "vim-plus-bookmark",
 } as const
+
+const WEBSITE_URL = "https://jamalyusuf.github.io/vim-plus/"
 
 type CtxMenusApi = {
   removeAll (cb?: () => void): void
@@ -83,6 +88,8 @@ const setupContextMenus_ = (enable: boolean): void => {
     mk(MENU_IDS.bookmark, "Toggle bookmark (Vim+)", ["page"])
     mk(MENU_IDS.openSidePanel, "Open Vim+ side panel", ["page", "action", "selection", "link", "editable"])
     mk(MENU_IDS.openOptions, "Vim+ Options", ["page", "action"])
+    mk(MENU_IDS.openWiki, "Vim+ Wiki", ["page", "action"])
+    mk(MENU_IDS.openWebsite, "Vim+ - All by Keyboard", ["action"])
   })
 }
 
@@ -95,15 +102,19 @@ updateHooks_.showContextMenu = (value): void => { setupContextMenus_(!!value) }
     case MENU_IDS.openOptions:
       browser_.runtime.openOptionsPage()
       break
+    case MENU_IDS.openWiki:
+      void focusOrLaunch_({ u: browser_.runtime.getURL("pages/wiki.html") })
+      break
+    case MENU_IDS.openWebsite:
+      void focusOrLaunch_({ u: WEBSITE_URL })
+      break
     case MENU_IDS.openSidePanel: {
-      // Context-menu click is a valid user gesture — open with windowId (global panel).
-      void import2<typeof import("./side_panel")>("/background/side_panel.js").then((m): void => {
-        if (tab) {
-          m.openSidePanelImmediate_(tab.id, tab.windowId)
-        } else {
-          m.openSidePanelImmediate_()
-        }
-      }, blank_)
+      // Must stay in the same turn as the click — dynamic import() drops the user gesture.
+      if (tab) {
+        openSidePanelImmediate_(tab.id, tab.windowId)
+      } else {
+        openSidePanelImmediate_()
+      }
       break
     }
     case MENU_IDS.searchSelection: {
@@ -559,7 +570,7 @@ installation_ && void Promise.all([installation_, settings_.ready_]).then(([deta
     if (err = runtimeError_()) { return err }
     noteId = notificationId || noteId
     browserNotifications.onClicked.addListener(function callback(id): void {
-      if (id !== id) { return; }
+      if (id !== noteId) { return; }
       browserNotifications.clear(id)
       focusOrLaunch_({ u: convertToUrl_("vimium://release") })
       browserNotifications.onClicked.removeListener(callback)

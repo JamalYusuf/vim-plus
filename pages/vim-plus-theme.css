@@ -8,8 +8,8 @@
   --vp-red-dim: rgba(225, 29, 72, 0.14);
   --vp-red-glow: rgba(225, 29, 72, 0.35);
   --vp-radius: 0;
-  --vp-font: "Inter", "SF Pro Text", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
-  --vp-mono: "JetBrains Mono", "SF Mono", ui-monospace, Menlo, Consolas, monospace;
+  --vp-font: ui-sans-serif, system-ui, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  --vp-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
   --vp-border: 1px;
 
   /* Light (fallback) */
@@ -139,6 +139,19 @@ input[type="text"], input[type="search"], input[type="number"], textarea, input:
   border: var(--vp-border) solid var(--vp-border-color);
   border-radius: var(--vp-radius);
 }
+/* Native color wells: do not let the dark input fill hide the swatch */
+input[type="color"],
+html.dark input[type="color"],
+html.vp-dark input[type="color"] {
+  background: transparent !important;
+  color: transparent !important;
+  padding: 2px;
+  width: 32px;
+  height: 28px;
+  cursor: pointer;
+}
+input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
+input[type="color"]::-webkit-color-swatch { border: none; border-radius: 0; }
 input:focus, textarea:focus {
   border-color: var(--vp-red);
   outline: none;
@@ -180,9 +193,12 @@ a:hover {
   color: var(--vp-red-hover);
 }
 
-/* Code / pre accent bar */
+/* Code / pre accent bar — keep text off the red rule */
 pre, .help-block {
   border-left: 2px solid var(--vp-red) !important;
+  padding: 8px 12px 8px 14px !important;
+  margin: 8px 0 !important;
+  box-sizing: border-box;
 }
 
 /* Selection */

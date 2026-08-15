@@ -6,6 +6,10 @@
   "quickNext_s": { "message": "Aller à droite de un onglet" },
   "reloadTab_s": { "message": "Recharger l'onglet" },
   "userCustomized": { "message": "Raccourci personnalisé" },
+  "openSidePanel_s": { "message": "Ouvrir le centre de commandes Vim+ (panneau latéral)" },
+  "visitPreviousTab_s": { "message": "Aller à l’onglet précédent (fonctionne sur chrome://)" },
+  "toggleMuteTab_s": { "message": "Couper / rétablir le son de cet onglet" },
+  "discardTab_s": { "message": "Mettre cet onglet en veille pour libérer de la mémoire" },
   "name": { "message": "Vim+ - Tout par le clavier" },
   "description": { "message":
 "Outil de raccourcis clavier pour une navigation de page centrée sur l'usage du clavier, des opérations sur les onglets du navigateur avec une omnibar avancée ainsi que des raccourcis globaux"

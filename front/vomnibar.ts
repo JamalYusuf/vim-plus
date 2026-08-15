@@ -119,6 +119,7 @@ var VCID_: string | undefined = VCID_ || "", VHost_: string | undefined = VHost_
     } else {
       a.onInnerWidth_(frameElWidth)
     }
+    a._hostViewH = parHeight / dz
     const max = Math.max(3, Math.min(0 | ((parHeight / dz
           - a.baseHeightIfNotEmpty_
           - (PixelData.FrameTop - ((PixelData.MarginV2 / 2 + 1) | 0) - PixelData.ShadowOffset * 2
@@ -212,6 +213,8 @@ var VCID_: string | undefined = VCID_ || "", VHost_: string | undefined = VHost_
   docZoom_: 1,
   lastScrolling_: 0,
   height_: 0,
+  /** Parent page viewport height (CSS px) — used to keep the iframe on-screen */
+  _hostViewH: 0,
   _canvas: null as HTMLCanvasElement | null,
   input_: null as never as HTMLInputElement & Ensure<HTMLInputElement
       , "selectionDirection" | "selectionEnd" | "selectionStart">,
@@ -1162,6 +1165,14 @@ var VCID_: string | undefined = VCID_ || "", VHost_: string | undefined = VHost_
     if (notTouchpad satisfies boolean | 2 === 2) { a._nearWheelHasDeltaXY = a._nearWheelDeltaLimited = 0 }
     if (!a.isActive_ || target == input && deltaX && (deltaX < 0 ? input.scrollLeft > 0
           : input.scrollLeft + 1e-2 < input.scrollWidth - input.clientWidth)) { a.wheelDelta_ = 0; return }
+    // Overflowed result list: native scroll (do not preventDefault / page)
+    const listEl0 = a.list_
+    if (listEl0 && (target === listEl0 || listEl0.contains(target as Node))
+        && listEl0.scrollHeight > listEl0.clientHeight + 2) {
+      a.wheelDelta_ = 0
+      a.updateListScrollHint_(listEl0)
+      return
+    }
     VUtils_.Stop_(event, 1);
     if (hasXAndY && Math.abs(rawDeltaX - rawDeltaY) < 0.5 || !absDelta) { return }
     const forward = !!notTouchpad !== (a.wheelMinStep_ < 0)
@@ -1238,15 +1249,24 @@ var VCID_: string | undefined = VCID_ || "", VHost_: string | undefined = VHost_
     a.updateTips_(a.input_.value, a.mode_.o, a.completions_ ? a.completions_.length : 0)
     a.update_(inputType ? 0 : -1, a.inAlt_ ? a.toggleAlt_ : null)
   },
+  /** Keep the iframe inside the parent viewport; extra rows scroll inside #list. */
+  listFit_ (): { maxList: number, maxFrame: number } {
+    const a = Vomnibar_
+    const host = a._hostViewH || (typeof innerHeight === "number" ? innerHeight : 720)
+    const maxFrame = Math.max(a.heightIfEmpty_ + a.itemHeight_ * 3
+        , Math.floor(host - PixelData.FrameTop - 16))
+    const maxList = Math.max(a.itemHeight_ * 3, maxFrame - a.baseHeightIfNotEmpty_)
+    return { maxList, maxFrame }
+  },
   omni_ (response: BgVomnibarSpecialReq[kBgReq.omni_omni]): void {
     const a = Vomnibar_, autoSelect = a.options_.autoSelect
     const completions = response.l, len = completions.length, notEmpty = len > 0, oldH = a.height_, list = a.list_;
-    // Cap visible rows so the iframe stays usable; overflow scrolls inside #list
-    const maxVisibleRows = 10
+    const fit = a.listFit_()
+    const maxVisibleRows = Math.max(3, (fit.maxList / a.itemHeight_) | 0)
     const visibleRows = notEmpty ? Math.min(len, maxVisibleRows) : 0
-    // Formula is a provisional size; tips/footer wrap and CSS item height can differ from settings.
     const formulaH = Math.ceil(notEmpty
-        ? visibleRows * a.itemHeight_ + a.baseHeightIfNotEmpty_ : a.heightIfEmpty_)
+        ? Math.min(visibleRows * a.itemHeight_ + a.baseHeightIfNotEmpty_, fit.maxFrame)
+        : a.heightIfEmpty_)
     let height = a.height_ = formulaH
     const wdZoom = Build.MinCVer < BrowserVer.MinEnsuredChildFrameUseTheSameDevicePixelRatioAsParent
           && (Build.BTypes === BrowserType.Chrome as number
@@ -1270,8 +1290,7 @@ var VCID_: string | undefined = VCID_ || "", VHost_: string | undefined = VHost_
     a.isSelOriginal_ = true;
     a.ParseCompletions_(a.completions_)
     a.renderItems_(a.completions_, list);
-    // Scrollport for long lists (~10 rows); always allow auto so scrollbar works when content overflows
-    const listMax = maxVisibleRows * a.itemHeight_
+    const listMax = fit.maxList
     list.style.maxHeight = listMax + "px"
     list.style.overflowY = "auto"
     const wrap = document.getElementById("list-wrap")
@@ -1317,9 +1336,7 @@ var VCID_: string | undefined = VCID_ || "", VHost_: string | undefined = VHost_
         body.offsetHeight + marginV,
         formulaH
       ) + 2) // +2 for subpixel / border
-      // Cap: provisional already uses maxVisibleRows; don't let measurement blow past that + chrome.
-      const maxH = Math.ceil(maxVisibleRows * a.itemHeight_ + a.baseHeightIfNotEmpty_ + 24)
-      if (needed > maxH) { needed = maxH }
+      if (needed > fit.maxFrame) { needed = fit.maxFrame }
       height = a.height_ = needed
       msg.h = needed * wdZoom
       VPort_.postToOwner_(msg)
@@ -1539,12 +1556,15 @@ var VCID_: string | undefined = VCID_ || "", VHost_: string | undefined = VHost_
       VPort_._port = null
     }
   },
+  /** Numbered 1–9 picks: ⌘ on macOS, Alt on Windows/Linux (matches onKeydown_). */
+  pickMod_ (): string {
+    return Vomnibar_.os_ === kOS.mac ? "⌘" : "Alt"
+  },
   updateTips_ (query: string, mode: string, count: number): void {
     const a = Vomnibar_
     if (!a.tipTextEl_ || !a.tipModeEl_) { return }
     const q = (query || "").trim()
-    const isMac = a.os_ === kOS.mac
-    const modKey = isMac ? "⌘" : "Alt"
+    const modKey = a.pickMod_()
     let modeLabel = (mode || a.mode_.o || "omni").toUpperCase()
     let html = ""
     if (q.startsWith(":")) {
@@ -1579,8 +1599,8 @@ var VCID_: string | undefined = VCID_ || "", VHost_: string | undefined = VHost_
     a.tipTextEl_.innerHTML = html
     if (a.footerTipEl_) {
       a.footerTipEl_.innerHTML = q.startsWith(":")
-          ? "<kbd>↑</kbd><kbd>↓</kbd> scroll list · <kbd>Enter</kbd> run · hold <kbd>" + modKey
-              + "</kbd>+<kbd>1</kbd>–<kbd>9</kbd> · short form stays in bar"
+          ? "<kbd>↑</kbd><kbd>↓</kbd> move · scroll for more · <kbd>Enter</kbd> run · hold <kbd>" + modKey
+              + "</kbd>+<kbd>1</kbd>–<kbd>9</kbd>"
           : "<kbd>↑</kbd><kbd>↓</kbd> · <kbd>Enter</kbd> · hold <kbd>" + modKey
               + "</kbd> + <kbd>1</kbd>–<kbd>9</kbd> jump · <kbd>Esc</kbd> · <kbd>:</kbd> palette"
     }
@@ -1601,6 +1621,7 @@ var VCID_: string | undefined = VCID_ || "", VHost_: string | undefined = VHost_
     a.tipTextEl_ = document.getElementById("tip-text") as HTMLElement | null
     a.tipModeEl_ = document.getElementById("tip-mode") as HTMLElement | null
     a.footerTipEl_ = document.getElementById("footer-tip") as HTMLElement | null
+    a.updateTips_("", "omni", 0)
     list.onmouseover = list.oncontextmenu = a.OnMenu_;
     (document.getElementById("close") as HTMLElement).onclick = function (): void { return Vomnibar_.hide_(); };
 

@@ -20,76 +20,104 @@ export const WIKI_PAGES: WikiPage[] = [
     title: "Vim+ Wiki",
     subtitle: "Keyboard-first Chrome · docs live inside the extension",
     group: "Start",
-    related: ["getting-started", "vim-concepts", "modes", "options-overview", "architecture", "keys"],
+    related: ["getting-started", "daily-loop", "faq", "keys", "command-palette", "troubleshooting"],
     html: `
 <div class="hero">
-  <p><strong>Vim+</strong> is a keyboard navigation extension for Google Chrome by
+  <p><strong>Vim+</strong> is a keyboard-first Chrome extension by
   <strong>Jamal Yusuf</strong> (<a href="https://jamal.dev" target="_blank" rel="noopener">jamal.dev</a>).
-  This wiki is the product + developer handbook: how to use it, why it is designed this way,
-  and how pieces fit together under Manifest V3.</p>
+  This wiki lives inside the package — no network, no CMS. Use it as the product handbook
+  and the developer map under Manifest V3.</p>
+  <p style="margin-top:10px;font-size:13px;opacity:.9">
+    Open anytime: side panel <strong>Wiki</strong> · Options · <kbd>?</kbd> · omnibar <code>:wiki</code>.
+    In this sidebar: <kbd>/</kbd> filter · <kbd>j</kbd>/<kbd>k</kbd> next topic · <kbd>Esc</kbd> clears find.</p>
 </div>
+<p class="sec-kicker">Start here</p>
 <div class="card-grid">
-  <a class="card" href="#getting-started"><h3>Getting started</h3><p>Install, first keys, daily loop.</p></a>
-  <a class="card" href="#vim-concepts"><h3>Vim concepts</h3><p>Modes, counts, maps — theory.</p></a>
-  <a class="card" href="#modes"><h3>Modes &amp; how to use</h3><p>What to press when.</p></a>
-  <a class="card" href="#options-overview"><h3>Options tour</h3><p>Tabs, save, reset, backup.</p></a>
-  <a class="card" href="#key-mappings"><h3>Key mappings</h3><p>map / unmap + keystroke pipeline.</p></a>
-  <a class="card" href="#exclusions"><h3>Excluded sites</h3><p>When not to capture keys.</p></a>
-  <a class="card" href="#architecture"><h3>Architecture</h3><p>MV3, content vs background.</p></a>
-  <a class="card" href="#message-flow"><h3>Message flow</h3><p>Ports, keys → commands.</p></a>
-  <a class="card" href="#page-enhance"><h3>Page enhance</h3><p>Progress, reader, FX internals.</p></a>
-  <a class="card" href="#omnibar"><h3>Omnibar &amp; palette</h3><p>History, :commands, engines.</p></a>
-  <a class="card" href="#permissions"><h3>Permissions</h3><p>Why each Chrome permission is requested.</p></a>
+  <a class="card" href="#getting-started"><h3>Getting started</h3><p>First keys, modes, and how to get unstuck.</p></a>
+  <a class="card" href="#daily-loop"><h3>Daily loop</h3><p>Recipes for browse, read, and research.</p></a>
+  <a class="card" href="#modes"><h3>Modes</h3><p>Normal, insert, hints, find, visual.</p></a>
+  <a class="card" href="#faq"><h3>FAQ</h3><p>Short answers to “why doesn’t this work?”</p></a>
+  <a class="card" href="#troubleshooting"><h3>Troubleshooting</h3><p>Keys dead, chrome://, FX no-op.</p></a>
 </div>
-<div class="callout tip"><strong>Open anytime:</strong>
-  Side panel Wiki · Options gear · <kbd>?</kbd> · omnibar <code>:wiki</code>.</div>
-<p><strong>Options deep dives:</strong>
-  <a href="#keyboard-layout">layouts</a> ·
-  <a href="#site-maps">site maps</a> ·
-  <a href="#user-css">user CSS</a> ·
-  <a href="#clip-sub">clipSub</a> ·
-  <a href="#vomnibar-options">vomnibar JSON</a> ·
-  <a href="#newtab-url">new tab URL</a> ·
-  <a href="#chrome-shortcuts">global shortcuts</a> ·
-  <a href="#test-keys">key testing</a> ·
-  <a href="#inject-extensions">inject into extensions</a> ·
-  <a href="#reading-view">reading tools</a> ·
-  <a href="#hashbangs">AI hashbangs</a> ·
-  <a href="#permissions">permissions (Web Store)</a>.</p>
+<p class="sec-kicker">Every day</p>
+<div class="card-grid">
+  <a class="card" href="#keys"><h3>Keyboard map</h3><p>Default keys for scroll, tabs, copy.</p></a>
+  <a class="card" href="#omnibar"><h3>Omnibar</h3><p>History, engines, hold ⌘/Alt for 1–9.</p></a>
+  <a class="card" href="#command-palette"><h3>Command palette</h3><p><code>:</code> view, read, tab, priv…</p></a>
+  <a class="card" href="#link-hints"><h3>Link hints</h3><p><kbd>f</kbd> click anything without a mouse.</p></a>
+  <a class="card" href="#hashbangs"><h3>Hashbangs</h3><p><code>!g</code> <code>!grok</code> search and AI send.</p></a>
+  <a class="card" href="#side-panel"><h3>Command center</h3><p>Side panel: keys, tabs, closed, later.</p></a>
+  <a class="card" href="#reading-view"><h3>Reading tools</h3><p>Progress, <code>:read</code>, <code>:hl</code>.</p></a>
+  <a class="card" href="#tabs-windows"><h3>Tabs &amp; windows</h3><p>Close, restore, dock, groups.</p></a>
+</div>
+<p class="sec-kicker">Make it yours</p>
+<div class="card-grid">
+  <a class="card" href="#options-overview"><h3>Options tour</h3><p>Start · Keys · Search · Look · Advanced.</p></a>
+  <a class="card" href="#key-mappings"><h3>Mappings</h3><p>map / unmap / mapKey — your .vimrc.</p></a>
+  <a class="card" href="#look-colors"><h3>Colors</h3><p>Accent, hints, find, highlighter swatches.</p></a>
+  <a class="card" href="#view-fx"><h3>:view FX</h3><p>Edit <code>:gray</code> / <code>:dim</code> CSS.</p></a>
+  <a class="card" href="#exclusions"><h3>Exclusions</h3><p>Turn Vim+ off on a fighting site.</p></a>
+</div>
+<p class="sec-kicker">Under the hood</p>
+<div class="card-grid">
+  <a class="card" href="#architecture"><h3>Architecture</h3><p>MV3, content vs service worker.</p></a>
+  <a class="card" href="#permissions"><h3>Permissions</h3><p>Why each Chrome permission exists.</p></a>
+  <a class="card" href="#privacy"><h3>Privacy</h3><p>Local-first — what never leaves.</p></a>
+  <a class="card" href="#changelog"><h3>Changelog</h3><p>What landed in this version.</p></a>
+  <a class="card" href="#devtools"><h3>Developer handbook</h3><p>Build, debug, ship.</p></a>
+</div>
 `
   },
   {
     id: "getting-started",
     title: "Getting started",
-    subtitle: "From install to comfortable daily use",
+    subtitle: "The basics you need now that Vim+ is on",
     group: "Start",
-    related: ["vim-concepts", "modes", "keys", "side-panel"],
+    related: ["daily-loop", "vim-concepts", "modes", "keys", "side-panel", "faq"],
     html: `
-<ol class="steps">
-  <li><strong>Install.</strong> <code>chrome://extensions</code> → Developer mode →
-    <strong>Load unpacked</strong> → this folder. Pin the icon.</li>
-  <li><strong>Command center.</strong> Click the icon or <kbd>Alt+Shift+V</kbd> / <kbd>gS</kbd>.
-    Use the gear <strong>Options</strong>, <strong>Help</strong>, <strong>Wiki</strong>, and
-    <strong>Off for this site</strong> when a page fights keyboard control.</li>
-  <li><strong>First keys on a normal webpage</strong> (not <code>chrome://</code>):
-    <table>
-      <tr><td><kbd>j</kbd> <kbd>k</kbd></td><td>Scroll down / up</td></tr>
-      <tr><td><kbd>f</kbd></td><td>Link hints — type the letters that appear</td></tr>
-      <tr><td><kbd>o</kbd></td><td>Omnibar (search history / type URLs)</td></tr>
-      <tr><td><kbd>:</kbd></td><td>Command palette (e.g. <code>:hl</code> <code>:read</code> <code>:zen</code>)</td></tr>
-      <tr><td><kbd>?</kbd></td><td>Help overlay</td></tr>
-      <tr><td><kbd>i</kbd> then <kbd>Esc</kbd></td><td>Insert mode (type in page) · back to Normal</td></tr>
-    </table>
-  </li>
-  <li><strong>Tabs.</strong> <kbd>t</kbd> tab picker · <kbd>J</kbd>/<kbd>K</kbd> or mapped next/prev ·
-    side panel → Tabs / Closed to restore sessions.</li>
-  <li><strong>Customize lightly.</strong> Options tabs: Start · Keys · Search · Look · Advanced.
-    Change one thing at a time. Full walkthrough: <a href="#vim-concepts">Vim concepts</a>.</li>
-</ol>
-<div class="callout"><strong>chrome:// pages:</strong> content scripts cannot run there.
-  Use Chrome’s <code>chrome://extensions/shortcuts</code> + the side panel.</div>
-<div class="callout tip"><strong>Stuck on a site?</strong> Side panel → <strong>Off for this site</strong>
-  adds an exclusion rule. Undo under Options → Excluded URLs.</div>
+<p>You already have Vim+ installed — this page is the first-day map, not a setup guide.</p>
+<h3>One rule</h3>
+<p>On a normal webpage you are in <strong>Normal</strong> mode: keys are commands, not typing.
+  If letters go into a field, press <kbd>Esc</kbd> to get commands back.
+  Details: <a href="#modes">Modes</a>.</p>
+<h3>Keys to learn first</h3>
+<table>
+  <tr><th>Key</th><th>Does</th></tr>
+  <tr><td><kbd>j</kbd> <kbd>k</kbd> <kbd>h</kbd> <kbd>l</kbd></td><td>Scroll down / up / left / right</td></tr>
+  <tr><td><kbd>d</kbd> / <kbd>u</kbd></td><td>Page down / up</td></tr>
+  <tr><td><kbd>f</kbd> / <kbd>F</kbd></td><td>Link hints — click / open in a new tab</td></tr>
+  <tr><td><kbd>o</kbd> / <kbd>O</kbd></td><td>Omnibar — this tab / new tab</td></tr>
+  <tr><td><kbd>:</kbd></td><td>Command palette — try <code>:read</code> <code>:hl</code> <code>:wiki</code></td></tr>
+  <tr><td><kbd>?</kbd></td><td>Help overlay (live command list)</td></tr>
+  <tr><td><kbd>i</kbd> then <kbd>Esc</kbd></td><td>Type into the page · back to Normal</td></tr>
+  <tr><td><kbd>J</kbd> / <kbd>K</kbd> · <kbd>x</kbd> / <kbd>X</kbd></td><td>Next / prev tab · close / restore</td></tr>
+  <tr><td><kbd>gS</kbd></td><td>Command center (side panel)</td></tr>
+</table>
+<p>The live list for <em>your</em> maps is side panel → <strong>Keys</strong>, or <kbd>?</kbd>.
+  Full chart: <a href="#keys">Keyboard map</a>.</p>
+<h3>Three surfaces</h3>
+<ul>
+  <li><strong>Omnibar</strong> (<kbd>o</kbd>) — history, URLs, <code>!g cats</code>, <code>!grok …</code></li>
+  <li><strong>Palette</strong> (<kbd>:</kbd>) — <code>:view</code> <code>:read</code> <code>:tab</code> …
+    see <a href="#command-palette">command palette</a></li>
+  <li><strong>Command center</strong> — toolbar icon or <kbd>gS</kbd>. Keys, tabs, closed sessions,
+    Reading List, and <strong>This site: On/Off</strong></li>
+</ul>
+<h3>When it “doesn’t work”</h3>
+<ul>
+  <li><strong>Typing instead of commands</strong> — <kbd>Esc</kbd></li>
+  <li><strong>A site needs its own shortcuts</strong> (Gmail, Figma, games) — side panel
+    <strong>Off for this site</strong>. Undo in Options → Excluded URLs</li>
+  <li><strong><code>chrome://</code> pages</strong> — content scripts cannot run there.
+    Assign <strong>Open side panel</strong> at <code>chrome://extensions/shortcuts</code>
+    (suggested <kbd>Alt+Shift+V</kbd>) so the panel still opens</li>
+</ul>
+<h3>Customize later, not first</h3>
+<p>Defaults are meant to be usable. When you are ready: Options →
+  <strong>Keys</strong> (maps) · <strong>Search</strong> (bangs) · <strong>Look</strong> (colors).
+  Change one thing, Save, test. <a href="#options-overview">Options tour</a>.</p>
+<p>Next: <a href="#daily-loop">Daily loop</a> · <a href="#faq">FAQ</a> ·
+  <a href="#vim-concepts">Vim concepts</a>.</p>
 `
   },
   {
@@ -118,7 +146,8 @@ export const WIKI_PAGES: WikiPage[] = [
 <p>Some sites need the mouse or their own shortcuts (Gmail, Figma, games).
   Exclude them so Vim+ stays out of the way — side panel <strong>Off for this site</strong>
   or Options → Excluded URLs.</p>
-<div class="callout tip">Next: <a href="#modes">Modes &amp; how to use</a> · <a href="#advanced">Advanced</a></div>
+<div class="callout tip">Next: <a href="#modes">Modes</a> ·
+  <a href="#daily-loop">Daily loop</a> · <a href="#faq">FAQ</a></div>
 `
   },
   {
@@ -126,7 +155,7 @@ export const WIKI_PAGES: WikiPage[] = [
     title: "Modes & how to use",
     subtitle: "What mode you’re in and what to press",
     group: "Start",
-    related: ["vim-concepts", "keys", "omnibar", "link-hints"],
+    related: ["vim-concepts", "keys", "find-mode", "visual-mode", "omnibar", "link-hints"],
     html: `
 <table>
   <tr><th>Mode</th><th>How you get there</th><th>What to do</th></tr>
@@ -212,19 +241,31 @@ export const WIKI_PAGES: WikiPage[] = [
     title: "Options page tour",
     subtitle: "How the Options UI is organized",
     group: "Options",
-    related: ["key-mappings", "exclusions", "search-engines", "reading-view", "customization"],
+    related: ["key-mappings", "exclusions", "search-engines", "reading-view", "view-fx", "customization"],
     html: `
 <p>Open Options from the side panel gear, <code>:opts</code>, or this wiki link:
   <a href="options.html">options.html</a>.</p>
+<p>The page is long on purpose — power users can change almost everything.
+  Tabs + a filter keep it usable. Defaults stay sane if you never open Advanced.</p>
 <h3>Section tabs</h3>
 <table>
-  <tr><th>Tab</th><th>What lives there</th></tr>
-  <tr><td><strong>Start</strong></td><td>Welcome, excluded sites, first-run tips</td></tr>
-  <tr><td><strong>Keys</strong></td><td>Custom key mappings, key layout, link-hint characters, find mode</td></tr>
-  <tr><td><strong>Search</strong></td><td>Search engines, hashbangs, new-tab URL, omnibar sizes</td></tr>
-  <tr><td><strong>Look</strong></td><td>Dark mode, HUD, CSS, reading progress, icons, motion</td></tr>
-  <tr><td><strong>Advanced</strong></td><td>Everything else + power-user toggles</td></tr>
+  <tr><th>Tab</th><th>Concept</th><th>What lives there</th></tr>
+  <tr><td><strong>Start</strong></td><td>Where it runs</td>
+    <td>Welcome, excluded sites, optional permissions, incognito</td></tr>
+  <tr><td><strong>Keys</strong></td><td>What you press</td>
+    <td>Custom maps, hint characters, keyboard layout, find / pass-Esc</td></tr>
+  <tr><td><strong>Search</strong></td><td>How you look things up</td>
+    <td>Engines, hashbangs, new-tab URL, omnibar JSON, next/prev patterns</td></tr>
+  <tr><td><strong>Look</strong></td><td>How it looks</td>
+    <td>Dark mode, HUD, user CSS, reading progress, <a href="#view-fx">:view color profiles</a></td></tr>
+  <tr><td><strong>Advanced</strong></td><td>Power-user edges</td>
+    <td>clipSub, sync, other-extension IDs, dock step, encoding</td></tr>
 </table>
+<h3>Finding an option</h3>
+<ul>
+  <li><kbd>/</kbd> focuses the filter — matches captions, labels, and field ids across tabs.</li>
+  <li>The right-hand <strong>Notes</strong> column is always visible — it is the help for that row.</li>
+</ul>
 <h3>Footer actions</h3>
 <ul>
   <li><strong>Save</strong> — write all dirty fields (or <kbd>Ctrl+Enter</kbd>)</li>
@@ -389,7 +430,7 @@ map j scrollDown
     title: "Reading, progress & highlighter",
     subtitle: "Look tab options and :read / :hl / :prog",
     group: "Options",
-    related: ["options-overview", "omnibar", "modes", "page-enhance"],
+    related: ["options-overview", "omnibar", "modes", "page-enhance", "view-fx"],
     html: `
 <p>Options → <strong>Look</strong> → Reading &amp; View.</p>
 <table>
@@ -414,6 +455,103 @@ map j scrollDown
 </ol>
 <p>Highlights &amp; comments persist per URL and restore on page load.
   Internals: <a href="#page-enhance">Page enhance</a>.</p>
+<p>Page color filters (<code>:gray</code>, <code>:dim</code>…) are separate — see
+  <a href="#view-fx">:view color profiles</a>.</p>
+`
+  },
+  {
+    id: "view-fx",
+    title: ":view color profiles",
+    subtitle: "Edit the CSS behind :gray :blue :inv :sepia :blur :hicon :dim :focus",
+    group: "Options",
+    related: ["reading-view", "options-overview", "page-enhance", "omnibar", "customization"],
+    html: `
+<p>Options → <strong>Look</strong> → <strong>:view color profiles</strong> (<code>viewFxCss</code>).</p>
+<p>Palette commands under <code>:view</code> inject a <code>&lt;style&gt;</code> into the current tab.
+  Built-in CSS is the default. Power users can replace any profile without touching source.</p>
+<h3>Setting</h3>
+<table>
+  <tr><th>Key</th><td><code>viewFxCss</code></td></tr>
+  <tr><th>Default</th><td>empty string — use built-in <code>DEFAULT_VIEW_FX_CSS</code></td></tr>
+  <tr><th>Type</th><td>multiline string</td></tr>
+  <tr><th>Format</th><td><code>name: css</code> per line; <code>#</code> starts a comment</td></tr>
+  <tr><th>Apply</th><td>Save Options, then toggle the command on a tab</td></tr>
+</table>
+<h3>Known names</h3>
+<table>
+  <tr><th>Name</th><th>Command</th><th>Built-in idea</th></tr>
+  <tr><td><code>gray</code></td><td><code>:gray</code></td><td><code>filter:grayscale(1)</code></td></tr>
+  <tr><td><code>blue</code></td><td><code>:blue</code></td><td>sepia + hue-rotate night-ish</td></tr>
+  <tr><td><code>inv</code></td><td><code>:inv</code></td><td>invert + hue-rotate</td></tr>
+  <tr><td><code>sepia</code></td><td><code>:sepia</code></td><td>warm sepia</td></tr>
+  <tr><td><code>blur</code></td><td><code>:blur</code></td><td><code>blur(1.2px)</code></td></tr>
+  <tr><td><code>contrast</code></td><td><code>:hicon</code></td><td>higher contrast / saturate</td></tr>
+  <tr><td><code>dim</code></td><td><code>:dim</code></td><td><code>brightness(.72)</code></td></tr>
+  <tr><td><code>focus</code></td><td><code>:focus</code></td><td>narrow reading column</td></tr>
+</table>
+<p><code>jumble</code> scrambles visible text in JavaScript — it is <strong>not</strong> CSS and
+  cannot be overridden here. Spotlight / zen / device frames are separate page tools.</p>
+<h3>Example</h3>
+<pre># stronger dim, gentler gray
+gray: html{filter:grayscale(.65)!important}
+dim: html{filter:brightness(.55)!important}</pre>
+<p>Omitted names keep their built-ins. <strong>Insert built-in profiles</strong> on the Options
+  row dumps the full template so you can edit in place.</p>
+<h3>Internals</h3>
+<ul>
+  <li><code>background/index.d.ts</code> — type + storage contract</li>
+  <li><code>background/settings.ts</code> — <code>defaults_.viewFxCss = ""</code></li>
+  <li><code>background/quick_actions.ts</code> — <code>parseViewFxCss_</code>,
+    <code>resolveFxCss_</code>, passed as the 3rd arg to <code>pageFxInjector_</code></li>
+  <li>Injector still has a hardcoded fallback map if the override is empty</li>
+</ul>
+<div class="callout tip">This styles the <em>page</em>. To style Vim+ chrome (hints, HUD, omnibar)
+  use <a href="#user-css">user-defined CSS</a>.</div>
+`
+  },
+  {
+    id: "look-colors",
+    title: "Colors & look tokens",
+    subtitle: "Accent, hints, find highlight, highlighter, progress",
+    group: "Options",
+    related: ["options-overview", "customization", "user-css", "reading-view", "view-fx"],
+    html: `
+<p>Options → <strong>Look</strong> → Colors / Highlighter / Reading progress.</p>
+<p>Every color field uses the <strong>browser’s native color picker</strong> plus a hex box
+  for exact values. Defaults match the shipped rose / zinc theme — leave them alone unless you
+  want a personal skin.</p>
+<h3>Settings</h3>
+<table>
+  <tr><th>Key</th><th>Default</th><th>What it paints</th></tr>
+  <tr><td><code>accentColor</code></td><td><code>#e11d48</code></td>
+    <td>HUD border, flash, frame, selected-hint chrome</td></tr>
+  <tr><td><code>hintBg</code> / <code>hintFg</code></td><td>rose / white</td>
+    <td><kbd>f</kbd> link-hint pills</td></tr>
+  <tr><td><code>findHighlightColor</code></td><td><code>#ff9632</code></td>
+    <td>Find-mode (<kbd>/</kbd>) selection</td></tr>
+  <tr><td><code>readingProgressColor</code></td><td><code>#e11d48</code></td>
+    <td>Top reading bar fill</td></tr>
+  <tr><td><code>highlighterColors</code></td>
+    <td><code>#fef08a,#bbf7d0,#fbcfe8,#bfdbfe,#fdba74</code></td>
+    <td><code>:hl</code> keys 1–5</td></tr>
+</table>
+<h3>Other Look knobs that were missing</h3>
+<ul>
+  <li><code>spotlightRadius</code> — <code>:spot</code> hole size (80–400, default 150)</li>
+  <li><code>readerFontSize</code> / <code>readerWidth</code> — starting <code>:read</code> size (18px) and column (36em)</li>
+  <li><code>viewFxCss</code> — <a href="#view-fx">:view CSS profiles</a></li>
+</ul>
+<h3>Internals</h3>
+<ul>
+  <li>Accent / hint / find inject through <code>mergeCSS</code> in <code>background/ui_css.ts</code>
+    (<code>lookOverrideCSS_</code>). User-defined CSS still wins if it sets the same selectors.</li>
+  <li>Highlighter + spotlight are read in <code>content/page_enhance.ts</code> from
+    <code>chrome.storage.local</code>.</li>
+  <li>Reader size/width are passed into <code>readerViewInjector_</code> from
+    <code>settingsCache_</code>.</li>
+</ul>
+<div class="callout tip">Hex must start with <code>#</code> (or <code>rgb</code>/<code>hsl</code>).
+  Values with <code>;</code> or <code>{</code> are rejected so CSS cannot be injected into a color field.</div>
 `
   },
   {
@@ -421,13 +559,15 @@ map j scrollDown
     title: "Look, CSS & power settings",
     subtitle: "Dark mode, HUD, user CSS, icons, sync",
     group: "Options",
-    related: ["options-overview", "advanced", "permissions"],
+    related: ["options-overview", "advanced", "permissions", "view-fx", "look-colors"],
     html: `
 <p>Most of these sit under Options → <strong>Look</strong> and <strong>Advanced</strong>.</p>
 <ul>
   <li><strong>Auto dark mode</strong> — follow system or force dark</li>
   <li><strong>Hide HUD</strong> — quieter insert-mode tips</li>
   <li><strong>User-defined CSS</strong> — style Vim+ UI (vomnibar, HUD, hints)</li>
+  <li><strong>Colors</strong> — accent, hint pills, find highlight (see <a href="#look-colors">look-colors</a>)</li>
+  <li><strong>:view color profiles</strong> — CSS for <code>:gray</code> / <code>:dim</code> / … (see <a href="#view-fx">view-fx</a>)</li>
   <li><strong>Action icon</strong> — toolbar icon on/off</li>
   <li><strong>Context menus</strong> — right-click entries</li>
   <li><strong>Smooth scroll / scroll step</strong> — feel of <kbd>j</kbd>/<kbd>k</kbd></li>
@@ -681,7 +821,7 @@ typings/      TypeScript contracts for messages / settings
     title: "Settings pipeline",
     subtitle: "Defaults → storage → caches → live update hooks",
     group: "Developers",
-    related: ["architecture", "message-flow", "options-overview", "hashbangs"],
+    related: ["architecture", "message-flow", "options-overview", "hashbangs", "view-fx"],
     html: `
 <p>Settings look simple in the Options UI. Internally they pass through several layers.</p>
 <h3>Layers</h3>
@@ -708,9 +848,12 @@ typings/      TypeScript contracts for messages / settings
     Options, wiki, and HUD theming all read this.</li>
   <li>Content features that only read storage (progress bar) listen to
     <code>storage.onChanged</code> so Options saves apply without reloading the tab when possible.</li>
+  <li><strong>viewFxCss</strong> is backend-only (service worker reads it when applying
+    <code>:view</code> FX). Empty string means “use built-in CSS” — no update hook needed.</li>
 </ul>
 <div class="callout tip">When adding a setting: default + type in <code>index.d.ts</code> + Options control
-  + (if needed) update hook + wiki note + content listener.</div>
+  + (if needed) update hook + wiki note + content listener. Also add the field id to
+  <code>FIELD_SEC</code> in <code>pages/options_nav.ts</code> so it lands on the right tab.</div>
 `
   },
   {
@@ -730,6 +873,8 @@ typings/      TypeScript contracts for messages / settings
   <li><strong>Styles injected as a &lt;style&gt; tag</strong> with a stable id so re-apply replaces cleanly.</li>
   <li><strong>Command palette path</strong> (<code>:prog</code>, <code>:spot</code>…) may inject via
     background <code>quick_actions</code> when the content global is missing — both paths must stay compatible.</li>
+  <li><strong>:view CSS</strong> is not in the content script — <code>applyPageFx_</code> injects
+    a style tag. User overrides live in <code>viewFxCss</code> (see <a href="#view-fx">view-fx</a>).</li>
 </ul>
 <h3>Reading progress (implementation note)</h3>
 <p>The fill uses <code>transform: scaleX(p)</code> on a full-width child inside a fixed track.
@@ -753,7 +898,7 @@ fill.style.setProperty("transform", "scaleX(" + p + ")", "important")
     title: "Keyboard map",
     subtitle: "Common defaults — customize in Options → Custom key mappings",
     group: "Core",
-    related: ["omnibar", "link-hints", "side-panel", "chrome-pages", "key-mappings"],
+    related: ["omnibar", "link-hints", "command-palette", "tabs-windows", "copy-yank", "key-mappings"],
     html: `
 <div class="callout tip">Live list: side panel → <strong>Keys</strong> / <strong>Cmds</strong>, or press <kbd>?</kbd>.</div>
 <h3>Essentials</h3>
@@ -869,7 +1014,7 @@ gpt|!gpt|chatgpt: https://chatgpt.com/?q=%s ChatGPT
     title: "Omnibar",
     subtitle: "History, domains, tabs, windows, engines — one keyboard UI",
     group: "Core",
-    related: ["hashbangs", "keys", "window-dock", "search-engines"],
+    related: ["hashbangs", "command-palette", "keys", "search-engines", "tabs-windows"],
     html: `
 <p>The omnibar is Vim+’s address bar. Open with <kbd>o</kbd> / <kbd>O</kbd> (or history/bookmark/window modes).</p>
 <h3>What it searches</h3>
@@ -885,7 +1030,7 @@ gpt|!gpt|chatgpt: https://chatgpt.com/?q=%s ChatGPT
 <div class="callout tip"><strong>Chrome-like tips:</strong>
   type a few letters of a site you visit often; use <code>!g </code> for Google;
   <kbd>↓</kbd>/<kbd>↑</kbd> move the selection (list <strong>scrolls</strong> when there are many hits);
-  Enter opens; Esc closes. Hold <kbd>⌘</kbd>/<kbd>Alt</kbd> for numbered 1–9 picks.</div>
+  Enter opens; Esc closes. Hold <kbd>⌘</kbd> (macOS) or <kbd>Alt</kbd> (Windows / Linux) for numbered 1–9 picks.</div>
 <h3>Command palette (<kbd>:</kbd>)</h3>
 <p>Power-user palette (VS Code–style). Type <kbd>:</kbd> alone for <strong>categories</strong>, then drill in.
 Selecting a row keeps the short form (e.g. <code>:gray</code>) in the bar.</p>
@@ -974,28 +1119,33 @@ map &lt;c-a-left&gt; dockWindow direction="left" step=40</pre>
     title: "Command center",
     subtitle: "Persistent keyboard UI in Chrome’s side panel",
     group: "Core",
-    related: ["keys", "chrome-pages", "getting-started", "advanced"],
+    related: ["keys", "chrome-pages", "getting-started", "tabs-windows", "command-palette"],
     html: `
-<p>Open via <strong>toolbar icon</strong>, <kbd>Alt+Shift+V</kbd> (if assigned), context menu, or page <kbd>gS</kbd>.</p>
-<h3>Header controls</h3>
+<p>The command center is a persistent keyboard UI in Chrome’s side panel.
+  Open via the <strong>toolbar icon</strong>, <kbd>Alt+Shift+V</kbd> (if assigned),
+  context menu, or page <kbd>gS</kbd>.</p>
+<h3>Header</h3>
 <ul>
+  <li><strong>This site: On/Off</strong> — excludes the current host (empty passKeys rule)</li>
   <li><strong>Options</strong> (gear) — full options page</li>
-  <li><strong>Off for this site</strong> — excludes the current host (Vim+ off there)</li>
-  <li><strong>Wiki</strong> / <strong>Help</strong> — docs and on-page help</li>
+  <li><strong>Wiki</strong> / <strong>Help</strong> — this wiki and the <kbd>?</kbd> overlay</li>
 </ul>
 <h3>Modes</h3>
-<ol>
-  <li><strong>Keys</strong> — filter bound keys; Enter runs the command</li>
-  <li><strong>Cmds</strong> — full command catalog</li>
-  <li><strong>Tabs</strong> — filter and activate tabs</li>
-  <li><strong>Closed</strong> — restore sessions</li>
-  <li><strong>Later</strong> — Reading List</li>
-  <li><strong>Page</strong> — bookmark, pin, mute, disable site, options…</li>
-</ol>
-<p>Inside the panel: <kbd>j</kbd>/<kbd>k</kbd> move · <kbd>Enter</kbd> activate ·
-  <kbd>1</kbd>–<kbd>6</kbd> modes · type to filter.</p>
+<table>
+  <tr><th>Mode</th><th>Key</th><th>Does</th></tr>
+  <tr><td><strong>Keys</strong></td><td><kbd>1</kbd></td><td>Filter bound keys; Enter runs the command</td></tr>
+  <tr><td><strong>Cmds</strong></td><td><kbd>2</kbd></td><td>Palette-style commands (<code>:read</code>, <code>:hl</code>…)</td></tr>
+  <tr><td><strong>Tabs</strong></td><td><kbd>3</kbd></td><td>Recency list · <kbd>x</kbd> close · <kbd>p</kbd> pin · <kbd>m</kbd> mute</td></tr>
+  <tr><td><strong>Closed</strong></td><td><kbd>4</kbd></td><td>Restore recently closed sessions</td></tr>
+  <tr><td><strong>Later</strong></td><td><kbd>5</kbd></td><td>Reading List — add is a toggle, <kbd>x</kbd> removes</td></tr>
+  <tr><td><strong>Page</strong></td><td><kbd>6</kbd></td><td>Bookmark, pin, mute, exclude site, Options…</td></tr>
+</table>
+<p>Always: <kbd>j</kbd>/<kbd>k</kbd> (or <kbd>Ctrl-n</kbd>/<kbd>p</kbd>) move · type to filter ·
+  <kbd>Enter</kbd> activate · <kbd>Esc</kbd> clears the filter.</p>
 <div class="callout"><strong>Gesture note:</strong> Chrome requires a user gesture to open the side panel.
-  Toolbar click, context menu, and keyboard commands count; background-only open may fail.</div>
+  Toolbar click, context menu, and a keyboard command count; a background-only open may fail.</div>
+<div class="callout tip">If the header says the shortcut is unassigned, open
+  <code>chrome://extensions/shortcuts</code> from Options → Start.</div>
 `
   },
   {
@@ -1003,16 +1153,38 @@ map &lt;c-a-left&gt; dockWindow direction="left" step=40</pre>
     title: "Link hints",
     subtitle: "Click anything without the mouse",
     group: "Core",
-    related: ["keys", "omnibar"],
+    related: ["keys", "look-colors", "modes", "key-mappings"],
     html: `
-<p>Press <kbd>f</kbd> to label clickable elements. Type the hint letters to activate.</p>
+<p>Press <kbd>f</kbd> to label every clickable thing. Type the letters next to a target to activate it.
+  Esc cancels. This is the fastest way to leave the mouse behind.</p>
+<h3>Common variants</h3>
+<table>
+  <tr><th>Key</th><th>Does</th></tr>
+  <tr><td><kbd>f</kbd></td><td>Activate in the current tab</td></tr>
+  <tr><td><kbd>F</kbd></td><td>Open in a new tab (usually background)</td></tr>
+  <tr><td><kbd>yf</kbd></td><td>Copy the link URL instead of clicking</td></tr>
+  <tr><td><kbd>af</kbd> / hover variants</td><td>In <kbd>?</kbd> when advanced commands are shown</td></tr>
+</table>
+<h3>How to type a hint</h3>
+<ol class="steps">
+  <li>Press <kbd>f</kbd>. Pills appear on links, buttons, and many clickable nodes.</li>
+  <li>Type the characters. The set is Options → <strong>Characters used for link hints</strong>
+    (default is easy home-row letters).</li>
+  <li>If <strong>Use the link’s name</strong> is on, you can also type words from the link text
+    to filter, then Enter (if “Require Enter” is on).</li>
+</ol>
+<p>The active target uses your <a href="#look-colors">hint colors</a> (Look → Hint background / text).
+  A red outline + bottom underline marks the match.</p>
+<h3>When hints miss</h3>
 <ul>
-  <li><kbd>F</kbd> — open in a new tab</li>
-  <li><kbd>yf</kbd> — copy link URL</li>
-  <li>Active target shows a <strong>red outline</strong> plus bottom underline</li>
+  <li><strong>Covered links</strong> — Options → Keys → “Detect whether links are completely covered”
+    skips targets a click would not reach.</li>
+  <li><strong>Shadow DOM / canvas apps</strong> — some UIs draw their own controls; use
+    <a href="#exclusions">exclusions</a> or the site’s own shortcuts.</li>
+  <li><strong>Wrong characters</strong> — if you remapped hint chars, type those, not the old set.</li>
 </ul>
-<p>Hint characters are under Options → Link hint characters. Advanced variants (hover, download, image)
-  appear in the <kbd>?</kbd> help list when advanced commands are shown.</p>
+<div class="callout tip">Hold the pick modifier in the <em>omnibar</em> for 1–9
+  (⌘ on macOS, Alt on Windows/Linux). That is not the same as link hints.</div>
 `
   },
   {
@@ -1020,13 +1192,28 @@ map &lt;c-a-left&gt; dockWindow direction="left" step=40</pre>
     title: "Search engines",
     subtitle: "Advanced URL builders (beyond hashbangs)",
     group: "Core",
-    related: ["hashbangs", "omnibar"],
+    related: ["hashbangs", "omnibar", "options-overview"],
     html: `
-<p>Custom search engines use the classic rule format:</p>
-<pre>key|alias: https://example.com/?q=%s Name
-blank=https://example.com/ Homepage</pre>
-<p>Hashbangs are merged <em>before</em> this list so short bangs stay predictable.
-Both feed the same omnibar keyword map.</p>
+<p>Options → Search → <strong>Custom search engines</strong>. These are richer than hashbangs:
+  aliases, a homepage, and optional parse rules so “copy URL → search again” can recover the query.</p>
+<h3>Format</h3>
+<pre>key|alias|Name: https://example.com/?q=%s \\
+  blank=https://example.com/ Nice Name
+# comment
+js\\:|Js: javascript:\\ $S; Run JavaScript</pre>
+<ul>
+  <li><code>%s</code> / <code>$s</code> — the query, URL-encoded</li>
+  <li><code>$S</code> — raw (useful for <code>javascript:</code> / math)</li>
+  <li><code>blank=</code> — URL when you run the engine with an empty query</li>
+  <li>A line that starts with <code>#</code> is a comment</li>
+</ul>
+<h3>How this relates to hashbangs</h3>
+<p><a href="#hashbangs">Hashbangs</a> are merged <em>first</em>, then this list.
+  A short <code>g</code> / <code>!g</code> therefore stays predictable. Both maps feed the same
+  omnibar keyword completer.</p>
+<div class="callout warn">Do not start a rule with <code>!</code> alone — that is a comment.
+  Write <code>g|!g:</code> … so the bang is an alias, not the start of the line.</div>
+<p>Delete the field and Save to restore the author engine list.</p>
 `
   },
   {
@@ -1280,8 +1467,9 @@ to implement matching keyboard features. No browsing data is uploaded to Vim+ se
   </tr>
   <tr>
     <td><code>browsingData</code></td>
-    <td>Shred site data / clear cookies-cache for current origin (privacy palette)</td>
-    <td>Only when the user runs an explicit purge command; scoped to the chosen domain/types.</td>
+    <td>Shred site data / clear cookies-cache for current origin (<code>:sc</code> <code>:ck</code>)</td>
+    <td>Only on an explicit purge. Cookie wipe is this API’s <code>cookies</code> data type —
+      not the separate <code>cookies</code> permission.</td>
   </tr>
   <tr>
     <td><code>notifications</code></td>
@@ -1310,16 +1498,16 @@ to implement matching keyboard features. No browsing data is uploaded to Vim+ se
 <table>
   <tr><th>Permission</th><th>When requested</th><th>Why</th></tr>
   <tr>
-    <td><code>cookies</code></td>
-    <td>Privacy / site-data tools that need cookie access beyond browsingData helpers</td>
-    <td>Fine-grained site cookie clearing when the user opts into those commands.</td>
-  </tr>
-  <tr>
     <td><code>contentSettings</code></td>
-    <td>Toggle images / JavaScript (and similar) for a site from Vim+</td>
-    <td>Mirrors Chrome site settings without opening the settings UI.</td>
+    <td>Toggle images / JavaScript (and similar) for a site from Vim+ (<code>toggleCS</code>)</td>
+    <td>Mirrors Chrome site settings without opening the settings UI. Uses
+      <code>chrome.contentSettings</code> after the user grants this optional permission.</td>
   </tr>
 </table>
+<div class="callout"><strong>Not requested: <code>cookies</code>.</strong>
+  Palette <code>:ck</code> / shred wipe cookies via <code>chrome.browsingData.remove({ cookies: true })</code>.
+  That API does not call <code>chrome.cookies</code>. An older listing that asked for
+  <code>cookies</code> without using it was rejected by the Web Store.</div>
 <div class="callout"><strong>Incognito:</strong> Manifest uses <code>"incognito": "spanning"</code>.
   Users still control “Allow in Incognito” in <code>chrome://extensions</code>. Incognito find-history is kept
   only while private windows exist (see Privacy).</div>
@@ -1507,6 +1695,325 @@ Clipboard and page content stay on your machine unless you copy or open external
 </ul>
 <div class="callout tip">When you add a user-facing option, add a wiki deep-dive and link it from Options help text
   in the same change. Future-you will thank present-you.</div>
+`
+  },
+  {
+    id: "daily-loop",
+    title: "Daily loop",
+    subtitle: "Three recipes — browse, read, research — without the mouse",
+    group: "Start",
+    related: ["getting-started", "command-palette", "reading-view", "hashbangs", "tabs-windows"],
+    html: `
+<p>Vim+ is meant to disappear into muscle memory. These are the loops we actually use.</p>
+<h3>1. Browse the web</h3>
+<ol class="steps">
+  <li><kbd>j</kbd> <kbd>k</kbd> <kbd>d</kbd> <kbd>u</kbd> to move. Count works: <kbd>5</kbd><kbd>j</kbd>.</li>
+  <li><kbd>f</kbd> to click. <kbd>F</kbd> for a background tab.</li>
+  <li><kbd>o</kbd> then a few letters of a site you visit often — or <code>!g query</code>.</li>
+  <li><kbd>H</kbd>/<kbd>L</kbd> (if mapped) back/forward. <kbd>r</kbd> reload.</li>
+</ol>
+<h3>2. Read an article</h3>
+<ol class="steps">
+  <li>Open the piece. The <a href="#reading-view">progress bar</a> tracks you (default on).</li>
+  <li><code>:read</code> for Reader View. <kbd>=</kbd>/<kbd>-</kbd> size, <kbd>q</kbd> exit.</li>
+  <li><code>:hl</code> to highlight. Keys <kbd>1</kbd>–<kbd>5</kbd> pick colors; click a mark to comment.</li>
+  <li><code>:yart</code> copies the article as markdown when you want it in a note.</li>
+</ol>
+<h3>3. Research a topic</h3>
+<ol class="steps">
+  <li><kbd>o</kbd> then <code>!g</code>, <code>!so</code>, <code>!mdn</code>, or <code>!grok</code>.</li>
+  <li>Park extras with <kbd>F</kbd> (new tab) and flip with <kbd>J</kbd>/<kbd>K</kbd>.</li>
+  <li>Side panel → <strong>Later</strong> to stash a tab in Reading List.</li>
+  <li>When a tab is dead weight: <kbd>x</kbd> close, <kbd>X</kbd> undo, or <code>:zd</code> sleep.</li>
+</ol>
+<div class="callout tip">If a site fights you (docs editors, design tools),
+  <strong>Off for this site</strong> in the side panel. Come back via Options → Exclusions.</div>
+`
+  },
+  {
+    id: "faq",
+    title: "FAQ",
+    subtitle: "Short answers — then the deep page",
+    group: "Start",
+    related: ["troubleshooting", "getting-started", "exclusions", "chrome-pages"],
+    html: `
+<table>
+  <tr><th>Question</th><th>Answer</th></tr>
+  <tr>
+    <td>Keys type into the page</td>
+    <td>You are in Insert. Press <kbd>Esc</kbd>. See <a href="#modes">modes</a>.</td>
+  </tr>
+  <tr>
+    <td>Nothing works on <code>chrome://</code></td>
+    <td>Content scripts cannot run there. Use the
+      <a href="#chrome-shortcuts">global shortcut</a> + side panel.</td>
+  </tr>
+  <tr>
+    <td>Hints miss a button</td>
+    <td>Covered-link detection, canvas apps, or custom widgets.
+      <a href="#link-hints">Link hints</a>.</td>
+  </tr>
+  <tr>
+    <td><code>!g</code> does nothing</td>
+    <td>Hashbang line started with <code>!</code> (comment). Format is
+      <code>g|!g:</code> … — <a href="#hashbangs">hashbangs</a>.</td>
+  </tr>
+  <tr>
+    <td>Omnibar list is taller than the screen</td>
+    <td>It should scroll inside the bar. Reload the extension if you are on an old build.</td>
+  </tr>
+  <tr>
+    <td>A site’s own shortcuts broke</td>
+    <td>Side panel → Off for this site. <a href="#exclusions">Exclusions</a>.</td>
+  </tr>
+  <tr>
+    <td>How do I change hint / HUD color?</td>
+    <td>Options → Look → Colors. <a href="#look-colors">Colors</a>.</td>
+  </tr>
+  <tr>
+    <td>Where is the command list?</td>
+    <td><kbd>?</kbd>, side panel → Cmds, or <a href="#command-palette">palette</a>.</td>
+  </tr>
+  <tr>
+    <td>Did my settings sync?</td>
+    <td>Only if you opted in (Options → Advanced → Sync). Export a JSON backup anyway.</td>
+  </tr>
+  <tr>
+    <td>Who made this?</td>
+    <td><a href="#about">About</a> — Jamal Yusuf · jamal.dev</td>
+  </tr>
+</table>
+`
+  },
+  {
+    id: "command-palette",
+    title: "Command palette",
+    subtitle: "Type : then a short command — VS Code–style",
+    group: "Core",
+    related: ["omnibar", "keys", "view-fx", "reading-view", "privacy-tools"],
+    html: `
+<p>Open the omnibar and type <kbd>:</kbd> (or map a direct activate).
+  Empty <code>:</code> shows recent commands, then categories. Type a category to drill in;
+  pick a row to fill the short form (e.g. <code>:gray</code>).</p>
+<h3>Browse a category</h3>
+<table>
+  <tr><th>Type</th><th>Group</th></tr>
+  <tr><td><code>:view</code> · <code>:fx</code></td><td>Filters, spotlight, zen, device frames</td></tr>
+  <tr><td><code>:rd</code></td><td>Read tools (use <code>:read</code> to run Reader View directly)</td></tr>
+  <tr><td><code>:tab</code></td><td>Pin, mute, close, sleep, bookmark, groups</td></tr>
+  <tr><td><code>:hist</code></td><td>Clear or pause history</td></tr>
+  <tr><td><code>:priv</code></td><td>Shred site data / cookies</td></tr>
+  <tr><td><code>:win</code></td><td>Dock, maximize, cycle windows</td></tr>
+  <tr><td><code>:nav</code></td><td>Back, forward, top, bottom, zoom</td></tr>
+  <tr><td><code>:clip</code></td><td>Copy URL, title, article, headings, tables</td></tr>
+  <tr><td><code>:chrome</code></td><td>Downloads, flags, settings, shortcuts</td></tr>
+  <tr><td><code>:vim</code></td><td>Side panel, options, wiki, help</td></tr>
+</table>
+<h3>Hot commands</h3>
+<table>
+  <tr><th>Cmd</th><th>Does</th></tr>
+  <tr><td><code>:read</code></td><td>Reader View</td></tr>
+  <tr><td><code>:hl</code></td><td>Highlighter</td></tr>
+  <tr><td><code>:prog</code></td><td>Toggle progress bar (this tab)</td></tr>
+  <tr><td><code>:zen</code> · <code>:spot</code> · <code>:lens</code></td><td>Calm chrome / spotlight / lens</td></tr>
+  <tr><td><code>:gray</code> · <code>:dim</code> · <code>:clear</code></td><td>View FX — <a href="#view-fx">edit CSS</a></td></tr>
+  <tr><td><code>:yart</code> · <code>:yy</code></td><td>Copy article markdown / URL</td></tr>
+  <tr><td><code>:wiki</code> · <code>:opts</code> · <code>:sp</code></td><td>Wiki / Options / side panel</td></tr>
+  <tr><td><code>:sc</code> · <code>:ph</code></td><td>Shred this site / pause history (confirm first)</td></tr>
+</table>
+<p>Destructive commands (<code>:hall</code>, <code>:sc</code>, mass-close) ask for a second Enter.</p>
+<p>Author maps worth knowing: <kbd>zS</kbd> spotlight · <kbd>zL</kbd> lens · <kbd>zZ</kbd> zen ·
+  <kbd>zH</kbd> highlighter · <kbd>yA</kbd> article markdown.</p>
+<div class="callout tip">Long lists scroll inside the omnibar.
+  Hold <kbd>⌘</kbd> (macOS) or <kbd>Alt</kbd> (Windows/Linux) for 1–9 picks.</div>
+`
+  },
+  {
+    id: "find-mode",
+    title: "Find mode",
+    subtitle: "/ search on the page — n / N to hop",
+    group: "Core",
+    related: ["modes", "keys", "look-colors", "visual-mode"],
+    html: `
+<p><kbd>/</kbd> opens find. Type a query, Enter (or just keep typing — first match highlights).
+  <kbd>n</kbd> / <kbd>N</kbd> next / previous. Esc leaves find.</p>
+<h3>Options</h3>
+<ul>
+  <li><strong>Treat find as RegExp</strong> (Keys) — queries are JavaScript regular expressions.
+    Switch back to literal with <code>\\R</code> in the query. Also <code>\\r</code> <code>\\i</code> <code>\\w</code>.</li>
+  <li><strong>Find highlight</strong> (Look → Colors) — native picker, default <code>#ff9632</code>.</li>
+</ul>
+<h3>Vs the omnibar</h3>
+<p>Find searches <em>this page’s text</em>. The <a href="#omnibar">omnibar</a> searches history,
+  engines, and tabs. Use both: <kbd>o</kbd> to get to a page, <kbd>/</kbd> to hunt inside it.</p>
+<div class="callout">Find is a Vimium-core mode. We do not rewrite its ranking —
+  we only expose colors and the RegExp toggle.</div>
+`
+  },
+  {
+    id: "visual-mode",
+    title: "Visual mode",
+    subtitle: "Select text with motions, then yank",
+    group: "Core",
+    related: ["modes", "keys", "find-mode", "copy-yank"],
+    html: `
+<p><kbd>v</kbd> (when mapped — it is in the author template) enters visual selection.
+  Motions extend the range the same way they move the caret in Normal.</p>
+<h3>Typical flow</h3>
+<ol class="steps">
+  <li>Move near the text (<kbd>j</kbd>/<kbd>k</kbd> or <kbd>/</kbd> then Esc).</li>
+  <li><kbd>v</kbd> — visual. <kbd>w</kbd> <kbd>e</kbd> <kbd>j</kbd> to grow the selection.</li>
+  <li>Yank / copy with the mapped copy command (often <kbd>y</kbd> in visual).</li>
+  <li>Esc back to Normal.</li>
+</ol>
+<p>Linewise / block variants appear in <kbd>?</kbd> when advanced commands are shown.</p>
+<p>For lasting marks on a page, prefer <code>:hl</code> — highlights persist per URL.
+  Visual is for a one-shot copy.</p>
+`
+  },
+  {
+    id: "tabs-windows",
+    title: "Tabs &amp; windows",
+    subtitle: "Switch, close, restore, dock, group",
+    group: "Core",
+    related: ["keys", "side-panel", "window-dock", "command-palette"],
+    html: `
+<h3>Tabs (author defaults)</h3>
+<table>
+  <tr><th>Key</th><th>Action</th></tr>
+  <tr><td><kbd>J</kbd> / <kbd>K</kbd></td><td>Previous / next tab</td></tr>
+  <tr><td><kbd>x</kbd> / <kbd>X</kbd></td><td>Close / restore</td></tr>
+  <tr><td><kbd>T</kbd></td><td>Tab switcher (omnibar)</td></tr>
+  <tr><td><kbd>t</kbd></td><td>Often create-tab or picker — check your map</td></tr>
+  <tr><td><kbd>co</kbd> <kbd>c&gt;</kbd> <kbd>c&lt;</kbd></td><td>Close others / right / left</td></tr>
+  <tr><td><kbd>zd</kbd></td><td>Discard (sleep) the tab</td></tr>
+  <tr><td><kbd>yg</kbd> / <kbd>yG</kbd></td><td>Tab group toggle / collapse</td></tr>
+</table>
+<p>Side panel → <strong>Tabs</strong>: recency, favicons, <kbd>x</kbd> close, <kbd>p</kbd> pin, <kbd>m</kbd> mute.
+  <strong>Closed</strong> restores sessions.</p>
+<h3>Windows</h3>
+<table>
+  <tr><th>Key</th><th>Action</th></tr>
+  <tr><td><kbd>gW</kbd></td><td>Cycle windows</td></tr>
+  <tr><td><kbd>gA</kbd></td><td>Pick a window in the omnibar</td></tr>
+  <tr><td><kbd>Alt</kbd>+arrows</td><td><a href="#window-dock">Dock</a> — first press half, repeat shrinks</td></tr>
+  <tr><td><kbd>Alt+Shift+M</kbd></td><td>Maximize</td></tr>
+  <tr><td><code>:zen</code></td><td>App-style window (no URL bar) — again to exit</td></tr>
+</table>
+<p>Palette: <code>:pin</code> <code>:mute</code> <code>:xo</code> <code>:max</code> <code>:dlft</code>.</p>
+`
+  },
+  {
+    id: "copy-yank",
+    title: "Copy &amp; yank",
+    subtitle: "URL, title, article markdown, headings, tables",
+    group: "Core",
+    related: ["keys", "command-palette", "clip-sub", "reading-view"],
+    html: `
+<p>Most copy commands live on <kbd>y</kbd> prefixes and under <code>:clip</code>.</p>
+<table>
+  <tr><th>Key / cmd</th><th>Copies</th></tr>
+  <tr><td><kbd>yy</kbd> · <code>:yy</code></td><td>Page URL</td></tr>
+  <tr><td><kbd>yY</kbd></td><td>Title</td></tr>
+  <tr><td><kbd>ym</kbd></td><td>Markdown link <code>[title](url)</code></td></tr>
+  <tr><td><kbd>yf</kbd></td><td>Hinted link URL</td></tr>
+  <tr><td><kbd>yA</kbd> · <code>:yart</code></td><td>Article as markdown (Readability)</td></tr>
+  <tr><td><kbd>yH</kbd> · <code>:yhead</code></td><td>Headings</td></tr>
+  <tr><td><kbd>yP</kbd></td><td>Paragraphs</td></tr>
+  <tr><td><kbd>yT</kbd></td><td>Tables</td></tr>
+</table>
+<p><a href="#clip-sub">clipSub</a> rewrites text on copy/paste (sed-like). Use it to turn
+  <code>git@host:path</code> into an https URL, or strip tracking query params.</p>
+<div class="callout tip">If a yank feels empty, the page may be a canvas / no article.
+  <code>:read</code> first, or select in <a href="#visual-mode">visual mode</a>.</div>
+`
+  },
+  {
+    id: "privacy-tools",
+    title: "Privacy tools",
+    subtitle: "Shred a site, pause history, wipe cookies — from the keyboard",
+    group: "Chrome",
+    related: ["command-palette", "privacy", "permissions", "faq"],
+    html: `
+<p>Palette category <code>:priv</code> / <code>:hist</code>. Destructive commands need a
+  <strong>second Enter</strong> within a few seconds.</p>
+<table>
+  <tr><th>Cmd</th><th>Does</th></tr>
+  <tr><td><code>:sc</code></td><td>Shred data for the current site</td></tr>
+  <tr><td><code>:sh domain</code></td><td>Shred a named host</td></tr>
+  <tr><td><code>:ck</code></td><td>Clear cookies for this origin</td></tr>
+  <tr><td><code>:cache</code></td><td>Clear cache for this origin</td></tr>
+  <tr><td><code>:ph</code> · <code>:ph24</code></td><td>Pause history 15 min / 24 h (survives SW sleep)</td></tr>
+  <tr><td><code>:phon</code></td><td>Resume history</td></tr>
+  <tr><td><code>:h1</code> / hour-window cmds</td><td>Clear recent history</td></tr>
+</table>
+<p>These use Chrome <code>browsingData</code> APIs from the service worker — they do not send data to us
+  and they do not require the unused <code>cookies</code> permission.
+  See <a href="#privacy">Privacy</a> and <a href="#permissions">permissions</a>.</p>
+<div class="callout warn">Shred and history clear cannot be undone. The confirm step is there on purpose.</div>
+`
+  },
+  {
+    id: "troubleshooting",
+    title: "Troubleshooting",
+    subtitle: "Keys dead, FX no-op, options look wrong, chrome:// silence",
+    group: "Chrome",
+    related: ["faq", "exclusions", "chrome-pages", "devtools", "settings-pipeline"],
+    html: `
+<h3>No keys on this page</h3>
+<ol class="steps">
+  <li>Is it <code>chrome://</code>, the Web Store, or another extension page?
+    Content scripts cannot run. Use the <a href="#chrome-shortcuts">global shortcut</a>.</li>
+  <li>Is the site excluded? Side panel power toggle / Options → Excluded URLs.</li>
+  <li>Are you in Insert? <kbd>Esc</kbd>.</li>
+  <li>Hard-refresh the tab after reloading the extension (content scripts are injected at load).</li>
+</ol>
+<h3>Omnibar / palette looks wrong</h3>
+<ul>
+  <li>White square behind the bar — reload this build; the iframe canvas is transparent.</li>
+  <li>List taller than the screen — it should scroll inside <code>#list</code>.</li>
+  <li>⌘ vs Alt pick hints — they follow the OS. See <a href="#omnibar">omnibar</a>.</li>
+</ul>
+<h3><code>:gray</code> / <code>:read</code> / progress does nothing</h3>
+<ul>
+  <li>Top frame only. Iframes do not get a second bar.</li>
+  <li>Restricted page (PDF viewer, chrome://, CSP that blocks inline style).</li>
+  <li>Service worker asleep / error — <code>chrome://extensions</code> → service worker console.</li>
+</ul>
+<h3>Options</h3>
+<ul>
+  <li>Find any field with the Find box on the tab bar (not the Start blurb).</li>
+  <li>Notes (right column) stay visible. Save writes dirty fields; export before Reset.</li>
+  <li>A new setting missing after update — reload the extension, then reopen Options.</li>
+</ul>
+<div class="callout tip">Still stuck? <a href="#devtools">Developer handbook</a> —
+  SW DevTools, content-script sources, storage viewer.</div>
+`
+  },
+  {
+    id: "changelog",
+    title: "Changelog",
+    subtitle: "What landed in this line — details in RELEASE-NOTES.md",
+    group: "About",
+    related: ["about", "home", "options-overview"],
+    html: `
+<p>Authoritative notes live in the repo <code>RELEASE-NOTES.md</code>. This page is the in-extension summary.</p>
+<h3>v1.1</h3>
+<ul>
+  <li>Destructive palette commands confirm with a second Enter</li>
+  <li>History pause survives service-worker sleep; site power toggle matches the real host</li>
+  <li>Side panel: <kbd>j</kbd>/<kbd>k</kbd> on empty filter, tab <kbd>x</kbd>/<kbd>p</kbd>/<kbd>m</kbd>, working Cmds</li>
+  <li>Omnibar list scrolls instead of growing past the viewport; OS-correct ⌘ / Alt pick hints</li>
+  <li>Options: conceptual tabs, Find, always-on notes, native color pickers,
+    <code>viewFxCss</code>, highlighter / spotlight / reader size</li>
+  <li>Spanish locale is <code>es</code> (Chrome never loaded <code>sp</code>)</li>
+</ul>
+<h3>v1.0</h3>
+<ul>
+  <li>First public Vim+ line — Chrome MV3, keyboard navigation, omnibar, palette, command center</li>
+  <li>Reading progress, Reader View, highlighter, window dock, in-extension wiki</li>
+</ul>
+<p><a href="options.html">Open Options</a> · <a href="#about">About</a></p>
 `
   },
   {

@@ -475,9 +475,19 @@ js\\:|Js: javascript:\\ $S; JavaScript`,
     dockWindowStep: 50,
     readingProgress: true,
     readingProgressColor: "#e11d48",
-    readingProgressHeight: 3,
+    readingProgressHeight: 2,
     readingProgressCss: "",
     showInfiniteScrollMark: true,
+    // Empty = built-in :view profiles (see DEFAULT_VIEW_FX_CSS / wiki #view-fx)
+    viewFxCss: "",
+    accentColor: "#e11d48",
+    hintBg: "#e11d48",
+    hintFg: "#ffffff",
+    findHighlightColor: "#ff9632",
+    highlighterColors: "#fef08a,#bbf7d0,#fbcfe8,#bfdbfe,#fdba74",
+    spotlightRadius: 150,
+    readerFontSize: 18,
+    readerWidth: 36,
     hashbangs: `g|!g|google: https://www.google.com/search?q=%s Google
 w|!w|wiki|wikipedia: https://en.wikipedia.org/w/index.php?search=%s Wikipedia
 gh|!gh|github: https://github.com/search?q=%s GitHub

@@ -81,7 +81,7 @@
   },
   "default_locale": "en",
   "description": "__MSG_description__",
-  "homepage_url": "https://jamal.dev",
+  "homepage_url": "https://jamalyusuf.github.io/vim-plus/",
   "host_permissions": [
     "<all_urls>"
   ],
@@ -104,7 +104,6 @@
     "keyword": "v"
   },
   "optional_permissions": [
-    "cookies",
     "contentSettings"
   ],
   "options_ui": {
@@ -137,8 +136,8 @@
   ],
   "short_name": "Vim+",
   "update_url": "https://clients2.google.com/service/update2/crx",
-  "version": "1.0.0",
-  "version_name": "1.0.0",
+  "version": "1.1.0",
+  "version_name": "1.1.0",
   "web_accessible_resources": [ {
     "resources": [ "content/*", "front/vomnibar*", "lib/*" ],
     "matches": [ "<all_urls>", "chrome-extension://*/*" ],

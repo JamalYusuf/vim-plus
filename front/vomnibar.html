@@ -5,8 +5,9 @@
 	<title>Vomnibar of Vim+</title>
 	<script defer src="vomnibar.js"></script>
 	<style>
-html{overflow:hidden;}
-body{background:#fafafa;border-radius:0;box-shadow:0 12px 40px rgba(0,0,0,.5);contain:content;margin:9px 12px 10px;
+html{overflow:hidden;background:transparent!important;color-scheme:normal;}
+body{background:#fafafa;border-radius:0;box-shadow:0 10px 28px rgba(0,0,0,.18);
+contain:content;margin:9px 12px 10px;
 overflow:hidden;padding:0;position:relative;white-space:nowrap;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;}
 body::after{border:1px solid #e11d48;border-radius:0;bottom:0;left:0;pointer-events:none;position:fixed;right:0;top:0;content:"";}
 .inactive{opacity:.7;transition:opacity 160ms;}
@@ -29,8 +30,8 @@ color:#18181b;contain:strict;font-size:18px;height:34px;outline:none;padding:4px
 #input:focus{border-color:#e11d48;box-shadow:0 0 0 1px #e11d48;}
 #input::placeholder{color:#a1a1aa;font-size:15px;}
 /* Scroll long result lists — keep scrollbar usable (no contain:content on scroller) */
-#list-wrap{position:relative;max-height:480px;overflow:hidden}
-#list{border-radius:0;background:#fafafa;max-height:480px;overflow-x:hidden;overflow-y:auto;
+#list-wrap{position:relative;max-height:min(480px,calc(100vh - 170px));overflow:hidden}
+#list{border-radius:0;background:#fafafa;max-height:min(480px,calc(100vh - 170px));overflow-x:hidden;overflow-y:auto;
 scrollbar-width:thin;scrollbar-color:#e11d48 #ececee;position:relative;overscroll-behavior:contain;
 -webkit-overflow-scrolling:touch}
 #list::-webkit-scrollbar{width:10px}
@@ -115,7 +116,8 @@ match{color:#e11d48;font-weight:700;}.title>match{text-decoration:none;}
 .s,.item:hover{border-bottom-style:solid;}.s>.top,:hover>.top{font-weight:bold;--vc-c:currentColor;}
 </style>
 	<style id="dark">
-body{background:#0a0a0b;}
+html{background:transparent!important;}
+body{background:#0a0a0b;box-shadow:0 10px 28px rgba(0,0,0,.45);}
 body::after{content:"";border-color:#e11d48;}
 /* Dark header: charcoal + rose accents, never pale text on red */
 #tips{background:#111113;border-bottom-color:#e11d48;color:#e4e4e7;}
@@ -160,11 +162,11 @@ body::after{content:"";}body{box-shadow:none;}
 <body style="display: none;">
 <div id="tips" role="status" aria-live="polite">
 	<span class="tip-mode" id="tip-mode">OMNI</span>
-	<span id="tip-text"><b>Command palette</b> · type <kbd>:</kbd> · hold <kbd>⌘</kbd>/<kbd>Alt</kbd> for 1–9 hints · <kbd>!g</kbd> search</span>
+	<span id="tip-text"><b>Omnibar</b> · type to search · <kbd>:</kbd> commands · <kbd>!g</kbd> search</span>
 </div>
 <div id="bar">
 	<input type="text" id="input" spellcheck="false" autocomplete="off" autocapitalize="off"
-			inputmode="search" enterkeyhint="Go" placeholder="Search or type : for commands  (e.g. :gray :h1 :sh)" />
+			inputmode="search" enterkeyhint="Go" placeholder="Search or :command" />
 	<div id="toolbar">
 		<span role="button" class="button" id="toggle-dark" title="Toggle Dark"><svg class="btn_svg" viewBox="0 0 20 20">
 			<path class="i-moon" d="M5.4 3A7.2 7.3 0 1 1 5.4 17A6.4 7 0 1 0 5.4 3z"></path>
@@ -190,6 +192,6 @@ body::after{content:"";}body{box-shadow:none;}
 </div>
 <div id="list-scroll-hint" aria-hidden="true">more ↓</div>
 </div>
-<div id="footer-tip"><kbd>↑</kbd><kbd>↓</kbd> · <kbd>Enter</kbd> · hold <kbd>⌘</kbd>/<kbd>Alt</kbd> + <kbd>1</kbd>–<kbd>9</kbd> · <kbd>:</kbd> palette · <kbd>Esc</kbd></div>
+<div id="footer-tip"><kbd>↑</kbd><kbd>↓</kbd> · <kbd>Enter</kbd> · hold <kbd>Alt</kbd> + <kbd>1</kbd>–<kbd>9</kbd> · <kbd>:</kbd> palette · <kbd>Esc</kbd></div>
 </body>
 </html>

@@ -4,7 +4,7 @@
  */
 import { browser_, runtimeError_, getTabUrl, getCurTab, Tabs_, Windows_, browserSessions_, Q_ } from "./browser"
 import { showHUD, getPortUrl_, indexFrame } from "./ports"
-import { curTabId_, framesForTab_ } from "./store"
+import { curTabId_, framesForTab_, settingsCache_ } from "./store"
 // Static import only — dynamic import() compiles to AMD require(), which is null in the SW
 // and throws "require is not a function" (breaks LinkHints / find / visual from :nav).
 import { executeExternalCmd } from "./run_commands"
@@ -20,6 +20,8 @@ export interface QuickActionDef {
   /** Category chip (Privacy / History / View / Tab / Chrome) */
   cat: string
   needsDomain?: boolean
+  /** Requires a second Enter within 8s (deletes data or mass-closes tabs) */
+  destructive?: boolean
 }
 
 const MS_MIN = 60_000
@@ -45,9 +47,9 @@ export const CATEGORY_ALIASES: ReadonlyArray<{ cat: string, cmds: string[], titl
 export const QUICK_ACTIONS: readonly QuickActionDef[] = [
   // —— Privacy ——
   { id: "shred", cmd: "sh", title: "Shred domain…", keys: ["sh", "shred", "purge", "wipe"],
-    desc: "Wipe history + cookies/cache for a domain", cat: "Privacy", needsDomain: true },
+    desc: "Wipe history + cookies/cache for a domain", cat: "Privacy", needsDomain: true, destructive: true },
   { id: "shred-current", cmd: "sc", title: "Shred current site", keys: ["sc", "shred-current", "purge-site"],
-    desc: "Wipe history + site data for this tab’s domain", cat: "Privacy" },
+    desc: "Wipe history + site data for this tab’s domain", cat: "Privacy", destructive: true },
   { id: "clear-cookies", cmd: "ck", title: "Clear cookies (current site)", keys: ["ck", "cookies", "clear-cookies"],
     desc: "Remove cookies for this site only", cat: "Privacy" },
   { id: "clear-cache", cmd: "cache", title: "Clear cache (current site)", keys: ["cache", "clear-cache"],
@@ -63,7 +65,7 @@ export const QUICK_ACTIONS: readonly QuickActionDef[] = [
   { id: "h7", cmd: "h7", title: "Clear history · 7 days", keys: ["h7", "hist7", "week"],
     desc: "Delete history from the last week", cat: "History" },
   { id: "hall", cmd: "hall", title: "Clear all history", keys: ["hall", "histall"],
-    desc: "Delete all browsing history (cannot undo)", cat: "History" },
+    desc: "Delete all browsing history (cannot undo)", cat: "History", destructive: true },
   { id: "ph15", cmd: "ph15", title: "Pause history · 15 min", keys: ["ph15", "off15"],
     desc: "Auto-delete new visits for 15 minutes", cat: "History" },
   { id: "ph", cmd: "ph", title: "Pause history · 1 hour", keys: ["ph", "pause", "off"],
@@ -127,7 +129,7 @@ export const QUICK_ACTIONS: readonly QuickActionDef[] = [
   { id: "hl", cmd: "hl", title: "Highlighter mode", keys: ["hl", "highlight", "marker"],
     desc: "Select text to mark; click mark to comment/remove (persists)", cat: "Read" },
   { id: "hl-clear", cmd: "hlc", title: "Clear highlights", keys: ["hlc", "unmark"],
-    desc: "Remove all highlights on this page (and from storage)", cat: "Read" },
+    desc: "Remove all highlights on this page (and from storage)", cat: "Read", destructive: true },
   { id: "reader", cmd: "read", title: "Reader View", keys: ["read", "reader", "rv", "readable"],
     desc: "Firefox-style Reader View (Mozilla Readability) — toggle", cat: "Read" },
 
@@ -147,9 +149,9 @@ export const QUICK_ACTIONS: readonly QuickActionDef[] = [
   { id: "close", cmd: "x", title: "Close tab", keys: ["x", "close", "kill"],
     desc: "Close the current tab", cat: "Tab" },
   { id: "close-others", cmd: "xo", title: "Close other tabs", keys: ["xo", "only", "close-others"],
-    desc: "Close all tabs except this one", cat: "Tab" },
+    desc: "Close all tabs except this one", cat: "Tab", destructive: true },
   { id: "close-right", cmd: "xr", title: "Close tabs to the right", keys: ["xr", "close-right"],
-    desc: "Close tabs to the right of current", cat: "Tab" },
+    desc: "Close tabs to the right of current", cat: "Tab", destructive: true },
   { id: "new", cmd: "n", title: "New tab", keys: ["n", "new", "nt"],
     desc: "Open a new tab", cat: "Tab" },
   { id: "restore", cmd: "u", title: "Restore closed tab", keys: ["u", "undo", "restore"],
@@ -268,7 +270,7 @@ export const QUICK_ACTIONS: readonly QuickActionDef[] = [
     desc: "Float the main video (PiP)", cat: "View" },
   { id: "find", cmd: "find", title: "Find on page", keys: ["find", "search-page", "/"],
     desc: "Open Vim+ find mode", cat: "Nav" },
-  { id: "hints", cmd: "hints", title: "Link hints", keys: ["hints", "f", "links"],
+  { id: "hints", cmd: "hints", title: "Link hints", keys: ["hints", "fh", "links"],
     desc: "Activate link hints (f)", cat: "Nav" },
   { id: "omni", cmd: "o", title: "Reopen omnibar (omni)", keys: ["o", "omni"],
     desc: "Stay in omni mode (refresh)", cat: "Vim+" },
@@ -282,6 +284,24 @@ export const QUICK_ACTIONS: readonly QuickActionDef[] = [
 
 let historyPauseUntil_ = 0
 let historyPauseListenerOn_ = false
+const PAUSE_STORE = "vpHistoryPauseUntil"
+const PAUSE_ALARM = "vp-history-resume"
+
+const pauseStorage_ = (): { get (keys: string[], cb: (items: Dict<any>) => void): void
+    set (items: Dict<any>, cb?: () => void): void
+    remove (keys: string | string[], cb?: () => void): void } | null => {
+  const st = browser_.storage as typeof browser_.storage & { session?: typeof browser_.storage.local }
+  return (st && (st.session || st.local)) || null
+}
+
+const persistPauseUntil_ = (until: number): void => {
+  const st = pauseStorage_()
+  if (!st) { return }
+  try {
+    if (until > 0) { st.set({ [PAUSE_STORE]: until }, runtimeError_) }
+    else { st.remove(PAUSE_STORE, runtimeError_) }
+  } catch { /* empty */ }
+}
 
 const onVisitedWhilePaused_ = (item: chrome.history.HistoryItem): void => {
   if (Date.now() > historyPauseUntil_) {
@@ -295,6 +315,11 @@ const onVisitedWhilePaused_ = (item: chrome.history.HistoryItem): void => {
 
 const stopHistoryPause_ = (notify: boolean): void => {
   historyPauseUntil_ = 0
+  persistPauseUntil_(0)
+  try {
+    const alarms = (browser_ as any).alarms as { clear?: (n: string) => void } | undefined
+    alarms && alarms.clear && alarms.clear(PAUSE_ALARM)
+  } catch { /* empty */ }
   if (historyPauseListenerOn_ && browser_.history && browser_.history.onVisited) {
     try {
       browser_.history.onVisited.removeListener(onVisitedWhilePaused_)
@@ -304,15 +329,53 @@ const stopHistoryPause_ = (notify: boolean): void => {
   if (notify) { showHUD("History on") }
 }
 
+const attachPauseListener_ = (): void => {
+  if (historyPauseListenerOn_ || !browser_.history || !browser_.history.onVisited) { return }
+  browser_.history.onVisited.addListener(onVisitedWhilePaused_)
+  historyPauseListenerOn_ = true
+}
+
 const startHistoryPause_ = (ms: number): string => {
   historyPauseUntil_ = Date.now() + ms
-  if (!historyPauseListenerOn_ && browser_.history && browser_.history.onVisited) {
-    browser_.history.onVisited.addListener(onVisitedWhilePaused_)
-    historyPauseListenerOn_ = true
-  }
+  persistPauseUntil_(historyPauseUntil_)
+  attachPauseListener_()
+  try {
+    const alarms = (browser_ as any).alarms as { create?: (n: string, o: { when: number }) => void } | undefined
+    alarms && alarms.create && alarms.create(PAUSE_ALARM, { when: historyPauseUntil_ })
+  } catch { /* empty */ }
   const mins = Math.round(ms / MS_MIN)
   return mins >= 60 ? `History off ${Math.round(mins / 60)}h` : `History off ${mins}m`
 }
+
+/** Re-attach pause after MV3 service-worker death. Safe no-op if none. */
+export const restoreHistoryPause_ = (): void => {
+  const st = pauseStorage_()
+  if (!st) { return }
+  try {
+    st.get([PAUSE_STORE], (items): void => {
+      const until = items && +items[PAUSE_STORE] || 0
+      if (until > Date.now()) {
+        historyPauseUntil_ = until
+        attachPauseListener_()
+      } else if (until) {
+        persistPauseUntil_(0)
+      }
+      return runtimeError_()
+    })
+  } catch { /* empty */ }
+}
+
+try {
+  const alarms = (browser_ as any).alarms as {
+    onAlarm?: { addListener (cb: (a: { name?: string }) => void): void }
+  } | undefined
+  if (alarms && alarms.onAlarm) {
+    alarms.onAlarm.addListener((a): void => {
+      if (a && a.name === PAUSE_ALARM) { stopHistoryPause_(true) }
+    })
+  }
+} catch { /* empty */ }
+restoreHistoryPause_()
 
 const extractDomain_ = (raw: string): string => {
   let s = (raw || "").trim().toLowerCase()
@@ -346,7 +409,17 @@ const activeTabId_ = (): Promise<number> => new Promise((resolve): void => {
 })
 
 const deleteHistorySince_ = (sinceMs: number): Promise<number> => {
-  const history = browser_.history
+  const history = browser_.history as typeof browser_.history & {
+    deleteRange?: (q: { startTime: number, endTime: number }, cb: () => void) => void
+  }
+  if (history && history.deleteRange) {
+    return new Promise((resolve): void => {
+      history.deleteRange!({ startTime: sinceMs, endTime: Date.now() }, (): void => {
+        resolve(-1)
+        return runtimeError_()
+      })
+    })
+  }
   if (!history || !history.search) { return Promise.resolve(0) }
   return new Promise((resolve): void => {
     history.search({ text: "", startTime: sinceMs, maxResults: 10000 }, (items): void => {
@@ -414,8 +487,49 @@ const openChromePage_ = (url: string): Promise<string> => new Promise((resolve):
 
 type FxMode = "gray" | "blue" | "jumble" | "inv" | "sepia" | "blur" | "contrast" | "dim" | "focus" | "off"
 
+/**
+ * Built-in :view CSS profiles. Overridden by settingsCache_.viewFxCss (Look → :view color profiles).
+ * Keep names in sync with FxMode (except jumble / off). Wiki: #view-fx
+ */
+export const DEFAULT_VIEW_FX_CSS: { [name: string]: string } = {
+  gray: "html{filter:grayscale(1)!important}",
+  blue: "html{filter:sepia(.35) hue-rotate(180deg) saturate(1.4)!important}",
+  inv: "html{filter:invert(1) hue-rotate(180deg)!important}",
+  sepia: "html{filter:sepia(.85) contrast(1.05)!important}",
+  blur: "html{filter:blur(1.2px)!important}",
+  contrast: "html{filter:contrast(1.45) saturate(1.1)!important}",
+  dim: "html{filter:brightness(.72)!important}",
+  focus: "html{background:#111!important}body{max-width:42rem;margin:0 auto!important;padding:1rem 1.25rem!important;background:#111!important;color:#e8e8e8!important;box-shadow:0 0 0 100vmax rgba(0,0,0,.55)!important}"
+}
+
+/**
+ * Parse Options → Look → viewFxCss.
+ * Format: `name: css` per line. `#` comments. Later lines win. Unknown names kept (unused).
+ */
+export const parseViewFxCss_ = (raw: string): { [name: string]: string } => {
+  const out: { [name: string]: string } = {}
+  if (!raw) { return out }
+  const lines = raw.split("\n")
+  for (let i = 0; i < lines.length; i++) {
+    const t = (lines[i] || "").trim()
+    if (!t || t.charAt(0) === "#") { continue }
+    const colon = t.indexOf(":")
+    if (colon <= 0) { continue }
+    const name = t.slice(0, colon).trim().toLowerCase()
+    const css = t.slice(colon + 1).trim()
+    if (name && css) { out[name] = css }
+  }
+  return out
+}
+
+const resolveFxCss_ = (mode: string): string => {
+  const user = parseViewFxCss_((settingsCache_ as { viewFxCss?: string }).viewFxCss || "")
+  if (user[mode]) { return user[mode] }
+  return DEFAULT_VIEW_FX_CSS[mode] || ""
+}
+
 /** Injected into the page via scripting.executeScript. Typed as any — runs in page DOM context. */
-const pageFxInjector_: any = function (styleId: string, fx: string): string {
+const pageFxInjector_: any = function (styleId: string, fx: string, cssOverride?: string): string {
   const doc: any = (globalThis as any).document
   const root = doc.documentElement
   const old = doc.getElementById(styleId)
@@ -486,7 +600,7 @@ const pageFxInjector_: any = function (styleId: string, fx: string): string {
     dim: "html{filter:brightness(.72)!important}",
     focus: "html{background:#111!important}body{max-width:42rem;margin:0 auto!important;padding:1rem 1.25rem!important;background:#111!important;color:#e8e8e8!important;box-shadow:0 0 0 100vmax rgba(0,0,0,.55)!important}"
   }
-  const css = cssMap[fx]
+  const css = (cssOverride && (cssOverride + "").length) ? cssOverride : cssMap[fx]
   if (!css) { return "unknown fx" }
   const el = doc.createElement("style")
   el.id = styleId
@@ -515,8 +629,8 @@ const applyPageFx_ = async (mode: FxMode): Promise<string> => {
     const results = await scripting.executeScript({
       target: { tabId },
       world: "ISOLATED",
-      func: pageFxInjector_ as (styleId: string, fx: string) => string,
-      args: [FX_STYLE_ID, mode]
+      func: pageFxInjector_ as (styleId: string, fx: string, cssOverride?: string) => string,
+      args: [FX_STYLE_ID, mode, resolveFxCss_(mode)]
     })
     const msg = results && results[0] && results[0].result || mode
     return String(msg)
@@ -663,19 +777,20 @@ const enhanceInjector_: any = function vpEnhance (cmd: string, arg?: string): st
     st._progInfinite = false
     putStyle("vp-prog-css",
         "#vp-read-progress-track{position:fixed!important;top:0!important;left:0!important;right:0!important;"
-        + "height:5px!important;z-index:2147483646!important;pointer-events:none!important;"
-        + "background:rgba(113,113,122,.45)!important;overflow:hidden!important;"
-        + "box-shadow:0 1px 0 rgba(0,0,0,.12)!important}"
+        + "height:2px!important;z-index:2147483646!important;pointer-events:none!important;"
+        + "margin:0!important;padding:0!important;border:none!important;"
+        + "background:transparent!important;box-shadow:none!important;overflow:hidden!important}"
         + "#vp-read-progress-fill{position:absolute!important;top:0!important;left:0!important;"
         + "bottom:0!important;width:100%!important;height:100%!important;"
         + "transform:scaleX(0)!important;transform-origin:left center!important;"
-        + "background:linear-gradient(90deg,#e11d48,#fb7185 70%,#fda4af)!important;"
-        + "box-shadow:0 0 10px #e11d48aa!important;transition:transform 60ms linear!important;"
-        + "pointer-events:none!important}"
-        + "#vp-read-infinity{position:fixed!important;top:10px!important;right:10px!important;"
-        + "z-index:2147483647!important;pointer-events:none!important;font:700 13px/1 system-ui,sans-serif!important;"
-        + "color:#e11d48!important;opacity:0!important;transition:opacity .2s!important}"
-        + "#vp-read-infinity.on{opacity:.95!important}")
+        + "background:#e11d48!important;box-shadow:none!important;"
+        + "transition:transform 90ms ease-out!important;pointer-events:none!important}"
+        + "#vp-read-infinity{position:fixed!important;top:10px!important;right:12px!important;"
+        + "z-index:2147483647!important;pointer-events:none!important;"
+        + "font:600 11px/1 ui-sans-serif,system-ui,sans-serif!important;"
+        + "color:#e11d48!important;opacity:0!important;transition:opacity .18s ease!important;"
+        + "text-shadow:none!important}"
+        + "#vp-read-infinity.on{opacity:.45!important}")
     const track = d.createElement("div")
     track.id = "vp-read-progress-track"
     const fill = d.createElement("div")
@@ -1272,7 +1387,6 @@ const enhanceInjector_: any = function vpEnhance (cmd: string, arg?: string): st
   if (c === "off-view" || c === "offv" || c === "noview" || c === "off") {
     if (st.hideImg) { vpEnhance("hideimg") }
     if (st.device) { vpEnhance("device", "desktop") }
-    if (st.progress) { vpEnhance("progress") }
     if (st.spot) { vpEnhance(st.spot, "off") }
     if (st.zenCss) { vpEnhance("zen-css", "off") }
     if (st.hl) { vpEnhance("hl", "off") }
@@ -1282,13 +1396,25 @@ const enhanceInjector_: any = function vpEnhance (cmd: string, arg?: string): st
   return "unknown enhance: " + c
 }
 
-/** Inject enhanceInjector_ into the active tab. */
+/** Prefer the content-script enhance API; fall back to the injected copy on chrome://-adjacent pages. */
 const callEnhance_ = async (cmd: string, arg?: string, tabId?: number): Promise<string> => {
   const id = tabId != null ? tabId : await activeTabId_()
   if (id < 0) { return "No active tab" }
   const scripting = scriptingApi_()
   if (!scripting) { return "scripting API unavailable" }
   try {
+    const probe = await scripting.executeScript({
+      target: { tabId: id },
+      world: "ISOLATED",
+      func: ((c: string, a?: string): string => {
+        const g: any = globalThis as any
+        if (typeof g.__vpEnhance === "function") { return String(g.__vpEnhance(c, a)) }
+        return "__missing__"
+      }) as (c: string, a?: string) => string,
+      args: arg != null ? [cmd, arg] : [cmd]
+    })
+    const got = probe && probe[0] && probe[0].result
+    if (got != null && got !== "__missing__") { return String(got) }
     const results = await scripting.executeScript({
       target: { tabId: id },
       world: "ISOLATED",
@@ -1570,10 +1696,15 @@ const readabilityParseInjector_: any = function (): any {
  * Firefox-style Reader View: replace page with clean article UI.
  * Toggle: second call restores the original page.
  */
-const readerViewInjector_: any = function (article: any): string {
+const readerViewInjector_: any = function (article: any, opts?: {
+  fontPx?: number, widthEm?: number, accent?: string
+}): string {
   const g: any = globalThis as any
   const d: any = g.document
   if (!d || !d.body) { return "No document body" }
+  const fontPx = Math.max(12, Math.min(32, (opts && opts.fontPx) || 18))
+  const widthEm = Math.max(24, Math.min(56, (opts && opts.widthEm) || 36))
+  const accent = (opts && opts.accent) || "#e11d48"
 
   // Exit reader mode → restore
   if (d.documentElement.getAttribute("data-vp-reader") === "1" && g.__vpReaderBackup) {
@@ -1611,14 +1742,14 @@ const readerViewInjector_: any = function (article: any): string {
   const css = `
 html.vp-reader-root,html.vp-reader-root body{background:#f4f4f1!important;color:#1a1a1a!important;
 margin:0!important;padding:0!important;min-height:100%!important}
-html.vp-reader-root body{font:18px/1.7 Georgia,"Times New Roman",serif!important}
-#vp-reader{max-width:36em;margin:0 auto;padding:2.5rem 1.5rem 4rem;position:relative}
+html.vp-reader-root body{font:${fontPx}px/1.7 Georgia,"Times New Roman",serif!important}
+#vp-reader{max-width:${widthEm}em;margin:0 auto;padding:2.5rem 1.5rem 4rem;position:relative}
 #vp-reader-toolbar{position:sticky;top:0;z-index:10;display:flex;gap:8px;align-items:center;
 flex-wrap:wrap;padding:.6rem 0 .75rem;margin:0 0 1.25rem;background:linear-gradient(#f4f4f1ee,#f4f4f1);
 border-bottom:1px solid #ddd;font:13px/1.3 system-ui,-apple-system,sans-serif}
 #vp-reader-toolbar button{cursor:pointer;border:1px solid #ccc;background:#fff;color:#222;
-padding:6px 12px;border-radius:6px;font:13px system-ui,sans-serif}
-#vp-reader-toolbar button:hover{border-color:#e11d48;color:#e11d48}
+padding:6px 12px;border-radius:0;font:13px system-ui,sans-serif}
+#vp-reader-toolbar button:hover{border-color:${accent};color:${accent}}
 #vp-reader-toolbar .spacer{flex:1}
 #vp-reader h1.vp-rtitle{font:700 2em/1.25 Georgia,serif;margin:0 0 .4em;letter-spacing:-.02em}
 #vp-reader .vp-rmeta{color:#666;font:14px/1.4 system-ui,sans-serif;margin:0 0 1.5em}
@@ -1718,6 +1849,12 @@ html.vp-reader-root.sepia #vp-reader-toolbar{background:linear-gradient(#f4ecd8e
           html.classList.add("dark")
           wrap.classList.add("dark")
         }
+        try {
+          const name = html.classList.contains("dark") ? "dark"
+              : html.classList.contains("sepia") ? "sepia" : "light"
+          const ch = g.chrome
+          ch && ch.storage && ch.storage.local && ch.storage.local.set({ vpReaderTheme: name })
+        } catch { /* empty */ }
         return
       }
       if (act === "width") {
@@ -1735,10 +1872,73 @@ html.vp-reader-root.sepia #vp-reader-toolbar{background:linear-gradient(#f4ecd8e
         const cur = parseFloat(g.getComputedStyle(wrap).fontSize) || 18
         const next = act === "plus" ? Math.min(28, cur + 1) : Math.max(14, cur - 1)
         wrap.style.fontSize = next + "px"
+        try {
+          const ch = g.chrome
+          ch && ch.storage && ch.storage.local && ch.storage.local.set({ vpReaderFontPx: next })
+        } catch { /* empty */ }
       }
     })
   }
-  return "Reader View on · " + (article.title || "article")
+  const closeReader = (): void => {
+    if (!g.__vpReaderBackup) { return }
+    d.body.innerHTML = g.__vpReaderBackup.bodyHTML
+    d.body.className = g.__vpReaderBackup.bodyClass || ""
+    d.title = g.__vpReaderBackup.title || d.title
+    d.documentElement.removeAttribute("data-vp-reader")
+    d.documentElement.classList.remove("vp-reader-root", "dark", "sepia")
+    const st = d.getElementById("vp-reader-style")
+    if (st && st.parentNode) { st.parentNode.removeChild(st) }
+    g.scrollTo(0, g.__vpReaderBackup.scrollY || 0)
+    g.__vpReaderBackup = null
+  }
+  const onRKey = (e: any): void => {
+    if (d.documentElement.getAttribute("data-vp-reader") !== "1") {
+      g.removeEventListener("keydown", onRKey, true)
+      return
+    }
+    const k = e.key
+    if (k === "Escape" || k === "q") {
+      if (e.preventDefault) { e.preventDefault() }
+      closeReader()
+      return
+    }
+    if (k === "=" || k === "+") {
+      const btn = wrap.querySelector('[data-vp-r="plus"]')
+      if (btn) { btn.click() }
+      if (e.preventDefault) { e.preventDefault() }
+    } else if (k === "-") {
+      const btn = wrap.querySelector('[data-vp-r="minus"]')
+      if (btn) { btn.click() }
+      if (e.preventDefault) { e.preventDefault() }
+    } else if (k === "0") {
+      wrap.style.fontSize = fontPx + "px"
+      if (e.preventDefault) { e.preventDefault() }
+    }
+  }
+  g.addEventListener("keydown", onRKey, true)
+  try {
+    const ch = g.chrome
+    if (ch && ch.storage && ch.storage.local) {
+      ch.storage.local.get(["vpReaderTheme", "vpReaderFontPx", "vpUiDark", "autoDarkMode"], (items: any): void => {
+        const theme = items && items.vpReaderTheme
+        if (theme === "dark" || (!theme && (items && items.vpUiDark === 1
+            || items && items.autoDarkMode === 1 && g.matchMedia
+            && g.matchMedia("(prefers-color-scheme: dark)").matches))) {
+          d.documentElement.classList.add("dark")
+          wrap.classList.add("dark")
+        } else if (theme === "sepia") {
+          d.documentElement.classList.add("sepia")
+          wrap.classList.add("sepia")
+        }
+        if (items && items.vpReaderFontPx) {
+          wrap.style.fontSize = (+items.vpReaderFontPx || fontPx) + "px"
+        } else {
+          wrap.style.fontSize = fontPx + "px"
+        }
+      })
+    }
+  } catch { /* empty */ }
+  return "Reader View on · q/Esc exit · =/− size · " + (article.title || "article")
 }
 
 const parseArticleInTab_ = async (tabId: number): Promise<any> => {
@@ -1780,7 +1980,7 @@ const toggleReaderView_ = async (): Promise<string> => {
         target: { tabId },
         world: "ISOLATED",
         func: readerViewInjector_,
-        args: [null]
+        args: [null, null]
       })
       return String(off && off[0] && off[0].result || "Reader View off")
     }
@@ -1796,7 +1996,11 @@ const toggleReaderView_ = async (): Promise<string> => {
       target: { tabId },
       world: "ISOLATED",
       func: readerViewInjector_,
-      args: [article]
+      args: [article, {
+        fontPx: (settingsCache_ as { readerFontSize?: number }).readerFontSize || 18,
+        widthEm: (settingsCache_ as { readerWidth?: number }).readerWidth || 36,
+        accent: (settingsCache_ as { accentColor?: string }).accentColor || "#e11d48"
+      }]
     })
     return String(results && results[0] && results[0].result || "Reader View on")
   } catch (e) {
@@ -1925,10 +2129,13 @@ const tabAction_ = async (kind: "pin" | "mute" | "dup" | "sleep" | "rh" | "r" | 
         if (g) { g(tabId, (): void => { resolve("Forward"); return runtimeError_() }) }
         else { resolve("goForward unavailable") }
       } else {
-        // stop
-        const s = (chrome.tabs as any).discard // no direct stop; use reload cancel via scripting
-        void s
-        Tabs_.update(tabId, { url: tab.url }, (): void => { resolve("Stopped/refreshed"); return runtimeError_() })
+        const scripting = scriptingApi_()
+        if (!scripting) { resolve("scripting API unavailable"); return }
+        void scripting.executeScript({
+          target: { tabId },
+          func: (): void => { try { (globalThis as any).stop() } catch { /* empty */ } }
+        }).then((): void => { resolve("Stopped") }
+            , (): void => { resolve("Stop failed (restricted page?)") })
       }
     })
   })
@@ -2318,6 +2525,26 @@ const scoreQuickAction_ = (act: QuickActionDef, q: string): number => {
   return s
 }
 
+const RECENTS_KEY = "vpQaRecent"
+let qaRecents_: string[] = []
+try {
+  const st = browser_.storage && browser_.storage.local
+  st && st.get([RECENTS_KEY], (items): void => {
+    if (items && items[RECENTS_KEY] && items[RECENTS_KEY].length) {
+      qaRecents_ = items[RECENTS_KEY] as string[]
+    }
+    return runtimeError_()
+  })
+} catch { /* empty */ }
+
+const pushQaRecent_ = (id: string): void => {
+  if (!id || id === "browse" || DESTRUCTIVE_CANON[id] && pendingConfirm_) { return }
+  qaRecents_ = [id].concat(qaRecents_.filter(x => x !== id)).slice(0, 12)
+  try {
+    browser_.storage.local.set({ [RECENTS_KEY]: qaRecents_ }, runtimeError_)
+  } catch { /* empty */ }
+}
+
 /** Build rows for omnibar. `text` is the short form filled into the bar. */
 export const matchQuickActions_ = (queryNoColon: string, max: number
     ): Array<{ id: string, title: string, desc: string, url: string, text: string, cat: string }> => {
@@ -2328,8 +2555,17 @@ export const matchQuickActions_ = (queryNoColon: string, max: number
   type Row = { id: string, title: string, desc: string, url: string, text: string, cat: string, score?: number }
   const out: Row[] = []
 
-  // Empty ":" → category index + power-user hits (VS Code palette style)
+  // Empty ":" → recents, then category index + power-user hits
   if (!head) {
+    for (const rid of qaRecents_) {
+      if (out.length >= max) { break }
+      const act = QUICK_ACTIONS.find(a => a.id === rid)
+      if (!act) { continue }
+      out.push({
+        id: act.id, title: act.title, desc: "Recent · " + act.desc,
+        url: "vimium://qa/" + act.id, text: ":" + act.cmd, cat: act.cat
+      })
+    }
     for (const c of CATEGORY_ALIASES) {
       out.push({
         id: "cat-" + c.cat,
@@ -2436,22 +2672,40 @@ export const restoreHighlightsOnTab_ = (tabId: number): void => {
   void callEnhance_("hl-restore", undefined, tabId).then((): void => { /* quiet */ }, (): void => { /* quiet */ })
 }
 
-// Auto-restore highlights after navigation (content script may miss late DOM)
-try {
-  const webNav = (browser_ as typeof chrome).webNavigation
-  if (webNav && webNav.onCompleted) {
-    webNav.onCompleted.addListener((details): void => {
-      if (details.frameId !== 0) { return }
-      const u = details.url || ""
-      if (!u || u.startsWith("chrome:") || u.startsWith("chrome-extension:")
-          || u.startsWith("about:") || u.startsWith("devtools:")) { return }
-      const tid = details.tabId
-      // two attempts: early + after late content
-      setTimeout((): void => { restoreHighlightsOnTab_(tid) }, 250)
-      setTimeout((): void => { restoreHighlightsOnTab_(tid) }, 1500)
-    })
+// Content script restores highlights on load. SW re-injects only if the page never got content scripts.
+
+let pendingConfirm_: { id: string, until: number } | null = null
+const CONFIRM_MS = 8000
+const DESTRUCTIVE_CANON: { [k: string]: string } = {
+  hall: "hall",
+  shred: "shred", "shred-domain": "shred",
+  "shred-current": "shred-current", sc: "shred-current",
+  "close-others": "close-others", xo: "close-others",
+  "close-right": "close-right", xr: "close-right",
+  "hl-clear": "hl-clear", hlc: "hl-clear", unmark: "hl-clear"
+}
+const DESTRUCTIVE_LABEL: { [k: string]: string } = {
+  hall: "delete ALL browsing history",
+  shred: "wipe this domain’s history and site data",
+  "shred-current": "wipe this site’s history and site data",
+  "close-others": "close every other tab in this window",
+  "close-right": "close tabs to the right",
+  "hl-clear": "remove all highlights on this page"
+}
+
+const confirmDestructive_ = (canon: string): string | null => {
+  const now = Date.now()
+  if (pendingConfirm_ && pendingConfirm_.id === canon && pendingConfirm_.until > now) {
+    pendingConfirm_ = null
+    return null
   }
-} catch { /* empty */ }
+  pendingConfirm_ = { id: canon, until: now + CONFIRM_MS }
+  const label = DESTRUCTIVE_LABEL[canon] || canon
+  return "Enter again to confirm · cannot undo — " + label
+}
+
+const histCleared_ = (n: number, window: string): string =>
+    n < 0 ? ("Cleared history (" + window + ")") : ("−" + n + " hist (" + window + ")")
 
 export const runQuickAction_ = (path: string): Promise<[string, Urls.kEval]> | [string, Urls.kEval] => {
   const raw = decodeURIComponent((path || "").trim())
@@ -2461,9 +2715,15 @@ export const runQuickAction_ = (path: string): Promise<[string, Urls.kEval]> | [
 
   const go = async (): Promise<[string, Urls.kEval]> => {
     try {
+      const dest = DESTRUCTIVE_CANON[id]
+      if (dest && arg !== "confirm") {
+        const block = confirmDestructive_(dest)
+        if (block) { return [block, Urls.kEval.ERROR] }
+      }
       switch (id) {
       case "browse":
-        return ["Category :" + (arg || "…") + " — pick a command from the list", Urls.kEval.ERROR]
+        return ["Type :" + (arg || "view") + " and pick a command — category is a filter, not an action",
+          Urls.kEval.ERROR]
       case "shred":
       case "shred-domain":
         return [await shredDomain_(arg), Urls.kEval.ERROR]
@@ -2479,13 +2739,13 @@ export const runQuickAction_ = (path: string): Promise<[string, Urls.kEval]> | [
       case "cache":
         return [await clearOriginData_({ cache: true, cacheStorage: true }), Urls.kEval.ERROR]
       case "h15":
-        return [`−${await deleteHistorySince_(Date.now() - 15 * MS_MIN)} hist (15m)`, Urls.kEval.ERROR]
+        return [histCleared_(await deleteHistorySince_(Date.now() - 15 * MS_MIN), "15m"), Urls.kEval.ERROR]
       case "h1":
-        return [`−${await deleteHistorySince_(Date.now() - MS_HOUR)} hist (1h)`, Urls.kEval.ERROR]
+        return [histCleared_(await deleteHistorySince_(Date.now() - MS_HOUR), "1h"), Urls.kEval.ERROR]
       case "h24":
-        return [`−${await deleteHistorySince_(Date.now() - MS_DAY)} hist (24h)`, Urls.kEval.ERROR]
+        return [histCleared_(await deleteHistorySince_(Date.now() - MS_DAY), "24h"), Urls.kEval.ERROR]
       case "h7":
-        return [`−${await deleteHistorySince_(Date.now() - 7 * MS_DAY)} hist (7d)`, Urls.kEval.ERROR]
+        return [histCleared_(await deleteHistorySince_(Date.now() - 7 * MS_DAY), "7d"), Urls.kEval.ERROR]
       case "hall": {
         const hist = browser_.history as typeof browser_.history & { deleteAll?: (cb: () => void) => void }
         if (hist && hist.deleteAll) {
@@ -2658,22 +2918,22 @@ export const runQuickAction_ = (path: string): Promise<[string, Urls.kEval]> | [
       case "dock-left":
       case "dlft":
       case "dockl":
-        return [await dockDirect_("left"), Urls.kEval.ERROR]
+        return [await runVimCmd_("dockWindowLeft"), Urls.kEval.ERROR]
       case "dock-right":
       case "drgt":
       case "dockr":
-        return [await dockDirect_("right"), Urls.kEval.ERROR]
+        return [await runVimCmd_("dockWindowRight"), Urls.kEval.ERROR]
       case "dock-up":
       case "dupp":
       case "docku":
-        return [await dockDirect_("up"), Urls.kEval.ERROR]
+        return [await runVimCmd_("dockWindowUp"), Urls.kEval.ERROR]
       case "dock-down":
       case "ddown":
       case "dockd":
-        return [await dockDirect_("down"), Urls.kEval.ERROR]
+        return [await runVimCmd_("dockWindowDown"), Urls.kEval.ERROR]
       case "dock-max":
       case "max":
-        return [await dockDirect_("max"), Urls.kEval.ERROR]
+        return [await runVimCmd_("dockWindowMax"), Urls.kEval.ERROR]
       case "dock-center":
       case "ctr":
         return [await dockDirect_("center"), Urls.kEval.ERROR]
@@ -2807,6 +3067,9 @@ export const runQuickAction_ = (path: string): Promise<[string, Urls.kEval]> | [
 
   return go().then((pair): [string, Urls.kEval] => {
     showHUD(pair[0])
+    if (id !== "browse" && pair[0] && pair[0].indexOf("Enter again to confirm") < 0) {
+      pushQaRecent_(DESTRUCTIVE_CANON[id] || id)
+    }
     return pair
   })
 }

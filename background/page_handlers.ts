@@ -15,6 +15,7 @@ import { indexFrame } from "./ports"
 import * as Exclusions from "./exclusions"
 import { MediaWatcher_, MergeAction, mergeCSS, reloadCSS_ } from "./ui_css"
 import { availableCommands_, keyMappingErrors_ } from "./key_mappings"
+import { QUICK_ACTIONS, runQuickAction_ } from "./quick_actions"
 import { executeExternalCmd, runNextOnTabLoaded } from "./run_commands"
 import { checkHarmfulUrl_, focusOrLaunch_ } from "./open_urls"
 import { focusFrame, initHelp } from "./frame_commands"
@@ -322,11 +323,13 @@ const pageRequestHandlers_: {
       try { host = url ? (new URL(url).hostname || "") : "" } catch { /* empty */ }
       const frames = framesForTab_.get(tabId)
       const status = frames ? frames.cur_.s.status_ : Frames.Status.enabled
-      const rules = settingsCache_.exclusionRules || []
-      const siteDisabled = !!(host && rules.some(r =>
-          r.passKeys === "" && (r.pattern === ":https://" + host + "/"
-              || r.pattern === ":http://" + host + "/"
-              || r.pattern.indexOf(host) >= 0)))
+      let siteDisabled = false
+      if (url) {
+        try {
+          const dummySender = { tabId_: tabId, frameId_: 0, url_: url } as Frames.Sender
+          siteDisabled = Exclusions.getExcluded_(url, dummySender) === ""
+        } catch { siteDisabled = false }
+      }
       return {
         ver: CONST_.VerName_, status, url, tabId, host,
         runnable: !!(frames && frames.cur_),
@@ -341,12 +344,15 @@ const pageRequestHandlers_: {
       out.push({ key, command: item.command_ })
     })
     out.sort((a, b) => a.key < b.key ? -1 : a.key > b.key ? 1 : 0)
-    return out.slice(0, 200)
+    return out
   },
   /** kPgReq.recentTabs: */ (): Promise<PgReq[kPgReq.recentTabs][1]> => {
     return Q_(browser_.tabs.query, {}).then((tabs): PgReq[kPgReq.recentTabs][1] => {
       if (!tabs) { return [] }
-      return tabs.slice(0, 40).map(t => ({
+      const sorted = tabs.slice().sort((a, b): number =>
+          ((b as Tab & { lastAccessed?: number }).lastAccessed || 0)
+          - ((a as Tab & { lastAccessed?: number }).lastAccessed || 0))
+      return sorted.slice(0, 80).map(t => ({
         id: t.id, title: t.title || "", url: t.url || "", active: !!t.active
       }))
     })
@@ -371,17 +377,20 @@ const pageRequestHandlers_: {
       const url = tab ? getTabUrl(tab) : ""
       switch (req.action) {
       case "help": {
-        // Run on-page help dialog when content script is available
-        try {
-          if (t && t.id != null) {
-            executeExternalCmd(
-                { command: "showHelp", count: 1 },
-                { tab: t, frameId: 0, id: browser_.runtime.id })
-          }
-        } catch {
-          try { void initHelp({ f: true }, null as never) } catch { /* empty */ }
+        const port = t && t.id != null ? indexFrame(t.id, 0) : null
+        if (!port) {
+          focusOrLaunch_({ u: browser_.runtime.getURL("pages/wiki.html#getting-started") })
+          return Promise.resolve({ ok: false, message: "No page connection — opened wiki" })
         }
-        return Promise.resolve({ ok: true, message: "Help (press ? on page · wiki also available)" })
+        try {
+          executeExternalCmd(
+              { command: "showHelp", count: 1 },
+              { tab: t, frameId: 0, id: browser_.runtime.id })
+          return Promise.resolve({ ok: true, message: "Help" })
+        } catch {
+          focusOrLaunch_({ u: browser_.runtime.getURL("pages/wiki.html#getting-started") })
+          return Promise.resolve({ ok: false, message: "Help failed — opened wiki" })
+        }
       }
       case "wiki":
         focusOrLaunch_({ u: browser_.runtime.getURL("pages/wiki.html#getting-started") })
@@ -395,14 +404,41 @@ const pageRequestHandlers_: {
       case "readingList": {
         const rl = (browser_ as Dict<any>)["readingList"] as {
           addEntry (e: { title: string, url: string, hasBeenRead?: boolean }): Promise<void>
+          removeEntry? (e: { url: string }): Promise<void>
+          query? (e: object): Promise<Array<{ url: string }>>
         } | undefined
         if (!rl || !(<RegExpOne> /^https?:/).test(url)) {
           return Promise.resolve({ ok: false, message: "Reading List needs an http(s) page" })
         }
-        return rl.addEntry({ title: (t.title || url).slice(0, 255), url, hasBeenRead: false })
-            .then((): PgReq[kPgReq.runPageAction][1] => ({ ok: true, message: "Added to Reading List" })
-                , (e: any): PgReq[kPgReq.runPageAction][1] =>
-                    ({ ok: false, message: (e && e.message) || "failed" }))
+        const add = (): Promise<PgReq[kPgReq.runPageAction][1]> =>
+            rl.addEntry({ title: (t.title || url).slice(0, 255), url, hasBeenRead: false })
+                .then((): PgReq[kPgReq.runPageAction][1] => ({ ok: true, message: "Added to Reading List" })
+                    , (e: any): PgReq[kPgReq.runPageAction][1] =>
+                        ({ ok: false, message: (e && e.message) || "failed" }))
+        if (rl.query && rl.removeEntry) {
+          return rl.query({ url }).then((found): Promise<PgReq[kPgReq.runPageAction][1]> => {
+            if (found && found.length) {
+              return rl.removeEntry!({ url }).then(
+                  (): PgReq[kPgReq.runPageAction][1] => ({ ok: true, message: "Removed from Reading List" })
+                  , add)
+            }
+            return add()
+          }, add)
+        }
+        return add()
+      }
+      case "readingListRemove": {
+        const rl = (browser_ as Dict<any>)["readingList"] as {
+          removeEntry? (e: { url: string }): Promise<void>
+        } | undefined
+        const target = req.command || url
+        if (!rl || !rl.removeEntry || !target) {
+          return Promise.resolve({ ok: false, message: "Cannot remove" })
+        }
+        return rl.removeEntry({ url: target }).then(
+            (): PgReq[kPgReq.runPageAction][1] => ({ ok: true, message: "Removed from Reading List" })
+            , (e: any): PgReq[kPgReq.runPageAction][1] =>
+                ({ ok: false, message: (e && e.message) || "failed" }))
       }
       case "bookmark": {
         const bookmarks = browser_.bookmarks
@@ -462,17 +498,19 @@ const pageRequestHandlers_: {
         const httpsPat = ":https://" + host + "/"
         const httpPat = ":http://" + host + "/"
         const rules = (settingsCache_.exclusionRules || []).slice()
-        const isOff = rules.some(r => r.passKeys === ""
-            && (r.pattern === httpsPat || r.pattern === httpPat || r.pattern.indexOf(host) >= 0))
+        const isExactOff = (r: { pattern: string, passKeys: string }): boolean =>
+            r.passKeys === "" && (r.pattern === httpsPat || r.pattern === httpPat)
+        const isOff = rules.some(isExactOff)
         if (isOff) {
-          // Turn ON — remove full-site exclusions for this host
-          const next = rules.filter(r => !(r.passKeys === ""
-              && (r.pattern === httpsPat || r.pattern === httpPat
-                  || (r.pattern.indexOf(host) >= 0 && !r.passKeys))))
+          // Turn ON — remove only the exact full-site rules this toggle wrote
+          const next = rules.filter(r => !isExactOff(r))
           settings_.set_("exclusionRules", next)
+          const still = url ? Exclusions.getExcluded_(rawUrl, { tabId_: t.id, frameId_: 0, url_: rawUrl } as Frames.Sender) : null
           return Promise.resolve({
-            ok: true, siteDisabled: false,
-            message: "Vim+ ON for " + host
+            ok: true, siteDisabled: still === "",
+            message: still === ""
+                ? "Removed site toggle — a custom exclusion still applies (Options)"
+                : "Vim+ ON for " + host
           })
         }
         rules.push({ pattern: httpsPat, passKeys: "" })
@@ -520,6 +558,16 @@ const pageRequestHandlers_: {
         executeExternalCmd({ command: name, count: 1 }, { tab: t, frameId: 0, id: browser_.runtime.id })
         return Promise.resolve({ ok: true, message: "Ran " + name })
       }
+      case "quickAction": {
+        const id = (req.command || "") + ""
+        if (!id) { return Promise.resolve({ ok: false, message: "No action" }) }
+        const raw = runQuickAction_(id)
+        return Promise.resolve(raw).then((pair): PgReq[kPgReq.runPageAction][1] => ({
+          ok: true, message: (pair && pair[0]) || id
+        }), (e: unknown): PgReq[kPgReq.runPageAction][1] => ({
+          ok: false, message: "Action failed: " + ((e as Error) && (e as Error).message || e)
+        }))
+      }
       case "discard":
         return Q_(Tabs_.discard, t.id).then(
             (): PgReq[kPgReq.runPageAction][1] => ({ ok: true, message: "Tab discarded (slept)" })
@@ -541,15 +589,13 @@ const pageRequestHandlers_: {
     })
   },
   /** kPgReq.commandCatalog: */ (): PgReq[kPgReq.commandCatalog][1] => {
-    const out: Array<{ name: string, bg: boolean }> = []
-    for (const name of Object.keys(availableCommands_) as kCName[]) {
-      if (name === "__proto__" as never) { continue }
-      const desc = availableCommands_[name]
-      if (!desc) { continue }
-      out.push({ name, bg: !!desc[1] })
+    try {
+      return QUICK_ACTIONS.map(a => ({
+        name: a.id, bg: true, title: a.title, cmd: a.cmd, cat: a.cat
+      }))
+    } catch {
+      return []
     }
-    out.sort((a, b) => a.name < b.name ? -1 : a.name > b.name ? 1 : 0)
-    return out
   },
   /** kPgReq.closedSessions: */ (): Promise<PgReq[kPgReq.closedSessions][1]> => {
     const sessions = browserSessions_()
@@ -594,7 +640,7 @@ type _FuncKeys<K, T> = K extends keyof T ? T[K] extends Function
 type FuncKeys<T> = _FuncKeys<keyof T, T>
 const validApis: { [T in keyof typeof chrome]?: FuncKeys<typeof chrome[T]>[] } = OnEdge ? {} : {
   permissions: ["contains", "request", "remove"],
-  tabs: ["update"]
+  tabs: ["update", "remove"]
 }
 
 const parseErr = (err: any): NonNullable<ExtApiResult<0>[1]> => {

@@ -332,6 +332,38 @@ declare namespace SettingsNS {
     readingProgressCss: string
     /** Show ∞ mark when page looks like infinite scroll */
     showInfiniteScrollMark: boolean
+    /**
+     * Optional CSS overrides for :view color/filter profiles (gray, blue, inv, sepia, blur, contrast, dim, focus).
+     *
+     * Storage key: `viewFxCss` (string). Empty = built-in DEFAULT_VIEW_FX_CSS in quick_actions.ts.
+     * Format: one `name: css` line per profile. Lines starting with `#` are comments.
+     * `jumble` is a text-scramble (not CSS) and is ignored here.
+     * Read path: applyPageFx_ → parseViewFxCss_ → pageFxInjector_(id, mode, css).
+     * Options: Look tab. Wiki: #view-fx
+     */
+    viewFxCss: string
+    /**
+     * Brand / chrome accent (HUD border, flash, frame, highlighter UI).
+     * Default `#e11d48`. Applied via mergeCSS look overrides. Options: Look.
+     */
+    accentColor: string
+    /** Link-hint pill background. Default `#e11d48`. Wiki: #look-colors */
+    hintBg: string
+    /** Link-hint pill text. Default `#ffffff`. */
+    hintFg: string
+    /** Find-mode selection highlight. Default `#ff9632`. */
+    findHighlightColor: string
+    /**
+     * Highlighter palette for `:hl` keys 1–5.
+     * Comma-separated hex: `#fef08a,#bbf7d0,#fbcfe8,#bfdbfe,#fdba74`
+     */
+    highlighterColors: string
+    /** Spotlight (`:spot`) radius in px (80–400). Default 150. Lens still auto-sizes. */
+    spotlightRadius: number
+    /** Reader View starting font size in px (12–32). Default 18. Per-tab `=`/`-` still overrides. */
+    readerFontSize: number
+    /** Reader View column width in em (24–56). Default 36. */
+    readerWidth: number
     showActionIcon: boolean;
     showContextMenu: boolean;
     showInIncognito: boolean;

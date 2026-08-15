@@ -194,7 +194,12 @@ define([ "require", "exports", "./store" ], (require, exports, store_1) => {
  // just for debugging
         const json = !format && filePath.endsWith(".json");
     filePath = format || filePath.includes("/") ? filePath : "/front/" + filePath;
-    return fetch(filePath).then(r => json ? r.json().then(res => new Map(Object.entries(res))) : format ? format === "blob" ? r.blob() : r.arrayBuffer() : r.text());
+    return fetch(filePath).then(r => {
+      if (!r.ok) {
+        throw Error("fetch " + filePath + " \u2192 " + r.status);
+      }
+      return json ? r.json().then(res => new Map(Object.entries(res))) : format ? format === "blob" ? r.blob() : r.arrayBuffer() : r.text();
+    });
   };
   const fetchOnlineResources_ = (url, timeout) => {
     let p, timer1 = 0;

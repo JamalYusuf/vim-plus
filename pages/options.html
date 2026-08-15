@@ -15,33 +15,39 @@
     <link rel="stylesheet" href="options.css">
     <link rel="stylesheet" href="vim-plus-theme.css">
     <style>
-      #opt-tabs {
-        display: flex; flex-wrap: wrap; gap: 0; margin: 10px 0 0;
+      #opt-tabs { margin: 10px 0 0; }
+      .opt-tabs-row {
+        display: flex; flex-wrap: wrap; align-items: flex-end; gap: 0;
         border-bottom: 2px solid var(--vp-border-color, #27272a);
+        box-shadow: 0 1px 0 rgba(0,0,0,.2);
       }
-      #opt-tabs button {
+      .opt-tabs-row .opt-tools {
+        margin-left: auto; display: flex; align-items: center; gap: 8px;
+        padding: 4px 0 6px 12px;
+      }
+      .opt-filter-label {
+        font-size: 11px; font-weight: 700; letter-spacing: .04em;
+        text-transform: uppercase; color: var(--vp-fg-muted, #a1a1aa);
+      }
+      .opt-tabs-row button {
         border: none; border-radius: 0; border-bottom: 2px solid transparent;
         background: transparent; color: var(--vp-fg-muted, #a1a1aa);
         padding: 8px 14px; font-size: 12px; font-weight: 700; letter-spacing: .04em;
         text-transform: uppercase; cursor: pointer; margin-bottom: -2px;
       }
-      #opt-tabs button:hover { color: var(--vp-fg, #f4f4f5); }
-      #opt-tabs button.active {
+      .opt-tabs-row button:hover { color: var(--vp-fg, #f4f4f5); }
+      .opt-tabs-row button.active {
         color: #fff; border-bottom-color: var(--vp-red, #e11d48);
         background: var(--vp-red-dim, rgba(225,29,72,.14));
       }
-      #opt-quick-links {
-        display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0 0; font-size: 12px;
+      .opt-sec-desc {
+        margin: 8px 0 4px; font-size: 12px; line-height: 1.4;
+        color: var(--vp-fg-muted, #a1a1aa);
       }
-      #opt-quick-links a {
-        color: var(--vp-red-hover, #fb7185); text-decoration: none;
-        border: 1px solid var(--vp-border-color, #3f3f46); padding: 5px 11px;
-        background: var(--vp-bg-elevated, #111113);
+      #opt-filter {
+        width: 12em; max-width: 36vw; font-size: 12px; padding: 5px 8px;
       }
-      #opt-quick-links a:hover { background: var(--vp-red); color: #fff; border-color: var(--vp-red); }
-      #opt-tabs {
-        box-shadow: 0 1px 0 rgba(0,0,0,.2);
-      }
+      .opt-filter-count { font-size: 11px; color: var(--vp-fg-muted, #a1a1aa); }
       #resetDefaults {
         margin-left: 8px; background: transparent; border: 1px solid #52525b; color: #fda4af;
         cursor: pointer; padding: 6px 12px; font-weight: 600;
@@ -52,65 +58,118 @@
         border-left: 3px solid var(--vp-red, #e11d48);
         background: var(--vp-bg-elevated, #111113);
       }
-      td.caption {
-        font-weight: 700; letter-spacing: .02em; color: var(--vp-fg-muted, #a1a1aa);
-        text-transform: uppercase; font-size: 11px; vertical-align: top; padding-top: 14px;
+      /* Fixed 3-column grid so tab changes / typing never reflow width */
+      #wrapper {
+        table-layout: fixed;
+        width: 890px;
+        min-width: 890px;
       }
-      #wrapper tr[data-sec] td { padding-top: 10px; padding-bottom: 10px; }
+      #wrapper col.opt-col-label { width: 168px; }
+      #wrapper col.opt-col-control { width: auto; }
+      #wrapper col.opt-col-help { width: 300px; }
+      td.caption {
+        font-weight: 600;
+        letter-spacing: 0;
+        color: var(--vp-fg-muted, #a1a1aa);
+        font-size: 13px;
+        line-height: 1.35;
+        vertical-align: top;
+        width: 168px;
+        max-width: 168px;
+        padding-top: 12px;
+        padding-right: 12px;
+        box-sizing: border-box;
+        overflow-wrap: anywhere;
+        hyphens: auto;
+      }
+      #wrapper tbody > tr > td {
+        padding-top: 10px;
+        padding-bottom: 10px;
+        vertical-align: top;
+      }
+      #wrapper tbody > tr > td:nth-child(2) { width: auto; }
+      #wrapper td.help, #wrapper .help-inner {
+        width: 300px;
+        max-width: 300px;
+        box-sizing: border-box;
+      }
+      #wrapper .help-inner {
+        padding-left: 2px;
+        padding-right: 4px;
+      }
+      #wrapper .help-inner .help-block,
+      #wrapper .help-inner pre {
+        padding: 8px 12px 8px 14px;
+      }
+      .vp-color-field {
+        display: inline-flex; align-items: center; gap: 8px;
+      }
+      input[type="color"] {
+        -webkit-appearance: none; appearance: none;
+        width: 32px; height: 28px; padding: 2px;
+        border: 1px solid var(--vp-border-color, #3f3f46);
+        background: transparent !important;
+        color: transparent !important;
+        cursor: pointer; box-sizing: border-box;
+      }
+      input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
+      input[type="color"]::-webkit-color-swatch {
+        border: none; border-radius: 0; display: block;
+        width: 100%; height: 100%;
+      }
+      .vp-color-field input.vp-color-hex { width: 7.2em; font-family: ui-monospace, monospace; }
+      .vp-swatch-row {
+        display: flex; flex-wrap: wrap; gap: 10px 14px; align-items: center; margin-top: 6px;
+      }
+      .vp-swatch-row label {
+        display: inline-flex; align-items: center; gap: 6px; font-size: 12px;
+      }
     </style>
   </head>
 
   <body>
     <table id="wrapper">
+      <colgroup>
+        <col class="opt-col-label" />
+        <col class="opt-col-control" />
+        <col class="opt-col-help" />
+      </colgroup>
       <thead><tr><td colspan="2">
         <header id="mainHeader">
           <img class="icon" alt="Icon" src="../icons/icon48.png"
               srcset="../icons/icon48.png 1x, ../icons/icon128.png 3x" />
           <span class="Vim">Vim</span><span class="C">+</span>
           <span data-i="Name2Options">- All by Keyboard&nbsp;&nbsp;&nbsp;Options</span>
-          <a href="wiki.html" target="_blank" style="float:right;font-size:13px;margin-top:2px;">Wiki</a>
+          <a href="wiki.html#options-overview" target="_blank" style="float:right;font-size:13px;margin-top:2px;">Wiki</a>
         </header>
-        <div id="opt-quick-links">
-          <a href="wiki.html#options-overview" target="_blank">Options tour</a>
-          <a href="wiki.html#key-mappings" target="_blank">Key mappings</a>
-          <a href="wiki.html#keyboard-layout" target="_blank">Layouts</a>
-          <a href="wiki.html#exclusions" target="_blank">Exclusions</a>
-          <a href="wiki.html#user-css" target="_blank">User CSS</a>
-          <a href="wiki.html#clip-sub" target="_blank">clipSub</a>
-          <a href="wiki.html#vomnibar-options" target="_blank">Vomnibar JSON</a>
-          <a href="wiki.html#architecture" target="_blank">Architecture</a>
-          <a href="wiki.html#reading-view" target="_blank">Reading</a>
-          <a href="wiki.html#getting-started" target="_blank">Get started</a>
-        </div>
       </td><td></td></tr></thead>
       <tbody>
-      <tr>
+      <tr data-sec="start">
         <td class="caption">Welcome</td>
         <td colspan="1">
           <div id="vimPlusIntro" class="vp-card" style="line-height:1.5;padding:10px 12px;">
-            <strong>Vim+</strong> — keyboard-first Chrome navigator.
-            <div style="margin-top:6px;opacity:.9">
-              <kbd>?</kbd> help · <kbd>f</kbd> hints · <kbd>o</kbd> omnibar ·
-              <kbd>:</kbd> command palette · <kbd>gS</kbd> side panel
+            <strong>Vim+</strong> — keyboard-first Chrome.
+            <kbd>?</kbd> help · <kbd>f</kbd> hints · <kbd>o</kbd> omnibar ·
+            <kbd>:</kbd> palette · <kbd>gS</kbd> panel.
+            <div style="margin-top:8px;font-size:12px;opacity:.9">
+              <strong>Start</strong> is sites &amp; permissions.
+              <strong>Keys</strong> is what you press.
+              <strong>Search</strong> is engines &amp; the omnibar.
+              <strong>Look</strong> is theme, reading, and <kbd>:view</kbd> FX.
+              <strong>Advanced</strong> is everything else.
+              <kbd>/</kbd> filters this page.
+              New here? <a href="wiki.html#getting-started" target="_blank">Getting started</a>
+              · <a href="wiki.html#options-overview" target="_blank">Options tour</a>.
             </div>
-            <div style="margin-top:8px;opacity:.95">
-              <strong>Use the section tabs</strong> (Start · Keys · Search · Look · Advanced).
-              New here? <a href="wiki.html#getting-started" target="_blank">Getting started wiki</a>
-              or omnibar <code>:wiki</code>.
-            </div>
-            <div style="margin-top:8px;opacity:.95">
-              <strong>Command center</strong> — toolbar · <kbd>Alt+Shift+V</kbd> · <kbd>gS</kbd>.
-              Use the <strong>power toggle</strong> (ON/OFF) next to the logo to enable/disable Vim+ for the current site.
-            </div>
-            <div style="margin-top:6px;font-size:12px;opacity:.8">
-              Customize almost everything: keys, search engines, hashbangs, exclusions,
-              appearance, reading progress, HUD, CSS. Prefer small changes and test on a tab.
+            <div id="vp-shortcut-hint" hidden style="margin-top:8px;font-size:12px;">
+              Side panel shortcut is unassigned.
+              <a href="chrome://extensions/shortcuts" id="vp-open-shortcuts">Assign Alt+Shift+V</a>
             </div>
           </div>
         </td>
         <td class="help"><div class="help-inner">
-          Chrome 121+ · MV3 · dark-first UI.
-          Tabs keep this page simpler — full power is still here under each section.
+          Chrome 121+ · MV3. The right column is the note for each setting.
+          Save writes dirty fields; reset restores author defaults.
         </div></td>
       </tr>
       <tr>
@@ -305,7 +364,7 @@ key: https://c.com/$s/space=\s\ space_end
             · <a href="wiki.html#search-engines" target="_blank">Wiki: search engines</a></p>
         </div></td>
       </tr>
-        <tr><td colspan="2"><header id="advanced" data-i="39">Advanced Options</header></td><td></td></tr>
+        <tr data-sec="hide"><td colspan="2"><header id="advanced" data-i="39">Advanced Options</header></td><td></td></tr>
         <tr id="optionalPermissionsBox">
           <td class="caption" data-i="103_2">Optional permissions</td>
           <td id="optionalPermissions" data-model="">
@@ -338,9 +397,9 @@ key: https://c.com/$s/space=\s\ space_end
           </div></td>
         </tr>
       </tbody>
-      <tbody id="keyLayout" data-model="Number">
+      <tbody id="keyLayout" data-model="Number" data-sec="keys">
         <tr>
-          <td class="caption" rowspan="4" data-i="47">Keyboard layout rules</td>
+          <td class="caption" data-i="47">Keyboard layout</td>
           <td>
             <label class="booleanOption" tabindex="-1" aria-hidden="true">
               <input id="alwaysIgnore" type="checkbox" tabindex="-1" aria-hidden="true" />
@@ -348,7 +407,7 @@ key: https://c.com/$s/space=\s\ space_end
                 >Always ignore keyboard layout</span>
             </label>
           </td>
-          <td class="help" rowspan="2"><div class="help-inner line-help">
+          <td class="help"><div class="help-inner line-help">
             <div data-i="47_3">Please note this group of settings and <kbd>mapKey</kbd> directives
               can only take effect inside Vim+.</div>
             <div data-i="47_4">
@@ -356,6 +415,7 @@ key: https://c.com/$s/space=\s\ space_end
           </div></td>
         </tr>
         <tr>
+          <td class="caption">Alt / Option</td>
           <td>
             <label class="booleanOption" tabindex="-1" aria-hidden="true">
               <input id="ignoreIfAlt" type="checkbox" tabindex="-1" aria-hidden="true" />
@@ -363,8 +423,12 @@ key: https://c.com/$s/space=\s\ space_end
                 >Ignore layout when holding down Alt (Option, &#8997;) key</span>
             </label>
           </td>
+          <td class="help"><div class="help-inner line-help">
+            Same “ignore layout” rule, only while Alt is held.
+          </div></td>
         </tr>
         <tr>
+          <td class="caption">Non-ASCII keys</td>
           <td>
             <label class="booleanOption" tabindex="-1" aria-hidden="true">
               <input id="ignoreIfNotASCII" type="checkbox" tabindex="-1" aria-hidden="true" />
@@ -378,6 +442,7 @@ key: https://c.com/$s/space=\s\ space_end
           </div></td>
         </tr>
         <tr>
+          <td class="caption">CapsLock</td>
           <td>
             <label class="booleanOption" tabindex="-1" aria-hidden="true">
               <input id="ignoreCaps" type="checkbox" tabindex="-1" aria-hidden="true" />
@@ -390,7 +455,7 @@ key: https://c.com/$s/space=\s\ space_end
           </div></td>
         </tr>
         <tr>
-          <td class="caption"></td>
+          <td class="caption">Modifiers</td>
           <td>
             <label class="booleanOption" tabindex="-1" aria-hidden="true">
               <input id="mapModifier" type="checkbox" tabindex="-1" aria-hidden="true" />
@@ -405,7 +470,7 @@ key: https://c.com/$s/space=\s\ space_end
           </div></td>
         </tr>
         <tr>
-          <td class="caption"></td>
+          <td class="caption">Firefox privacy</td>
           <td>
             <label class="booleanOption" tabindex="-1" aria-hidden="true">
               <input id="inPrivResistFp" type="checkbox" tabindex="-1" aria-hidden="true" />
@@ -419,7 +484,7 @@ key: https://c.com/$s/space=\s\ space_end
           </div></td>
         </tr>
         <tr id="testKeyInputBox">
-          <td class="caption"></td>
+          <td class="caption">Test a key</td>
           <td>
             <label class="booleanOption" tabindex="-1" aria-hidden="true">
               <input id="testKeyInInput" type="checkbox" tabindex="-1" aria-hidden="true" />
@@ -468,7 +533,7 @@ key: https://c.com/$s/space=\s\ space_end
           </div></td>
         </tr>
         <tr>
-          <td class="caption" rowspan="2" data-i="43">Miscellaneous options</td>
+          <td class="caption">Smooth scrolling</td>
           <td>
             <label class="booleanOption" tabindex="-1" aria-hidden="true">
               <input id="smoothScroll" type="checkbox" tabindex="-1" aria-hidden="true" data-model="Boolean" />
@@ -476,8 +541,12 @@ key: https://c.com/$s/space=\s\ space_end
                 >Use Vim+'s smooth scrolling</span>
             </label>
           </td>
+          <td class="help"><div class="help-inner">
+            Animate <kbd>j</kbd>/<kbd>k</kbd> and long scrolls. Uncheck for instant jumps.
+          </div></td>
         </tr>
         <tr>
+          <td class="caption">Link-hint filter</td>
           <td>
             <label class="booleanOption" tabindex="-1" aria-hidden="true">
               <input id="filterLinkHints" type="checkbox" tabindex="-1" aria-hidden="true" data-model="Boolean" />
@@ -493,7 +562,7 @@ key: https://c.com/$s/space=\s\ space_end
           </div></td>
         </tr>
         <tr>
-          <td class="caption"></td>
+          <td class="caption">Confirm hint</td>
           <td>
             <label class="booleanOption" tabindex="-1" aria-hidden="true">
               <input id="waitForEnter" type="checkbox" tabindex="-1" aria-hidden="true" data-model="Boolean" />
@@ -506,7 +575,7 @@ key: https://c.com/$s/space=\s\ space_end
           </div></td>
         </tr>
         <tr>
-          <td class="caption"></td>
+          <td class="caption">Covered links</td>
           <td>
             <label class="booleanOption" tabindex="-1" aria-hidden="true">
               <input id="mouseReachable" type="checkbox" tabindex="-1" aria-hidden="true" data-model="Boolean" />
@@ -514,9 +583,12 @@ key: https://c.com/$s/space=\s\ space_end
                 >Detect whether links are completely covered or not</span>
             </label>
           </td>
+          <td class="help"><div class="help-inner">
+            Skip hints on links that a click would not reach (fully covered).
+          </div></td>
         </tr>
         <tr>
-          <td class="caption"></td>
+          <td class="caption">Focus</td>
           <td>
             <label class="booleanOption" tabindex="-1" aria-hidden="true">
               <input id="grabBackFocus" type="checkbox" tabindex="-1" aria-hidden="true" data-model="Boolean" />
@@ -529,7 +601,20 @@ key: https://c.com/$s/space=\s\ space_end
           </div></td>
         </tr>
         <tr>
-          <td class="caption"></td>
+          <td class="caption">Help dialog</td>
+          <td>
+            <label class="booleanOption" tabindex="-1" aria-hidden="true">
+              <input id="showAdvancedCommands" type="checkbox" tabindex="-1" aria-hidden="true" data-model="Boolean" />
+              <span class="checkboxHint" role="checkbox" tabindex="0" aria-hidden="false"
+                >Show advanced commands in the <kbd>?</kbd> help dialog (default on)</span>
+            </label>
+          </td>
+          <td class="help"><div class="help-inner">
+            Uncheck to keep the help list to everyday commands. Power commands stay available via maps and <kbd>:</kbd>.
+          </div></td>
+        </tr>
+        <tr>
+          <td class="caption">Find mode</td>
           <td>
             <label class="booleanOption" tabindex="-1" aria-hidden="true">
               <input id="regexFindMode" type="checkbox" tabindex="-1" aria-hidden="true" data-model="Boolean" />
@@ -543,7 +628,7 @@ key: https://c.com/$s/space=\s\ space_end
           </div></td>
         </tr>
         <tr>
-          <td class="caption"></td>
+          <td class="caption">HUD</td>
           <td>
             <label class="booleanOption" tabindex="-1" aria-hidden="true">
               <input id="hideHud" type="checkbox" tabindex="-1" aria-hidden="true" data-model="Boolean" />
@@ -571,8 +656,12 @@ key: https://c.com/$s/space=\s\ space_end
             <div style="margin-top:8px;display:flex;flex-wrap:wrap;gap:10px;align-items:center">
               <label style="display:flex;align-items:center;gap:6px">
                 Color
-                <input id="readingProgressColor" type="text" data-model="Text" maxlength="20"
-                    style="width:7em" placeholder="#e11d48" lang="en" />
+                <span class="vp-color-field">
+                  <input type="color" data-color-for="readingProgressColor" value="#e11d48"
+                      aria-label="Reading progress color" />
+                  <input id="readingProgressColor" type="text" data-model="Text" maxlength="20"
+                      class="vp-color-hex" placeholder="#e11d48" lang="en" />
+                </span>
               </label>
               <label style="display:flex;align-items:center;gap:6px">
                 Height (px)
@@ -585,7 +674,7 @@ key: https://c.com/$s/space=\s\ space_end
             </label>
             <textarea id="readingProgressCss" class="code" data-model="Text" autocomplete="off"
               rows="4" spellcheck="false"
-              placeholder="#vp-read-progress-fill { box-shadow: 0 0 12px #e11d48 !important; }"
+              placeholder="#vp-read-progress-fill { opacity: .85 !important; }"
               style="width:100%;max-width:42em;margin-top:4px;font-size:12px;line-height:1.4"></textarea>
             <div class="info">
               Appended after built-in rules. Selectors:
@@ -607,7 +696,28 @@ key: https://c.com/$s/space=\s\ space_end
           </div></td>
         </tr>
         <tr>
-          <td class="caption"></td>
+          <td class="caption">:view color profiles</td>
+          <td>
+            <textarea id="viewFxCss" class="code min-height-4" data-model="Text" autocomplete="off"
+              rows="8" spellcheck="false"
+              placeholder="# empty = built-in profiles. Example:&#10;gray: html{filter:grayscale(1)!important}&#10;dim: html{filter:brightness(.6)!important}"
+              style="width:100%;max-width:42em;font-size:12px;line-height:1.4"></textarea>
+            <div class="info">
+              Overrides CSS for palette <kbd>:gray</kbd> <kbd>:blue</kbd> <kbd>:inv</kbd>
+              <kbd>:sepia</kbd> <kbd>:blur</kbd> <kbd>:hicon</kbd> <kbd>:dim</kbd> <kbd>:focus</kbd>.
+              Format: <code>name: css</code> per line. Empty = built-ins (sane defaults).
+              <a id="viewFxFillDefaults" href="#look" role="button">Insert built-in profiles</a>
+              · <a href="wiki.html#view-fx" target="_blank">Wiki: :view FX</a>
+            </div>
+          </td>
+          <td class="help"><div class="help-inner">
+            <p>These are page filters, not Vim+ chrome. <kbd>jumble</kbd> scrambles text in JS
+              and cannot be restyled here.</p>
+            <p>After Save, toggle the command again on a tab to apply the new CSS.</p>
+          </div></td>
+        </tr>
+        <tr>
+          <td class="caption">Browser search</td>
           <td>
             <label class="booleanOption" tabindex="-1" aria-hidden="true">
               <input id="preferBrowserSearch" type="checkbox" tabindex="-1" aria-hidden="true" data-model="Boolean"
@@ -623,7 +733,113 @@ key: https://c.com/$s/space=\s\ space_end
           </div></td>
         </tr>
         <tr>
-          <td class="caption"></td>
+          <td class="caption">Colors</td>
+          <td>
+            <div class="vp-swatch-row">
+              <label>Accent
+                <span class="vp-color-field">
+                  <input type="color" data-color-for="accentColor" value="#e11d48" aria-label="Accent color" />
+                  <input id="accentColor" type="text" data-model="Text" maxlength="20"
+                      class="vp-color-hex" placeholder="#e11d48" lang="en" />
+                </span>
+              </label>
+              <label>Hint background
+                <span class="vp-color-field">
+                  <input type="color" data-color-for="hintBg" value="#e11d48" aria-label="Hint background" />
+                  <input id="hintBg" type="text" data-model="Text" maxlength="20"
+                      class="vp-color-hex" placeholder="#e11d48" lang="en" />
+                </span>
+              </label>
+              <label>Hint text
+                <span class="vp-color-field">
+                  <input type="color" data-color-for="hintFg" value="#ffffff" aria-label="Hint text" />
+                  <input id="hintFg" type="text" data-model="Text" maxlength="20"
+                      class="vp-color-hex" placeholder="#ffffff" lang="en" />
+                </span>
+              </label>
+              <label>Find highlight
+                <span class="vp-color-field">
+                  <input type="color" data-color-for="findHighlightColor" value="#ff9632"
+                      aria-label="Find highlight" />
+                  <input id="findHighlightColor" type="text" data-model="Text" maxlength="20"
+                      class="vp-color-hex" placeholder="#ff9632" lang="en" />
+                </span>
+              </label>
+            </div>
+            <div class="info">
+              Accent is HUD / flash / frame. Hints are the <kbd>f</kbd> pills.
+              Find is the <kbd>/</kbd> match color. Empty + save restores the rose defaults.
+              <a href="wiki.html#look-colors" target="_blank">Wiki: colors</a>
+            </div>
+          </td>
+          <td class="help"><div class="help-inner">
+            Native browser color pickers. Hex is still editable for exact values.
+            User-defined CSS still wins if it targets the same selectors.
+          </div></td>
+        </tr>
+        <tr>
+          <td class="caption">Highlighter</td>
+          <td>
+            <div class="vp-swatch-row" id="hl-swatches">
+              <label>1 <span class="vp-color-field">
+                <input type="color" data-hl-i="0" value="#fef08a" aria-label="Highlight 1 yellow" />
+              </span></label>
+              <label>2 <span class="vp-color-field">
+                <input type="color" data-hl-i="1" value="#bbf7d0" aria-label="Highlight 2 green" />
+              </span></label>
+              <label>3 <span class="vp-color-field">
+                <input type="color" data-hl-i="2" value="#fbcfe8" aria-label="Highlight 3 pink" />
+              </span></label>
+              <label>4 <span class="vp-color-field">
+                <input type="color" data-hl-i="3" value="#bfdbfe" aria-label="Highlight 4 blue" />
+              </span></label>
+              <label>5 <span class="vp-color-field">
+                <input type="color" data-hl-i="4" value="#fdba74" aria-label="Highlight 5 orange" />
+              </span></label>
+            </div>
+            <input id="highlighterColors" type="text" data-model="Text" class="code"
+                style="margin-top:8px;width:100%;max-width:36em" spellcheck="false"
+                placeholder="#fef08a,#bbf7d0,#fbcfe8,#bfdbfe,#fdba74" />
+            <div class="info">Palette for <kbd>:hl</kbd> keys 1–5. Clear (0) stays transparent.</div>
+          </td>
+          <td class="help"><div class="help-inner">
+            Pick a swatch or edit the comma-separated hex list. Save, then open <kbd>:hl</kbd> on a tab.
+          </div></td>
+        </tr>
+        <tr>
+          <td class="caption">Spotlight</td>
+          <td>
+            <label><input id="spotlightRadius" type="number" min="80" max="400" step="10" lang="en"
+                data-model="Number" autocomplete="off" />
+            <span>px radius for <kbd>:spot</kbd></span></label>
+            <div class="info">Default 150. <kbd>:lens</kbd> still sizes itself to the paragraph.</div>
+          </td>
+          <td class="help"><div class="help-inner">
+            How wide the clear hole is around the cursor in spotlight mode.
+          </div></td>
+        </tr>
+        <tr>
+          <td class="caption">Reader View</td>
+          <td>
+            <label>Font
+              <input id="readerFontSize" type="number" min="12" max="32" step="1" lang="en"
+                  data-model="Number" autocomplete="off" style="width:4em" />
+              px
+            </label>
+            <label style="margin-left:14px">Width
+              <input id="readerWidth" type="number" min="24" max="56" step="1" lang="en"
+                  data-model="Number" autocomplete="off" style="width:4em" />
+              em
+            </label>
+            <div class="info">Starting size/column for <kbd>:read</kbd>. In the reader, <kbd>=</kbd>/<kbd>-</kbd>
+              still change size for that tab.</div>
+          </td>
+          <td class="help"><div class="help-inner">
+            Defaults: 18px / 36em. Re-open Reader View after Save to apply a new width.
+          </div></td>
+        </tr>
+        <tr>
+          <td class="caption">Theme</td>
           <td>
             <label class="booleanOption" tabindex="-1" aria-hidden="true">
               <input id="autoDarkMode" type="checkbox" tabindex="-1" aria-hidden="true"
@@ -637,7 +853,7 @@ key: https://c.com/$s/space=\s\ space_end
           </div></td>
         </tr>
         <tr>
-          <td class="caption"></td>
+          <td class="caption">Motion</td>
           <td>
             <label class="booleanOption" tabindex="-1" aria-hidden="true">
               <input id="autoReduceMotion" type="checkbox" tabindex="-1" aria-hidden="true"
@@ -651,7 +867,7 @@ key: https://c.com/$s/space=\s\ space_end
           </div></td>
         </tr>
         <tr>
-          <td class="caption"></td>
+          <td class="caption">Toolbar icon</td>
           <td>
             <label class="booleanOption" tabindex="-1" aria-hidden="true">
               <input id="showActionIcon" type="checkbox" tabindex="-1" aria-hidden="true"
@@ -666,7 +882,7 @@ key: https://c.com/$s/space=\s\ space_end
           </div></td>
         </tr>
         <tr>
-          <td class="caption"></td>
+          <td class="caption">Context menu</td>
           <td>
             <label class="booleanOption" tabindex="-1" aria-hidden="true">
               <input id="showContextMenu" type="checkbox" tabindex="-1" aria-hidden="true"
@@ -680,18 +896,21 @@ key: https://c.com/$s/space=\s\ space_end
           </div></td>
         </tr>
         <tr>
-          <td class="caption"></td>
+          <td class="caption">Incognito</td>
           <td>
             <label class="booleanOption" tabindex="-1" aria-hidden="true">
               <input id="showInIncognito" type="checkbox" tabindex="-1" aria-hidden="true"
                   data-model="Boolean" data-permission="C64,nonC" />
               <span data-i="64_2" class="checkboxHint" role="checkbox" tabindex="0" aria-hidden="false"
-                >Always prevent browser from caching images showing on Display</span>
+                >Allow Vim+ in incognito (also enable the extension in chrome://extensions)</span>
             </label>
           </td>
+          <td class="help"><div class="help-inner">
+            Also turn on “Allow in Incognito” at <code>chrome://extensions</code>.
+          </div></td>
         </tr>
         <tr>
-          <td class="caption"></td>
+          <td class="caption">Updates</td>
           <td>
             <label class="booleanOption" tabindex="-1" aria-hidden="true">
               <input id="notifyUpdate" type="checkbox" tabindex="-1" aria-hidden="true" data-model="Boolean" />
@@ -699,9 +918,12 @@ key: https://c.com/$s/space=\s\ space_end
                 >Show a notification on a new release</span>
             </label>
           </td>
+          <td class="help"><div class="help-inner">
+            A one-shot toast when Vim+ updates.
+          </div></td>
         </tr>
         <tr>
-          <td class="caption"></td>
+          <td class="caption">Sync</td>
           <td>
             <label class="booleanOption" tabindex="-1" aria-hidden="true">
               <input id="vimSync" type="checkbox" tabindex="-1" aria-hidden="true"

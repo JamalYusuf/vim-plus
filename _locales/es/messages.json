@@ -6,11 +6,15 @@
   "quickNext_s": { "message": "Ir una pestaña a la derecha" },
   "reloadTab_s": { "message": "Recargar pestaña" },
   "userCustomized": { "message": "Acceso directo personalizado" },
+  "openSidePanel_s": { "message": "Abrir el centro de comandos de Vim+ (panel lateral)" },
+  "visitPreviousTab_s": { "message": "Ir a la pestaña anterior (funciona en chrome://)" },
+  "toggleMuteTab_s": { "message": "Silenciar / activar sonido de esta pestaña" },
+  "discardTab_s": { "message": "Hibernar esta pestaña para liberar memoria" },
   "name": { "message": "Vim+ - Todo vía teclado" },
   "description": { "message":
 "Una herramienta de atajos de teclado para navegación de páginas basada en el teclado y operaciones con pestañas del navegador con un omnibar avanzado y atajos globales"
   },
-  "lang1": { "message": "sp" },
+  "lang1": { "message": "es" },
   "noActiveState": { "message": "Según lo configurado, aquí no hay estado activo" },
   "vblank": { "message": "Página en blanco" },
   "voptions": { "message": "Opciones" },

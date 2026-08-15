@@ -6,6 +6,10 @@
   "quickNext_s": { "message": "切換到右側分頁" },
   "reloadTab_s": { "message": "刷新整個頁面" },
   "userCustomized": { "message": "自訂快速鍵" },
+  "openSidePanel_s": { "message": "開啟 Vim+ 命令中心（側邊欄）" },
+  "visitPreviousTab_s": { "message": "回到上一個分頁（chrome:// 頁面可用）" },
+  "toggleMuteTab_s": { "message": "靜音 / 取消靜音目前分頁" },
+  "discardTab_s": { "message": "休眠目前分頁以釋放記憶體" },
   "name": { "message": "Vim+ - 全鍵盤操作瀏覽器" },
   "description": {
     "message": "一款支持全鍵盤操作瀏覽器的輔助工具，只用鍵盤即可點擊任意連結、切換分頁和快速搜索任意內容，支持自訂快速鍵和調整操作細節"

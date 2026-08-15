@@ -29,7 +29,15 @@ const RedirectedUrls_: SafeDict<string> = { __proto__: null as never,
   "release-notes": kWiki + "#changelog",
   setting: kOpts, settings: kOpts, wiki: kWiki, docs: kWiki, documentation: kWiki,
   hashbang: kWiki + "#hashbangs", hashbangs: kWiki + "#hashbangs", bangs: kWiki + "#hashbangs",
-  keys: kWiki + "#keys", shortcuts: kWiki + "#keys", panel: kWiki + "#side-panel"
+  keys: kWiki + "#keys", shortcuts: kWiki + "#keys", panel: kWiki + "#side-panel",
+  "view-fx": kWiki + "#view-fx", viewfx: kWiki + "#view-fx", views: kWiki + "#view-fx",
+  colors: kWiki + "#look-colors", "look-colors": kWiki + "#look-colors",
+  faq: kWiki + "#faq", recipes: kWiki + "#daily-loop", daily: kWiki + "#daily-loop",
+  palette: kWiki + "#command-palette", commands: kWiki + "#command-palette",
+  troubleshoot: kWiki + "#troubleshooting", troubleshooting: kWiki + "#troubleshooting",
+  yank: kWiki + "#copy-yank", copy: kWiki + "#copy-yank",
+  visual: kWiki + "#visual-mode", find: kWiki + "#find-mode",
+  tabs: kWiki + "#tabs-windows"
 }
 
 export let lastUrlType_ = Urls.Type.Full

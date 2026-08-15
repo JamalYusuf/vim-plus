@@ -194,6 +194,14 @@ html.dark #body .hero {
 #body .hero p { margin: 0; color: var(--vp-fg, #18181b); }
 html.vp-dark #body .hero p,
 html.dark #body .hero p { color: #f4f4f5; }
+#body .sec-kicker {
+  margin: 28px 0 8px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--vp-red, #e11d48);
+}
 #body .hero strong { color: #be123c; }
 html.vp-dark #body .hero strong,
 html.dark #body .hero strong { color: #fda4af; }

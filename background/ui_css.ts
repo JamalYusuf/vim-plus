@@ -38,7 +38,7 @@ export const reloadCSS_ = (action: MergeAction, knownCssStr?: string): SettingsN
       return
     }
   }
-  void fetchFile_("vim-plus.css").then((css: string): void => {
+  void fetchFile_("vimium-c.css").then((css: string): void => {
     const browserInfo = StyleCacheId_.slice(StyleCacheId_.indexOf(",") + 1),
     hasAll = OnChrome && Build.MinCVer >= BrowserVer.MinUsableCSS$All || browserInfo.includes("a")
     if (!(Build.NDEBUG || css.startsWith(":host{"))) {
@@ -123,7 +123,7 @@ export const reloadCSS_ = (action: MergeAction, knownCssStr?: string): SettingsN
           && (!OnFirefox || Build.MinFFVer >= FirefoxBrowserVer.MinEnsuredShadowDOMV1)
           && !OnEdge)
         && !browserInfo.includes("s")) {
-      /** Note: {@link ../front/vim-plus.css}: this requires `:host{` is at the beginning */
+      /** Note: {@link ../front/vimium-c.css}: this requires `:host{` is at the beginning */
       const hostEnd = css.indexOf("}") + 1, secondEnd = css.indexOf("}", hostEnd) + 1,
       prefix = "#VimiumUI"
       let body = css.slice(secondEnd)
@@ -132,7 +132,7 @@ export const reloadCSS_ = (action: MergeAction, knownCssStr?: string): SettingsN
       }
       body += `${prefix}::before,${prefix}::after,.R::before,.R:not(.HUD)::after{display:none!important}`
       css = prefix + css.slice(5, hostEnd) +
-          /** Note: {@link ../front/vim-plus.css}: this requires no ID/attr selectors in "ui" styles */
+          /** Note: {@link ../front/vimium-c.css}: this requires no ID/attr selectors in "ui" styles */
           body.replace(<RegExpG> /\.[A-Z][^,{]*/g, prefix + " $&")
     }
     css = css.replace(<RegExpG> /\n/g, "")
@@ -158,6 +158,8 @@ export const reloadCSS_ = (action: MergeAction, knownCssStr?: string): SettingsN
       postUpdate_("vomnibarOptions")
     }
     mergeCSS(settingsCache_.userDefinedCss, action)
+  }).catch((err: unknown): void => {
+    console.log("Vim+: UI CSS failed to load (hints/HUD may be invisible):", err)
   })
 }
 
@@ -178,11 +180,68 @@ const parseFindCSS_ = (find2: string): FindCSS => {
     i: find2.slice(endFH + 1) }
 }
 
+const DEFAULT_ACCENT = "#e11d48"
+const DEFAULT_HINT_BG = "#e11d48"
+const DEFAULT_HINT_FG = "#ffffff"
+const DEFAULT_FIND_HL = "#ff9632"
+
+const safeCssColor_ = (raw: string, fallback: string): string => {
+  const s = (raw || "").trim()
+  if (!s || s.length > 32) { return fallback }
+  if (s.indexOf(";") >= 0 || s.indexOf("{") >= 0 || s.indexOf("}") >= 0 || s.indexOf("<") >= 0) {
+    return fallback
+  }
+  const ch = s.charAt(0)
+  if (ch !== "#" && s.indexOf("rgb") !== 0 && s.indexOf("hsl") !== 0) { return fallback }
+  return s
+}
+
+/**
+ * Build UI CSS from Look color settings. Empty when all values are author defaults
+ * so we do not fight vimium-c.css unless the user changed something.
+ */
+const lookOverrideCSS_ = (): { ui: string, findSel: string } => {
+  const c = settingsCache_ as SettingsNS.SettingsWithDefaults
+  const accent = safeCssColor_(c.accentColor, DEFAULT_ACCENT)
+  const hintBg = safeCssColor_(c.hintBg, DEFAULT_HINT_BG)
+  const hintFg = safeCssColor_(c.hintFg, DEFAULT_HINT_FG)
+  const find = safeCssColor_(c.findHighlightColor, DEFAULT_FIND_HL)
+  const ui: string[] = []
+  if (hintBg !== DEFAULT_HINT_BG || hintFg !== DEFAULT_HINT_FG) {
+    ui.push(`.LH{background:${hintBg}!important;color:${hintFg}!important;border-color:${hintBg}!important}`)
+    ui.push(`.IH{border-color:${hintBg}!important}`)
+    ui.push(`.IHS{border-color:${hintBg}!important}`)
+    ui.push(`.D>.LH{background:${hintBg}!important;color:${hintFg}!important}`)
+  }
+  if (accent !== DEFAULT_ACCENT) {
+    ui.push(`.HUD:after{border-color:${accent}!important}`)
+    ui.push(`.Flash{box-shadow:0 0 0 2px ${accent}}`)
+    ui.push(`.Frame{border-color:${accent}}`)
+    ui.push(`.Sel{box-shadow:0 0 0 2px ${accent}}`)
+    ui.push(`.One{border-color:${accent}}`)
+  }
+  return {
+    ui: ui.join("\n"),
+    findSel: find !== DEFAULT_FIND_HL ? `::selection{background:${find}!important}` : ""
+  }
+}
+
+const remergeLook_ = (): void => {
+  mergeCSS(settingsCache_.userDefinedCss, "userDefinedCss")
+}
+
 export const mergeCSS = (css2Str: string, action: MergeAction | "userDefinedCss"
     ): SettingsNS.MergedCustomCSS | void => {
   let css = storageCache_.get("innerCSS")!, idx = css.indexOf("\n")
   css = idx > 0 ? css.slice(0, idx) : css
   const css2 = parseSections_(css2Str)
+  const look = lookOverrideCSS_()
+  if (look.ui) {
+    css2.ui = (look.ui + "\n" + (css2.ui || "")).trim()
+  }
+  if (look.findSel && !css2["find:selection"]) {
+    css2["find:selection"] = look.findSel
+  }
   let newInnerCSS = css2.ui ? css + "\n" + css2.ui : css
   let findh = css2["find:host"], findSel = css2["find:selection"]
   let find2 = css2.find, omni2 = css2.omni
@@ -442,6 +501,10 @@ void ready_.then((): void => {
     installation_ && installation_.then(details => details && reloadCSS_(MergeAction.rebuildWhenInit))
   }
   updateHooks_.userDefinedCss = mergeCSS
+  updateHooks_.accentColor = remergeLook_
+  updateHooks_.hintBg = remergeLook_
+  updateHooks_.hintFg = remergeLook_
+  updateHooks_.findHighlightColor = remergeLook_
   if (!Build.MV3 && OnFirefox && Build.MinFFVer < FirefoxBrowserVer.MinMediaQueryListenersWorkInBg) {
     hasReliableWatchers = CurFFVer_ > FirefoxBrowserVer.MinMediaQueryListenersWorkInBg - 1
     _mediaTimer = hasReliableWatchers ? -1 : 0

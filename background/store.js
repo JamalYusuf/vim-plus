@@ -363,7 +363,7 @@ define([ "require", "exports" ], (require, exports) => {
     OptionsPage_: "pages/options.html" /* GlobalConsts.OptionsPage */ ,
     Platform_: "browser",
     BrowserName_: "",
-    HomePage_: "https://jamal.dev",
+    HomePage_: "https://jamalyusuf.github.io/vim-plus/",
     GlobalCommands_: null,
     ShowPage_: "/pages/show.html",
     VomnibarPageInner_: "",

@@ -6,6 +6,10 @@
   "quickNext_s": { "message": "切换到右侧标签页" },
   "reloadTab_s": { "message": "刷新整个页面" },
   "userCustomized": { "message": "自定义快捷键" },
+  "openSidePanel_s": { "message": "打开 Vim+ 命令中心（侧边栏）" },
+  "visitPreviousTab_s": { "message": "回到上一个标签页（chrome:// 页面可用）" },
+  "toggleMuteTab_s": { "message": "静音 / 取消静音当前标签页" },
+  "discardTab_s": { "message": "休眠当前标签页以释放内存" },
   "name": { "message": "Vim+ - 全键盘操作浏览器" },
   "description": { "message":
     "一款支持全键盘操作浏览器的辅助工具，只用键盘即可点击任意链接、切换标签页和快速搜索任意内容，支持自定义快捷键和调整操作细节"

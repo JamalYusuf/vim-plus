@@ -5,7 +5,7 @@ define([ "require", "exports", "./browser", "./ports", "./store", "./run_command
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.runQuickAction_ = exports.restoreHighlightsOnTab_ = exports.qaIconType_ = exports.matchQuickActions_ = exports.QUICK_ACTIONS = exports.CATEGORY_ALIASES = void 0;
+  exports.runQuickAction_ = exports.restoreHighlightsOnTab_ = exports.qaIconType_ = exports.matchQuickActions_ = exports.parseViewFxCss_ = exports.DEFAULT_VIEW_FX_CSS = exports.restoreHistoryPause_ = exports.QUICK_ACTIONS = exports.CATEGORY_ALIASES = void 0;
   const MS_MIN = 6e4;
   const MS_HOUR = 60 * MS_MIN;
   const MS_DAY = 24 * MS_HOUR;
@@ -72,14 +72,16 @@ define([ "require", "exports", "./browser", "./ports", "./store", "./run_command
     keys: [ "sh", "shred", "purge", "wipe" ],
     desc: "Wipe history + cookies/cache for a domain",
     cat: "Privacy",
-    needsDomain: true
+    needsDomain: true,
+    destructive: true
   }, {
     id: "shred-current",
     cmd: "sc",
     title: "Shred current site",
     keys: [ "sc", "shred-current", "purge-site" ],
     desc: "Wipe history + site data for this tab\u2019s domain",
-    cat: "Privacy"
+    cat: "Privacy",
+    destructive: true
   }, {
     id: "clear-cookies",
     cmd: "ck",
@@ -130,7 +132,8 @@ define([ "require", "exports", "./browser", "./ports", "./store", "./run_command
     title: "Clear all history",
     keys: [ "hall", "histall" ],
     desc: "Delete all browsing history (cannot undo)",
-    cat: "History"
+    cat: "History",
+    destructive: true
   }, {
     id: "ph15",
     cmd: "ph15",
@@ -344,7 +347,8 @@ define([ "require", "exports", "./browser", "./ports", "./store", "./run_command
     title: "Clear highlights",
     keys: [ "hlc", "unmark" ],
     desc: "Remove all highlights on this page (and from storage)",
-    cat: "Read"
+    cat: "Read",
+    destructive: true
   }, {
     id: "reader",
     cmd: "read",
@@ -409,14 +413,16 @@ define([ "require", "exports", "./browser", "./ports", "./store", "./run_command
     title: "Close other tabs",
     keys: [ "xo", "only", "close-others" ],
     desc: "Close all tabs except this one",
-    cat: "Tab"
+    cat: "Tab",
+    destructive: true
   }, {
     id: "close-right",
     cmd: "xr",
     title: "Close tabs to the right",
     keys: [ "xr", "close-right" ],
     desc: "Close tabs to the right of current",
-    cat: "Tab"
+    cat: "Tab",
+    destructive: true
   }, {
     id: "new",
     cmd: "n",
@@ -804,7 +810,7 @@ define([ "require", "exports", "./browser", "./ports", "./store", "./run_command
     id: "hints",
     cmd: "hints",
     title: "Link hints",
-    keys: [ "hints", "f", "links" ],
+    keys: [ "hints", "fh", "links" ],
     desc: "Activate link hints (f)",
     cat: "Nav"
   }, {
@@ -838,6 +844,23 @@ define([ "require", "exports", "./browser", "./ports", "./store", "./run_command
   } ];
   let historyPauseUntil_ = 0;
   let historyPauseListenerOn_ = false;
+  const PAUSE_STORE = "vpHistoryPauseUntil";
+  const PAUSE_ALARM = "vp-history-resume";
+  const pauseStorage_ = () => {
+    const st = browser_1.browser_.storage;
+    return st && (st.session || st.local) || null;
+  };
+  const persistPauseUntil_ = until => {
+    const st = pauseStorage_();
+    if (!st) {
+      return;
+    }
+    try {
+      until > 0 ? st.set({
+        [PAUSE_STORE]: until
+      }, browser_1.runtimeError_) : st.remove(PAUSE_STORE, browser_1.runtimeError_);
+    } catch (_a) {}
+  };
   const onVisitedWhilePaused_ = item => {
     if (Date.now() > historyPauseUntil_) {
       stopHistoryPause_(false);
@@ -849,23 +872,65 @@ define([ "require", "exports", "./browser", "./ports", "./store", "./run_command
   };
   const stopHistoryPause_ = notify => {
     historyPauseUntil_ = 0;
+    persistPauseUntil_(0);
+    try {
+      const alarms = browser_1.browser_.alarms;
+      alarms && alarms.clear && alarms.clear(PAUSE_ALARM);
+    } catch (_a) {}
     if (historyPauseListenerOn_ && browser_1.browser_.history && browser_1.browser_.history.onVisited) {
       try {
         browser_1.browser_.history.onVisited.removeListener(onVisitedWhilePaused_);
-      } catch (_a) {}
+      } catch (_b) {}
       historyPauseListenerOn_ = false;
     }
     notify && ports_1.showHUD("History on");
   };
+  const attachPauseListener_ = () => {
+    if (historyPauseListenerOn_ || !browser_1.browser_.history || !browser_1.browser_.history.onVisited) {
+      return;
+    }
+    browser_1.browser_.history.onVisited.addListener(onVisitedWhilePaused_);
+    historyPauseListenerOn_ = true;
+  };
   const startHistoryPause_ = ms => {
     historyPauseUntil_ = Date.now() + ms;
-    if (!historyPauseListenerOn_ && browser_1.browser_.history && browser_1.browser_.history.onVisited) {
-      browser_1.browser_.history.onVisited.addListener(onVisitedWhilePaused_);
-      historyPauseListenerOn_ = true;
-    }
+    persistPauseUntil_(historyPauseUntil_);
+    attachPauseListener_();
+    try {
+      const alarms = browser_1.browser_.alarms;
+      alarms && alarms.create && alarms.create(PAUSE_ALARM, {
+        when: historyPauseUntil_
+      });
+    } catch (_a) {}
     const mins = Math.round(ms / MS_MIN);
     return mins >= 60 ? `History off ${Math.round(mins / 60)}h` : `History off ${mins}m`;
   };
+  /** Re-attach pause after MV3 service-worker death. Safe no-op if none. */  const restoreHistoryPause_ = () => {
+    const st = pauseStorage_();
+    if (!st) {
+      return;
+    }
+    try {
+      st.get([ PAUSE_STORE ], items => {
+        const until = items && +items[PAUSE_STORE] || 0;
+        if (until > Date.now()) {
+          historyPauseUntil_ = until;
+          attachPauseListener_();
+        } else {
+          until && persistPauseUntil_(0);
+        }
+        return browser_1.runtimeError_();
+      });
+    } catch (_a) {}
+  };
+  exports.restoreHistoryPause_ = restoreHistoryPause_;
+  try {
+    const alarms = browser_1.browser_.alarms;
+    alarms && alarms.onAlarm && alarms.onAlarm.addListener(a => {
+      a && a.name === PAUSE_ALARM && stopHistoryPause_(true);
+    });
+  } catch (_a) {}
+  exports.restoreHistoryPause_();
   const extractDomain_ = raw => {
     let s = (raw || "").trim().toLowerCase();
     if (!s) {
@@ -903,6 +968,17 @@ define([ "require", "exports", "./browser", "./ports", "./store", "./run_command
   });
   const deleteHistorySince_ = sinceMs => {
     const history = browser_1.browser_.history;
+    if (history && history.deleteRange) {
+      return new Promise(resolve => {
+        history.deleteRange({
+          startTime: sinceMs,
+          endTime: Date.now()
+        }, () => {
+          resolve(-1);
+          return browser_1.runtimeError_();
+        });
+      });
+    }
     if (!history || !history.search) {
       return Promise.resolve(0);
     }
@@ -998,7 +1074,52 @@ define([ "require", "exports", "./browser", "./ports", "./store", "./run_command
       return browser_1.runtimeError_();
     });
   });
-  /** Injected into the page via scripting.executeScript. Typed as any — runs in page DOM context. */  const pageFxInjector_ = (styleId, fx) => {
+  /**
+     * Built-in :view CSS profiles. Overridden by settingsCache_.viewFxCss (Look → :view color profiles).
+     * Keep names in sync with FxMode (except jumble / off). Wiki: #view-fx
+     */  exports.DEFAULT_VIEW_FX_CSS = {
+    gray: "html{filter:grayscale(1)!important}",
+    blue: "html{filter:sepia(.35) hue-rotate(180deg) saturate(1.4)!important}",
+    inv: "html{filter:invert(1) hue-rotate(180deg)!important}",
+    sepia: "html{filter:sepia(.85) contrast(1.05)!important}",
+    blur: "html{filter:blur(1.2px)!important}",
+    contrast: "html{filter:contrast(1.45) saturate(1.1)!important}",
+    dim: "html{filter:brightness(.72)!important}",
+    focus: "html{background:#111!important}body{max-width:42rem;margin:0 auto!important;padding:1rem 1.25rem!important;background:#111!important;color:#e8e8e8!important;box-shadow:0 0 0 100vmax rgba(0,0,0,.55)!important}"
+  };
+  /**
+     * Parse Options → Look → viewFxCss.
+     * Format: `name: css` per line. `#` comments. Later lines win. Unknown names kept (unused).
+     */  const parseViewFxCss_ = raw => {
+    const out = {};
+    if (!raw) {
+      return out;
+    }
+    const lines = raw.split("\n");
+    for (let i = 0; i < lines.length; i++) {
+      const t = (lines[i] || "").trim();
+      if (!t || t.charAt(0) === "#") {
+        continue;
+      }
+      const colon = t.indexOf(":");
+      if (colon <= 0) {
+        continue;
+      }
+      const name = t.slice(0, colon).trim().toLowerCase();
+      const css = t.slice(colon + 1).trim();
+      name && css && (out[name] = css);
+    }
+    return out;
+  };
+  exports.parseViewFxCss_ = parseViewFxCss_;
+  const resolveFxCss_ = mode => {
+    const user = exports.parseViewFxCss_(store_1.settingsCache_.viewFxCss || "");
+    if (user[mode]) {
+      return user[mode];
+    }
+    return exports.DEFAULT_VIEW_FX_CSS[mode] || "";
+  };
+  /** Injected into the page via scripting.executeScript. Typed as any — runs in page DOM context. */  const pageFxInjector_ = (styleId, fx, cssOverride) => {
     const doc = globalThis.document;
     const root = doc.documentElement;
     const old = doc.getElementById(styleId);
@@ -1084,7 +1205,7 @@ define([ "require", "exports", "./browser", "./ports", "./store", "./run_command
       dim: "html{filter:brightness(.72)!important}",
       focus: "html{background:#111!important}body{max-width:42rem;margin:0 auto!important;padding:1rem 1.25rem!important;background:#111!important;color:#e8e8e8!important;box-shadow:0 0 0 100vmax rgba(0,0,0,.55)!important}"
     };
-    const css = cssMap[fx];
+    const css = cssOverride && (cssOverride + "").length ? cssOverride : cssMap[fx];
     if (!css) {
       return "unknown fx";
     }
@@ -1112,7 +1233,7 @@ define([ "require", "exports", "./browser", "./ports", "./store", "./run_command
         },
         world: "ISOLATED",
         func: pageFxInjector_,
-        args: [ FX_STYLE_ID, mode ]
+        args: [ FX_STYLE_ID, mode, resolveFxCss_(mode) ]
       });
       const msg = results && results[0] && results[0].result || mode;
       return String(msg);
@@ -1243,7 +1364,7 @@ define([ "require", "exports", "./browser", "./ports", "./store", "./run_command
       st.progress = true;
       st._progLastH = 0;
       st._progInfinite = false;
-      putStyle("vp-prog-css", "#vp-read-progress-track{position:fixed!important;top:0!important;left:0!important;right:0!important;height:5px!important;z-index:2147483646!important;pointer-events:none!important;background:rgba(113,113,122,.45)!important;overflow:hidden!important;box-shadow:0 1px 0 rgba(0,0,0,.12)!important}#vp-read-progress-fill{position:absolute!important;top:0!important;left:0!important;bottom:0!important;width:100%!important;height:100%!important;transform:scaleX(0)!important;transform-origin:left center!important;background:linear-gradient(90deg,#e11d48,#fb7185 70%,#fda4af)!important;box-shadow:0 0 10px #e11d48aa!important;transition:transform 60ms linear!important;pointer-events:none!important}#vp-read-infinity{position:fixed!important;top:10px!important;right:10px!important;z-index:2147483647!important;pointer-events:none!important;font:700 13px/1 system-ui,sans-serif!important;color:#e11d48!important;opacity:0!important;transition:opacity .2s!important}#vp-read-infinity.on{opacity:.95!important}");
+      putStyle("vp-prog-css", "#vp-read-progress-track{position:fixed!important;top:0!important;left:0!important;right:0!important;height:2px!important;z-index:2147483646!important;pointer-events:none!important;margin:0!important;padding:0!important;border:none!important;background:transparent!important;box-shadow:none!important;overflow:hidden!important}#vp-read-progress-fill{position:absolute!important;top:0!important;left:0!important;bottom:0!important;width:100%!important;height:100%!important;transform:scaleX(0)!important;transform-origin:left center!important;background:#e11d48!important;box-shadow:none!important;transition:transform 90ms ease-out!important;pointer-events:none!important}#vp-read-infinity{position:fixed!important;top:10px!important;right:12px!important;z-index:2147483647!important;pointer-events:none!important;font:600 11px/1 ui-sans-serif,system-ui,sans-serif!important;color:#e11d48!important;opacity:0!important;transition:opacity .18s ease!important;text-shadow:none!important}#vp-read-infinity.on{opacity:.45!important}");
       const track = d.createElement("div");
       track.id = "vp-read-progress-track";
       const fill = d.createElement("div");
@@ -1854,7 +1975,6 @@ define([ "require", "exports", "./browser", "./ports", "./store", "./run_command
         if (c === "off-view" || c === "offv" || c === "noview" || c === "off") {
       st.hideImg && vpEnhance("hideimg");
       st.device && vpEnhance("device", "desktop");
-      st.progress && vpEnhance("progress");
       st.spot && vpEnhance(st.spot, "off");
       st.zenCss && vpEnhance("zen-css", "off");
       st.hl && vpEnhance("hl", "off");
@@ -1862,7 +1982,7 @@ define([ "require", "exports", "./browser", "./ports", "./store", "./run_command
     }
     return "unknown enhance: " + c;
   };
-  /** Inject enhanceInjector_ into the active tab. */  const callEnhance_ = async (cmd, arg, tabId) => {
+  /** Prefer the content-script enhance API; fall back to the injected copy on chrome://-adjacent pages. */  const callEnhance_ = async (cmd, arg, tabId) => {
     const id = tabId != null ? tabId : await activeTabId_();
     if (id < 0) {
       return "No active tab";
@@ -1872,6 +1992,24 @@ define([ "require", "exports", "./browser", "./ports", "./store", "./run_command
       return "scripting API unavailable";
     }
     try {
+      const probe = await scripting.executeScript({
+        target: {
+          tabId: id
+        },
+        world: "ISOLATED",
+        func(c, a) {
+          const g = globalThis;
+          if (typeof g.__vpEnhance === "function") {
+            return String(g.__vpEnhance(c, a));
+          }
+          return "__missing__";
+        },
+        args: arg != null ? [ cmd, arg ] : [ cmd ]
+      });
+      const got = probe && probe[0] && probe[0].result;
+      if (got != null && got !== "__missing__") {
+        return String(got);
+      }
       const results = await scripting.executeScript({
         target: {
           tabId: id
@@ -2190,12 +2328,15 @@ define([ "require", "exports", "./browser", "./ports", "./store", "./run_command
   /**
      * Firefox-style Reader View: replace page with clean article UI.
      * Toggle: second call restores the original page.
-     */  const readerViewInjector_ = article => {
+     */  const readerViewInjector_ = (article, opts) => {
     const g = globalThis;
     const d = g.document;
     if (!d || !d.body) {
       return "No document body";
     }
+    const fontPx = Math.max(12, Math.min(32, opts && opts.fontPx || 18));
+    const widthEm = Math.max(24, Math.min(56, opts && opts.widthEm || 36));
+    const accent = opts && opts.accent || "#e11d48";
     // Exit reader mode → restore
         if (d.documentElement.getAttribute("data-vp-reader") === "1" && g.__vpReaderBackup) {
       try {
@@ -2226,7 +2367,7 @@ define([ "require", "exports", "./browser", "./ports", "./store", "./run_command
       title: d.title || "",
       scrollY: g.scrollY || 0
     };
-    const css = '\nhtml.vp-reader-root,html.vp-reader-root body{background:#f4f4f1!important;color:#1a1a1a!important;\nmargin:0!important;padding:0!important;min-height:100%!important}\nhtml.vp-reader-root body{font:18px/1.7 Georgia,"Times New Roman",serif!important}\n#vp-reader{max-width:36em;margin:0 auto;padding:2.5rem 1.5rem 4rem;position:relative}\n#vp-reader-toolbar{position:sticky;top:0;z-index:10;display:flex;gap:8px;align-items:center;\nflex-wrap:wrap;padding:.6rem 0 .75rem;margin:0 0 1.25rem;background:linear-gradient(#f4f4f1ee,#f4f4f1);\nborder-bottom:1px solid #ddd;font:13px/1.3 system-ui,-apple-system,sans-serif}\n#vp-reader-toolbar button{cursor:pointer;border:1px solid #ccc;background:#fff;color:#222;\npadding:6px 12px;border-radius:6px;font:13px system-ui,sans-serif}\n#vp-reader-toolbar button:hover{border-color:#e11d48;color:#e11d48}\n#vp-reader-toolbar .spacer{flex:1}\n#vp-reader h1.vp-rtitle{font:700 2em/1.25 Georgia,serif;margin:0 0 .4em;letter-spacing:-.02em}\n#vp-reader .vp-rmeta{color:#666;font:14px/1.4 system-ui,sans-serif;margin:0 0 1.5em}\n#vp-reader .vp-rcontent{font-size:1.05em}\n#vp-reader .vp-rcontent p{margin:0 0 1em}\n#vp-reader .vp-rcontent img,#vp-reader .vp-rcontent picture{max-width:100%;height:auto;border-radius:4px}\n#vp-reader .vp-rcontent a{color:#0b57d0}\n#vp-reader .vp-rcontent h2,#vp-reader .vp-rcontent h3{font-family:system-ui,sans-serif;margin:1.4em 0 .5em}\n#vp-reader.dark,html.vp-reader-root.dark,html.vp-reader-root.dark body{background:#1b1b1d!important;color:#e8e8e8!important}\nhtml.vp-reader-root.dark #vp-reader-toolbar{background:linear-gradient(#1b1b1dee,#1b1b1d);border-color:#333}\nhtml.vp-reader-root.dark #vp-reader-toolbar button{background:#2a2a2e;color:#eee;border-color:#444}\nhtml.vp-reader-root.dark #vp-reader .vp-rmeta{color:#aaa}\nhtml.vp-reader-root.dark #vp-reader .vp-rcontent a{color:#8ab4f8}\n#vp-reader.sepia,html.vp-reader-root.sepia,html.vp-reader-root.sepia body{background:#f4ecd8!important;color:#5b4636!important}\nhtml.vp-reader-root.sepia #vp-reader-toolbar{background:linear-gradient(#f4ecd8ee,#f4ecd8);border-color:#e0d4b8}\n#vp-reader.narrow{max-width:28em}#vp-reader.wide{max-width:46em}\n';
+    const css = `\nhtml.vp-reader-root,html.vp-reader-root body{background:#f4f4f1!important;color:#1a1a1a!important;\nmargin:0!important;padding:0!important;min-height:100%!important}\nhtml.vp-reader-root body{font:${fontPx}px/1.7 Georgia,"Times New Roman",serif!important}\n#vp-reader{max-width:${widthEm}em;margin:0 auto;padding:2.5rem 1.5rem 4rem;position:relative}\n#vp-reader-toolbar{position:sticky;top:0;z-index:10;display:flex;gap:8px;align-items:center;\nflex-wrap:wrap;padding:.6rem 0 .75rem;margin:0 0 1.25rem;background:linear-gradient(#f4f4f1ee,#f4f4f1);\nborder-bottom:1px solid #ddd;font:13px/1.3 system-ui,-apple-system,sans-serif}\n#vp-reader-toolbar button{cursor:pointer;border:1px solid #ccc;background:#fff;color:#222;\npadding:6px 12px;border-radius:0;font:13px system-ui,sans-serif}\n#vp-reader-toolbar button:hover{border-color:${accent};color:${accent}}\n#vp-reader-toolbar .spacer{flex:1}\n#vp-reader h1.vp-rtitle{font:700 2em/1.25 Georgia,serif;margin:0 0 .4em;letter-spacing:-.02em}\n#vp-reader .vp-rmeta{color:#666;font:14px/1.4 system-ui,sans-serif;margin:0 0 1.5em}\n#vp-reader .vp-rcontent{font-size:1.05em}\n#vp-reader .vp-rcontent p{margin:0 0 1em}\n#vp-reader .vp-rcontent img,#vp-reader .vp-rcontent picture{max-width:100%;height:auto;border-radius:4px}\n#vp-reader .vp-rcontent a{color:#0b57d0}\n#vp-reader .vp-rcontent h2,#vp-reader .vp-rcontent h3{font-family:system-ui,sans-serif;margin:1.4em 0 .5em}\n#vp-reader.dark,html.vp-reader-root.dark,html.vp-reader-root.dark body{background:#1b1b1d!important;color:#e8e8e8!important}\nhtml.vp-reader-root.dark #vp-reader-toolbar{background:linear-gradient(#1b1b1dee,#1b1b1d);border-color:#333}\nhtml.vp-reader-root.dark #vp-reader-toolbar button{background:#2a2a2e;color:#eee;border-color:#444}\nhtml.vp-reader-root.dark #vp-reader .vp-rmeta{color:#aaa}\nhtml.vp-reader-root.dark #vp-reader .vp-rcontent a{color:#8ab4f8}\n#vp-reader.sepia,html.vp-reader-root.sepia,html.vp-reader-root.sepia body{background:#f4ecd8!important;color:#5b4636!important}\nhtml.vp-reader-root.sepia #vp-reader-toolbar{background:linear-gradient(#f4ecd8ee,#f4ecd8);border-color:#e0d4b8}\n#vp-reader.narrow{max-width:28em}#vp-reader.wide{max-width:46em}\n`;
     let style = d.getElementById("vp-reader-style");
     if (!style) {
       style = d.createElement("style");
@@ -2292,6 +2433,13 @@ define([ "require", "exports", "./browser", "./ports", "./store", "./run_command
           html.classList.add("dark");
           wrap.classList.add("dark");
         }
+        try {
+          const name = html.classList.contains("dark") ? "dark" : html.classList.contains("sepia") ? "sepia" : "light";
+          const ch = g.chrome;
+          ch && ch.storage && ch.storage.local && ch.storage.local.set({
+            vpReaderTheme: name
+          });
+        } catch (_a) {}
         return;
       }
       if (act === "width") {
@@ -2307,9 +2455,68 @@ define([ "require", "exports", "./browser", "./ports", "./store", "./run_command
         const cur = parseFloat(g.getComputedStyle(wrap).fontSize) || 18;
         const next = act === "plus" ? Math.min(28, cur + 1) : Math.max(14, cur - 1);
         wrap.style.fontSize = next + "px";
+        try {
+          const ch = g.chrome;
+          ch && ch.storage && ch.storage.local && ch.storage.local.set({
+            vpReaderFontPx: next
+          });
+        } catch (_b) {}
       }
     });
-    return "Reader View on \xb7 " + (article.title || "article");
+    const closeReader = () => {
+      if (!g.__vpReaderBackup) {
+        return;
+      }
+      d.body.innerHTML = g.__vpReaderBackup.bodyHTML;
+      d.body.className = g.__vpReaderBackup.bodyClass || "";
+      d.title = g.__vpReaderBackup.title || d.title;
+      d.documentElement.removeAttribute("data-vp-reader");
+      d.documentElement.classList.remove("vp-reader-root", "dark", "sepia");
+      const st = d.getElementById("vp-reader-style");
+      st && st.parentNode && st.parentNode.removeChild(st);
+      g.scrollTo(0, g.__vpReaderBackup.scrollY || 0);
+      g.__vpReaderBackup = null;
+    };
+    const onRKey = e => {
+      if (d.documentElement.getAttribute("data-vp-reader") !== "1") {
+        g.removeEventListener("keydown", onRKey, true);
+        return;
+      }
+      const k = e.key;
+      if (k === "Escape" || k === "q") {
+        e.preventDefault && e.preventDefault();
+        closeReader();
+        return;
+      }
+      if (k === "=" || k === "+") {
+        const btn = wrap.querySelector('[data-vp-r="plus"]');
+        btn && btn.click();
+        e.preventDefault && e.preventDefault();
+      } else if (k === "-") {
+        const btn = wrap.querySelector('[data-vp-r="minus"]');
+        btn && btn.click();
+        e.preventDefault && e.preventDefault();
+      } else if (k === "0") {
+        wrap.style.fontSize = fontPx + "px";
+        e.preventDefault && e.preventDefault();
+      }
+    };
+    g.addEventListener("keydown", onRKey, true);
+    try {
+      const ch = g.chrome;
+      ch && ch.storage && ch.storage.local && ch.storage.local.get([ "vpReaderTheme", "vpReaderFontPx", "vpUiDark", "autoDarkMode" ], items => {
+        const theme = items && items.vpReaderTheme;
+        if (theme === "dark" || !theme && (items && items.vpUiDark === 1 || items && items.autoDarkMode === 1 && g.matchMedia && g.matchMedia("(prefers-color-scheme: dark)").matches)) {
+          d.documentElement.classList.add("dark");
+          wrap.classList.add("dark");
+        } else if (theme === "sepia") {
+          d.documentElement.classList.add("sepia");
+          wrap.classList.add("sepia");
+        }
+        wrap.style.fontSize = items && items.vpReaderFontPx ? (+items.vpReaderFontPx || fontPx) + "px" : fontPx + "px";
+      });
+    } catch (_a) {}
+    return "Reader View on \xb7 q/Esc exit \xb7 =/\u2212 size \xb7 " + (article.title || "article");
   };
   const parseArticleInTab_ = async tabId => {
     const err = await ensureReadabilityLoaded_(tabId);
@@ -2369,7 +2576,7 @@ define([ "require", "exports", "./browser", "./ports", "./store", "./run_command
           },
           world: "ISOLATED",
           func: readerViewInjector_,
-          args: [ null ]
+          args: [ null, null ]
         });
         return String(off && off[0] && off[0].result || "Reader View off");
       }
@@ -2387,7 +2594,11 @@ define([ "require", "exports", "./browser", "./ports", "./store", "./run_command
         },
         world: "ISOLATED",
         func: readerViewInjector_,
-        args: [ article ]
+        args: [ article, {
+          fontPx: store_1.settingsCache_.readerFontSize || 18,
+          widthEm: store_1.settingsCache_.readerWidth || 36,
+          accent: store_1.settingsCache_.accentColor || "#e11d48"
+        } ]
       });
       return String(results && results[0] && results[0].result || "Reader View on");
     } catch (e) {
@@ -2566,13 +2777,24 @@ define([ "require", "exports", "./browser", "./ports", "./store", "./run_command
             return browser_1.runtimeError_();
           }) : resolve("goForward unavailable");
         } else {
-          chrome;
- // no direct stop; use reload cancel via scripting
-                    browser_1.Tabs_.update(tabId, {
-            url: tab.url
+          const scripting = scriptingApi_();
+          if (!scripting) {
+            resolve("scripting API unavailable");
+            return;
+          }
+          scripting.executeScript({
+            target: {
+              tabId
+            },
+            func() {
+              try {
+                globalThis.stop();
+              } catch (_a) {}
+            }
+          }).then(() => {
+            resolve("Stopped");
           }, () => {
-            resolve("Stopped/refreshed");
-            return browser_1.runtimeError_();
+            resolve("Stop failed (restricted page?)");
           });
         }
       });
@@ -3002,14 +3224,51 @@ define([ "require", "exports", "./browser", "./ports", "./store", "./run_command
     act.id.includes(q) && q.length >= 2 && (s = Math.max(s, 500));
     return s;
   };
+  const RECENTS_KEY = "vpQaRecent";
+  let qaRecents_ = [];
+  try {
+    const st = browser_1.browser_.storage && browser_1.browser_.storage.local;
+    st && st.get([ RECENTS_KEY ], items => {
+      items && items[RECENTS_KEY] && items[RECENTS_KEY].length && (qaRecents_ = items[RECENTS_KEY]);
+      return browser_1.runtimeError_();
+    });
+  } catch (_b) {}
+  const pushQaRecent_ = id => {
+    if (!id || id === "browse" || DESTRUCTIVE_CANON[id] && pendingConfirm_) {
+      return;
+    }
+    qaRecents_ = [ id ].concat(qaRecents_.filter(x => x !== id)).slice(0, 12);
+    try {
+      browser_1.browser_.storage.local.set({
+        [RECENTS_KEY]: qaRecents_
+      }, browser_1.runtimeError_);
+    } catch (_a) {}
+  };
   /** Build rows for omnibar. `text` is the short form filled into the bar. */  const matchQuickActions_ = (queryNoColon, max) => {
     const q = (queryNoColon || "").trim().toLowerCase();
     const parts = q.split(/\s+/).filter(Boolean);
     const head = parts[0] || "";
     const rest = parts.slice(1).join(" ");
     const out = [];
-    // Empty ":" → category index + power-user hits (VS Code palette style)
+    // Empty ":" → recents, then category index + power-user hits
         if (!head) {
+      for (const rid of qaRecents_) {
+        if (out.length >= max) {
+          break;
+        }
+        const act = exports.QUICK_ACTIONS.find(a => a.id === rid);
+        if (!act) {
+          continue;
+        }
+        out.push({
+          id: act.id,
+          title: act.title,
+          desc: "Recent \xb7 " + act.desc,
+          url: "vimium://qa/" + act.id,
+          text: ":" + act.cmd,
+          cat: act.cat
+        });
+      }
       for (const c of exports.CATEGORY_ALIASES) {
         out.push({
           id: "cat-" + c.cat,
@@ -3161,27 +3420,45 @@ define([ "require", "exports", "./browser", "./ports", "./store", "./run_command
     callEnhance_("hl-restore", void 0, tabId).then(() => {}, () => {});
   };
   exports.restoreHighlightsOnTab_ = restoreHighlightsOnTab_;
-  // Auto-restore highlights after navigation (content script may miss late DOM)
-    try {
-    const webNav = browser_1.browser_.webNavigation;
-    webNav && webNav.onCompleted && webNav.onCompleted.addListener(details => {
-      if (details.frameId !== 0) {
-        return;
-      }
-      const u = details.url || "";
-      if (!u || u.startsWith("chrome:") || u.startsWith("chrome-extension:") || u.startsWith("about:") || u.startsWith("devtools:")) {
-        return;
-      }
-      const tid = details.tabId;
-      // two attempts: early + after late content
-            setTimeout(() => {
-        exports.restoreHighlightsOnTab_(tid);
-      }, 250);
-      setTimeout(() => {
-        exports.restoreHighlightsOnTab_(tid);
-      }, 1500);
-    });
-  } catch (_a) {}
+  // Content script restores highlights on load. SW re-injects only if the page never got content scripts.
+    let pendingConfirm_ = null;
+  const CONFIRM_MS = 8e3;
+  const DESTRUCTIVE_CANON = {
+    hall: "hall",
+    shred: "shred",
+    "shred-domain": "shred",
+    "shred-current": "shred-current",
+    sc: "shred-current",
+    "close-others": "close-others",
+    xo: "close-others",
+    "close-right": "close-right",
+    xr: "close-right",
+    "hl-clear": "hl-clear",
+    hlc: "hl-clear",
+    unmark: "hl-clear"
+  };
+  const DESTRUCTIVE_LABEL = {
+    hall: "delete ALL browsing history",
+    shred: "wipe this domain\u2019s history and site data",
+    "shred-current": "wipe this site\u2019s history and site data",
+    "close-others": "close every other tab in this window",
+    "close-right": "close tabs to the right",
+    "hl-clear": "remove all highlights on this page"
+  };
+  const confirmDestructive_ = canon => {
+    const now = Date.now();
+    if (pendingConfirm_ && pendingConfirm_.id === canon && pendingConfirm_.until > now) {
+      pendingConfirm_ = null;
+      return null;
+    }
+    pendingConfirm_ = {
+      id: canon,
+      until: now + CONFIRM_MS
+    };
+    const label = DESTRUCTIVE_LABEL[canon] || canon;
+    return "Enter again to confirm \xb7 cannot undo \u2014 " + label;
+  };
+  const histCleared_ = (n, window) => n < 0 ? "Cleared history (" + window + ")" : "\u2212" + n + " hist (" + window + ")";
   const runQuickAction_ = path => {
     const raw = decodeURIComponent((path || "").trim());
     const slash = raw.indexOf("/");
@@ -3189,9 +3466,16 @@ define([ "require", "exports", "./browser", "./ports", "./store", "./run_command
     const arg = slash < 0 ? "" : raw.slice(slash + 1);
     const go = async () => {
       try {
+        const dest = DESTRUCTIVE_CANON[id];
+        if (dest && arg !== "confirm") {
+          const block = confirmDestructive_(dest);
+          if (block) {
+            return [ block, 3 /* Urls.kEval.ERROR */ ];
+          }
+        }
         switch (id) {
          case "browse":
-          return [ "Category :" + (arg || "\u2026") + " \u2014 pick a command from the list", 3 /* Urls.kEval.ERROR */ ];
+          return [ "Type :" + (arg || "view") + " and pick a command \u2014 category is a filter, not an action", 3 /* Urls.kEval.ERROR */ ];
 
          case "shred":
          case "shred-domain":
@@ -3218,16 +3502,16 @@ define([ "require", "exports", "./browser", "./ports", "./store", "./run_command
           }), 3 /* Urls.kEval.ERROR */ ];
 
          case "h15":
-          return [ `\u2212${await deleteHistorySince_(Date.now() - 15 * MS_MIN)} hist (15m)`, 3 /* Urls.kEval.ERROR */ ];
+          return [ histCleared_(await deleteHistorySince_(Date.now() - 15 * MS_MIN), "15m"), 3 /* Urls.kEval.ERROR */ ];
 
          case "h1":
-          return [ `\u2212${await deleteHistorySince_(Date.now() - MS_HOUR)} hist (1h)`, 3 /* Urls.kEval.ERROR */ ];
+          return [ histCleared_(await deleteHistorySince_(Date.now() - MS_HOUR), "1h"), 3 /* Urls.kEval.ERROR */ ];
 
          case "h24":
-          return [ `\u2212${await deleteHistorySince_(Date.now() - MS_DAY)} hist (24h)`, 3 /* Urls.kEval.ERROR */ ];
+          return [ histCleared_(await deleteHistorySince_(Date.now() - MS_DAY), "24h"), 3 /* Urls.kEval.ERROR */ ];
 
          case "h7":
-          return [ `\u2212${await deleteHistorySince_(Date.now() - 7 * MS_DAY)} hist (7d)`, 3 /* Urls.kEval.ERROR */ ];
+          return [ histCleared_(await deleteHistorySince_(Date.now() - 7 * MS_DAY), "7d"), 3 /* Urls.kEval.ERROR */ ];
 
          case "hall":
           {
@@ -3458,26 +3742,26 @@ define([ "require", "exports", "./browser", "./ports", "./store", "./run_command
          case "dock-left":
          case "dlft":
          case "dockl":
-          return [ await dockDirect_("left"), 3 /* Urls.kEval.ERROR */ ];
+          return [ await runVimCmd_("dockWindowLeft"), 3 /* Urls.kEval.ERROR */ ];
 
          case "dock-right":
          case "drgt":
          case "dockr":
-          return [ await dockDirect_("right"), 3 /* Urls.kEval.ERROR */ ];
+          return [ await runVimCmd_("dockWindowRight"), 3 /* Urls.kEval.ERROR */ ];
 
          case "dock-up":
          case "dupp":
          case "docku":
-          return [ await dockDirect_("up"), 3 /* Urls.kEval.ERROR */ ];
+          return [ await runVimCmd_("dockWindowUp"), 3 /* Urls.kEval.ERROR */ ];
 
          case "dock-down":
          case "ddown":
          case "dockd":
-          return [ await dockDirect_("down"), 3 /* Urls.kEval.ERROR */ ];
+          return [ await runVimCmd_("dockWindowDown"), 3 /* Urls.kEval.ERROR */ ];
 
          case "dock-max":
          case "max":
-          return [ await dockDirect_("max"), 3 /* Urls.kEval.ERROR */ ];
+          return [ await runVimCmd_("dockWindowMax"), 3 /* Urls.kEval.ERROR */ ];
 
          case "dock-center":
          case "ctr":
@@ -3653,6 +3937,7 @@ define([ "require", "exports", "./browser", "./ports", "./store", "./run_command
     };
     return go().then(pair => {
       ports_1.showHUD(pair[0]);
+      id !== "browse" && pair[0] && pair[0].indexOf("Enter again to confirm") < 0 && pushQaRecent_(DESTRUCTIVE_CANON[id] || id);
       return pair;
     });
   };

@@ -55,7 +55,7 @@ export interface PgReq {
   [kPgReq.callApi]: [ {
     module: "permissions", name: "contains" | "request" | "remove", args: unknown[]
   } | {
-    module: "tabs", name: "update", args: Parameters<typeof chrome.tabs.update>
+    module: "tabs", name: "update" | "remove", args: unknown[]
   }, ExtApiResult<unknown> ]
   [kPgReq.selfTabId]: [ void, number ]
   [kPgReq.getStorage]: [ GlobalConsts.kIsHighContrast | null, Dict<unknown> ]
@@ -74,13 +74,13 @@ export interface PgReq {
   [kPgReq.keyBindingsList]: [ void, Array<{ key: string, command: string }> ]
   [kPgReq.recentTabs]: [ void, Array<{ id: number, title: string, url: string, active: boolean }> ]
   [kPgReq.readingListItems]: [ void, Array<{ title: string, url: string, hasBeenRead: boolean }> ]
-  [kPgReq.runPageAction]: [ { action: "readingList" | "bookmark" | "toggleGroup" | "help" | "sidePanel"
+  [kPgReq.runPageAction]: [ { action: "readingList" | "readingListRemove" | "bookmark" | "toggleGroup" | "help" | "sidePanel"
       | "disableOnce" | "disableSite" | "toggleSite" | "enable" | "copyUrl" | "reload" | "closeTab"
       | "duplicate" | "mute"
-      | "pin" | "runCommand" | "discard" | "copyTitle" | "showLastDownload" | "cycleWindows"
+      | "pin" | "runCommand" | "quickAction" | "discard" | "copyTitle" | "showLastDownload" | "cycleWindows"
       | "openDownloads" | "openHistoryPage" | "openExtensions" | "openShortcuts" | "options" | "wiki"
       , tabId?: number, command?: string }, { ok: boolean, message?: string, siteDisabled?: boolean } ]
-  [kPgReq.commandCatalog]: [ void, Array<{ name: string, bg: boolean }> ]
+  [kPgReq.commandCatalog]: [ void, Array<{ name: string, bg: boolean, title?: string, cmd?: string, cat?: string }> ]
   [kPgReq.closedSessions]: [ void, Array<{ title: string, url: string, sessionId: string, isWindow: boolean }> ]
   [kPgReq.restoreSession]: [ { sessionId: string }, { ok: boolean, message?: string } ]
 }

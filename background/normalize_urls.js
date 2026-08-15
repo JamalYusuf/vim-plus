@@ -49,7 +49,24 @@ define([ "require", "exports", "./store", "./utils" ], (require, exports, store_
     bangs: kWiki + "#hashbangs",
     keys: kWiki + "#keys",
     shortcuts: kWiki + "#keys",
-    panel: kWiki + "#side-panel"
+    panel: kWiki + "#side-panel",
+    "view-fx": kWiki + "#view-fx",
+    viewfx: kWiki + "#view-fx",
+    views: kWiki + "#view-fx",
+    colors: kWiki + "#look-colors",
+    "look-colors": kWiki + "#look-colors",
+    faq: kWiki + "#faq",
+    recipes: kWiki + "#daily-loop",
+    daily: kWiki + "#daily-loop",
+    palette: kWiki + "#command-palette",
+    commands: kWiki + "#command-palette",
+    troubleshoot: kWiki + "#troubleshooting",
+    troubleshooting: kWiki + "#troubleshooting",
+    yank: kWiki + "#copy-yank",
+    copy: kWiki + "#copy-yank",
+    visual: kWiki + "#visual-mode",
+    find: kWiki + "#find-mode",
+    tabs: kWiki + "#tabs-windows"
   };
   exports.lastUrlType_ = 0 /* Urls.Type.Full */;
   exports.hasUsedKeyword_ = false;

@@ -24,7 +24,7 @@ define([ "require", "exports", "./store", "./utils", "./browser", "./settings", 
         return;
       }
     }
-    utils_1.fetchFile_("vim-plus.css").then(css => {
+    utils_1.fetchFile_("vimium-c.css").then(css => {
       StyleCacheId_.slice(StyleCacheId_.indexOf(",") + 1);
       const hasAll = true /* BrowserVer.MinUsableCSS$All */;
       css.startsWith(":host{") || console.log('Assert error: `css.startsWith(":host{")` in updateHooks_.baseCSS');
@@ -48,6 +48,8 @@ define([ "require", "exports", "./store", "./utils", "./browser", "./settings", 
       let findCSS = cssFile.find;
       settings_1.setInLocal_("findCSS", findCSS.length + "\n" + findCSS);
       exports.mergeCSS(store_1.settingsCache_.userDefinedCss, action);
+    }).catch(err => {
+      console.log("Vim+: UI CSS failed to load (hints/HUD may be invisible):", err);
     });
   };
   exports.reloadCSS_ = reloadCSS_;
@@ -71,10 +73,62 @@ define([ "require", "exports", "./store", "./utils", "./browser", "./settings", 
       i: find2.slice(endFH + 1)
     };
   };
+  const DEFAULT_ACCENT = "#e11d48";
+  const DEFAULT_HINT_BG = "#e11d48";
+  const DEFAULT_HINT_FG = "#ffffff";
+  const DEFAULT_FIND_HL = "#ff9632";
+  const safeCssColor_ = (raw, fallback) => {
+    const s = (raw || "").trim();
+    if (!s || s.length > 32) {
+      return fallback;
+    }
+    if (s.indexOf(";") >= 0 || s.indexOf("{") >= 0 || s.indexOf("}") >= 0 || s.indexOf("<") >= 0) {
+      return fallback;
+    }
+    const ch = s.charAt(0);
+    if (ch !== "#" && s.indexOf("rgb") !== 0 && s.indexOf("hsl") !== 0) {
+      return fallback;
+    }
+    return s;
+  };
+  /**
+     * Build UI CSS from Look color settings. Empty when all values are author defaults
+     * so we do not fight vimium-c.css unless the user changed something.
+     */  const lookOverrideCSS_ = () => {
+    const c = store_1.settingsCache_;
+    const accent = safeCssColor_(c.accentColor, DEFAULT_ACCENT);
+    const hintBg = safeCssColor_(c.hintBg, DEFAULT_HINT_BG);
+    const hintFg = safeCssColor_(c.hintFg, DEFAULT_HINT_FG);
+    const find = safeCssColor_(c.findHighlightColor, DEFAULT_FIND_HL);
+    const ui = [];
+    if (hintBg !== DEFAULT_HINT_BG || hintFg !== DEFAULT_HINT_FG) {
+      ui.push(`.LH{background:${hintBg}!important;color:${hintFg}!important;border-color:${hintBg}!important}`);
+      ui.push(`.IH{border-color:${hintBg}!important}`);
+      ui.push(`.IHS{border-color:${hintBg}!important}`);
+      ui.push(`.D>.LH{background:${hintBg}!important;color:${hintFg}!important}`);
+    }
+    if (accent !== DEFAULT_ACCENT) {
+      ui.push(`.HUD:after{border-color:${accent}!important}`);
+      ui.push(`.Flash{box-shadow:0 0 0 2px ${accent}}`);
+      ui.push(`.Frame{border-color:${accent}}`);
+      ui.push(`.Sel{box-shadow:0 0 0 2px ${accent}}`);
+      ui.push(`.One{border-color:${accent}}`);
+    }
+    return {
+      ui: ui.join("\n"),
+      findSel: find !== DEFAULT_FIND_HL ? `::selection{background:${find}!important}` : ""
+    };
+  };
+  const remergeLook_ = () => {
+    exports.mergeCSS(store_1.settingsCache_.userDefinedCss, "userDefinedCss");
+  };
   const mergeCSS = (css2Str, action) => {
     let css = store_1.storageCache_.get("innerCSS"), idx = css.indexOf("\n");
     css = idx > 0 ? css.slice(0, idx) : css;
     const css2 = parseSections_(css2Str);
+    const look = lookOverrideCSS_();
+    look.ui && (css2.ui = (look.ui + "\n" + (css2.ui || "")).trim());
+    look.findSel && !css2["find:selection"] && (css2["find:selection"] = look.findSel);
     let newInnerCSS = css2.ui ? css + "\n" + css2.ui : css;
     let findh = css2["find:host"], findSel = css2["find:selection"];
     let find2 = css2.find, omni2 = css2.omni;
@@ -281,5 +335,9 @@ define([ "require", "exports", "./store", "./utils", "./browser", "./settings", 
       store_1.installation_ && store_1.installation_.then(details => details && exports.reloadCSS_(1 /* MergeAction.rebuildWhenInit */));
     }
     store_1.updateHooks_.userDefinedCss = exports.mergeCSS;
+    store_1.updateHooks_.accentColor = remergeLook_;
+    store_1.updateHooks_.hintBg = remergeLook_;
+    store_1.updateHooks_.hintFg = remergeLook_;
+    store_1.updateHooks_.findHighlightColor = remergeLook_;
   });
 });

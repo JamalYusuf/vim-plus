@@ -4,7 +4,7 @@
 
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE.txt)
 [![Chrome](https://img.shields.io/badge/Chrome-MV3-green.svg)](docs/install.md)
-[![Version](https://img.shields.io/badge/version-1.0.0-e11d48.svg)](package.json)
+[![Version](https://img.shields.io/badge/version-1.1.0-e11d48.svg)](package.json)
 
 Vim+ lets you browse the web without leaving the keyboard: link hints, scrolling, find, visual mode, a Chrome-like omnibar, a **command palette** (`:`), window docking, privacy tools, reading progress, Reader View, and a persistent **command center** side panel.
 
@@ -198,7 +198,7 @@ npm run package
 
 ## Versioning
 
-Current version: **1.0.0** (`package.json` / `manifest.json`).
+Current version: **1.1.0** (`package.json` / `manifest.json`).
 
 Release notes: [RELEASE-NOTES.md](RELEASE-NOTES.md) when present.
 

@@ -1,6 +1,6 @@
 "use strict";
 __filename = "background/others.js";
-define([ "require", "exports", "./store", "./browser", "./utils", "./settings", "./i18n", "./normalize_urls", "./normalize_urls", "./open_urls" ], (require, exports, store_1, browser_1, BgUtils_, settings_, i18n_1, normalize_urls_1, normalize_urls_2, open_urls_1) => {
+define([ "require", "exports", "./store", "./browser", "./utils", "./settings", "./i18n", "./normalize_urls", "./normalize_urls", "./open_urls", "./side_panel" ], (require, exports, store_1, browser_1, BgUtils_, settings_, i18n_1, normalize_urls_1, normalize_urls_2, open_urls_1, side_panel_1) => {
   "use strict";
   Object.defineProperty(exports, "__esModule", {
     value: true
@@ -37,10 +37,13 @@ define([ "require", "exports", "./store", "./browser", "./utils", "./settings", 
     copyLink: "vim-plus-copy-link",
     excludeSite: "vim-plus-exclude-site",
     openOptions: "vim-plus-open-options",
+    openWiki: "vim-plus-open-wiki",
+    openWebsite: "vim-plus-open-website",
     openSidePanel: "vim-plus-open-side-panel",
     readingList: "vim-plus-reading-list",
     bookmark: "vim-plus-bookmark"
   };
+  const WEBSITE_URL = "https://jamalyusuf.github.io/vim-plus/";
   const setupContextMenus_ = enable => {
     const menus = browser_1.browser_.contextMenus;
     if (!menus) {
@@ -65,6 +68,8 @@ define([ "require", "exports", "./store", "./browser", "./utils", "./settings", 
       mk(MENU_IDS.bookmark, "Toggle bookmark (Vim+)", [ "page" ]);
       mk(MENU_IDS.openSidePanel, "Open Vim+ side panel", [ "page", "action", "selection", "link", "editable" ]);
       mk(MENU_IDS.openOptions, "Vim+ Options", [ "page", "action" ]);
+      mk(MENU_IDS.openWiki, "Vim+ Wiki", [ "page", "action" ]);
+      mk(MENU_IDS.openWebsite, "Vim+ - All by Keyboard", [ "action" ]);
     });
   };
   store_1.updateHooks_.showContextMenu = value => {
@@ -78,11 +83,21 @@ define([ "require", "exports", "./store", "./browser", "./utils", "./settings", 
         browser_1.browser_.runtime.openOptionsPage();
         break;
 
+       case MENU_IDS.openWiki:
+        open_urls_1.focusOrLaunch_({
+          u: browser_1.browser_.runtime.getURL("pages/wiki.html")
+        });
+        break;
+
+       case MENU_IDS.openWebsite:
+        open_urls_1.focusOrLaunch_({
+          u: WEBSITE_URL
+        });
+        break;
+
        case MENU_IDS.openSidePanel:
-        // Context-menu click is a valid user gesture — open with windowId (global panel).
-        browser_1.import2("/background/side_panel.js").then(m => {
-          tab ? m.openSidePanelImmediate_(tab.id, tab.windowId) : m.openSidePanelImmediate_();
-        }, store_1.blank_);
+        // Must stay in the same turn as the click — dynamic import() drops the user gesture.
+        tab ? side_panel_1.openSidePanelImmediate_(tab.id, tab.windowId) : side_panel_1.openSidePanelImmediate_();
         break;
 
        case MENU_IDS.searchSelection:
@@ -511,7 +526,7 @@ define([ "require", "exports", "./store", "./browser", "./utils", "./settings", 
           }
           noteId = notificationId || noteId;
           browserNotifications.onClicked.addListener(function callback(id) {
-            if (id !== id) {
+            if (id !== noteId) {
               return;
             }
             browserNotifications.clear(id);

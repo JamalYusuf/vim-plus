@@ -3,7 +3,7 @@
   "description": "Vim+ — keyboard-first navigation for Google Chrome by Jamal Yusuf",
   "author": "Jamal Yusuf",
   "private": true,
-  "homepage": "https://jamal.dev",
+  "homepage": "https://jamalyusuf.github.io/vim-plus/",
   "license": "Apache-2.0",
   "keywords": [
     "vimium",
@@ -67,5 +67,5 @@
     "start": "gulp local",
     "test": "gulp test"
   },
-  "version": "1.0.0"
+  "version": "1.1.0"
 }

@@ -19,7 +19,7 @@ const DEVICES: ReadonlyArray<DevicePreset> = [
   { id: "mobile", w: 390, h: 844, label: "Mobile" }
 ]
 
-const HL_COLORS: ReadonlyArray<{ k: string; c: string; name: string }> = [
+const DEFAULT_HL_COLORS: ReadonlyArray<{ k: string; c: string; name: string }> = [
   { k: "1", c: "#fef08a", name: "Yellow" },
   { k: "2", c: "#bbf7d0", name: "Green" },
   { k: "3", c: "#fbcfe8", name: "Pink" },
@@ -27,6 +27,19 @@ const HL_COLORS: ReadonlyArray<{ k: string; c: string; name: string }> = [
   { k: "5", c: "#fdba74", name: "Orange" },
   { k: "0", c: "transparent", name: "Clear" }
 ]
+
+let HL_COLORS: Array<{ k: string; c: string; name: string }> =
+    DEFAULT_HL_COLORS.map(x => ({ k: x.k, c: x.c, name: x.name }))
+
+const applyHighlighterPalette_ = (raw: string): void => {
+  const parts = (raw || "").split(",")
+  for (let i = 0; i < 5; i++) {
+    const c = (parts[i] || "").trim()
+    const ok = c.charAt(0) === "#" && c.length >= 4 && c.length <= 9
+        && c.indexOf(";") < 0 && c.indexOf("{") < 0
+    HL_COLORS[i]!.c = ok ? c : DEFAULT_HL_COLORS[i]!.c
+  }
+}
 
 const STYLE_IDS = {
   progress: "vp-reading-progress-style",
@@ -40,7 +53,7 @@ const STYLE_IDS = {
 
 let progressOn = true
 let progressColor = "#e11d48"
-let progressHeight = 3
+let progressHeight = 2
 /** Extra CSS from Options → Reading progress CSS (user override) */
 let progressExtraCss = ""
 let showInfinity = true
@@ -51,6 +64,7 @@ let deviceId = ""
 let zenOn = false
 let hideImgOn = false
 let spotX = 0, spotY = 0, spotR = 150
+let spotlightRadius = 150
 let progressEl: HTMLElement | null = null
 let infinityEl: HTMLElement | null = null
 let spotEl: HTMLElement | null = null
@@ -104,7 +118,7 @@ const loadSettings_ = (): void => {
   try {
     ch.storage.local.get(
         ["readingProgress", "readingProgressColor", "readingProgressHeight",
-          "readingProgressCss", "showInfiniteScrollMark"],
+          "readingProgressCss", "showInfiniteScrollMark", "highlighterColors", "spotlightRadius"],
         (items: any): void => {
           if (items) {
             // Default ON when unset; only turn off for explicit false
@@ -127,6 +141,16 @@ const loadSettings_ = (): void => {
             }
             if (typeof items["showInfiniteScrollMark"] === "boolean") {
               showInfinity = items["showInfiniteScrollMark"]
+            }
+            if (typeof items["highlighterColors"] === "string") {
+              applyHighlighterPalette_(items["highlighterColors"])
+            }
+            const rawR = items["spotlightRadius"]
+            const rNum = typeof rawR === "number" ? rawR
+                : (typeof rawR === "string" ? parseInt(rawR, 10) : 0)
+            if (rNum >= 80 && rNum <= 400) {
+              spotlightRadius = rNum
+              if (!spotMode || spotMode === "spotlight") { spotR = spotlightRadius }
             }
           }
           // Rebuild styles (color/height may have changed) but keep bar alive
@@ -206,29 +230,30 @@ const applyProgressUI_ = (forceStyle: boolean): void => {
 #vp-read-progress-track{
   position:fixed!important;top:0!important;left:0!important;right:0!important;
   height:${h}px!important;z-index:2147483646!important;pointer-events:none!important;
-  background:rgba(113,113,122,.4)!important;
-  box-shadow:0 1px 0 rgba(0,0,0,.12)!important;
-  overflow:hidden!important;
+  margin:0!important;padding:0!important;border:none!important;
+  background:transparent!important;box-shadow:none!important;
+  overflow:hidden!important;isolation:isolate!important;
   --vp-read-p:0;
 }
 #vp-read-progress-fill,#vp-read-progress{
   position:absolute!important;top:0!important;left:0!important;bottom:0!important;
   width:100%!important;max-width:100%!important;height:100%!important;
+  margin:0!important;padding:0!important;border:none!important;
   transform:scaleX(var(--vp-read-p,0))!important;transform-origin:left center!important;
   will-change:transform!important;
-  background:linear-gradient(90deg,${color},#fb7185 55%,#fda4af)!important;
-  box-shadow:0 0 10px ${color}aa!important;
-  transition:transform 40ms linear!important;
+  background:${color}!important;
+  box-shadow:none!important;
+  transition:transform 90ms ease-out!important;
   pointer-events:none!important;
 }
 #vp-read-infinity{
-  position:fixed!important;top:${h + 6}px!important;right:10px!important;
+  position:fixed!important;top:${h + 8}px!important;right:12px!important;
   z-index:2147483647!important;pointer-events:none!important;
-  font:700 13px/1 system-ui,sans-serif!important;color:${color}!important;
-  opacity:0!important;transition:opacity .2s!important;
-  text-shadow:0 0 4px rgba(255,255,255,.8)!important;
+  font:600 11px/1 ui-sans-serif,system-ui,sans-serif!important;color:${color}!important;
+  opacity:0!important;transition:opacity .18s ease!important;
+  letter-spacing:.04em!important;text-shadow:none!important;
 }
-#vp-read-infinity.on{opacity:.95!important}
+#vp-read-infinity.on{opacity:.45!important}
 ` + (progressExtraCss ? "\n/* user readingProgressCss */\n" + progressExtraCss : ""))
   }
   ensureProgressNodes_()
@@ -417,7 +442,7 @@ const onPointerMove_ = (e: Event): void => {
       el = el.parentElement
     }
   } else {
-    spotR = 150
+    spotR = spotlightRadius
   }
   updateSpotPos_()
 }
@@ -545,6 +570,7 @@ const applyHighlightToSelection_ = (color: string): number => {
         }
       }
       sel.removeAllRanges()
+      if (n) { hlSaveAll_() }
       return n
     }
     const mark = D.createElement("mark")
@@ -558,9 +584,12 @@ const applyHighlightToSelection_ = (color: string): number => {
       mark.appendChild(frag)
       range.insertNode(mark)
     }
+    mark.setAttribute("data-vp-id", "h" + Date.now().toString(36) + hlUndo.length)
+    mark.setAttribute("data-vp-c", color)
     hlUndo.push(mark)
     if (hlUndo.length > 40) { hlUndo.shift() }
     sel.removeAllRanges()
+    hlSaveAll_()
     return 1
   } catch {
     return 0
@@ -638,7 +667,7 @@ const onHlKey_ = (e: Event): void => {
   }
   if (k === "u" || k === "U") {
     const last = hlUndo.pop()
-    if (last) { unwrapMark_(last) }
+    if (last) { unwrapMark_(last); hlSaveAll_() }
     if (ke.preventDefault) { ke.preventDefault() }
     return
   }
@@ -677,6 +706,7 @@ const clearAllHighlights_ = (): string => {
     n++
   }
   hlUndo = []
+  hlSaveAll_()
   return "cleared " + n + " highlights"
 }
 
@@ -783,7 +813,16 @@ const hlUpdateBadge_ = (mark: any, comments: any[]): void => {
   mark.title = comments.length + " comment(s) — click to view"
 }
 
+let hlSaveTimer = 0
+const HL_MAX_PAGES = 200
+
 const hlSaveAll_ = (): void => {
+  if (hlSaveTimer) { W.clearTimeout(hlSaveTimer) }
+  hlSaveTimer = W.setTimeout(hlFlushSave_, 300)
+}
+
+const hlFlushSave_ = (): void => {
+  hlSaveTimer = 0
   const ch = chromeApi()
   if (!ch || !ch.storage || !ch.storage.local) { return }
   const pageKey = hlPageKey_()
@@ -810,7 +849,8 @@ const hlSaveAll_ = (): void => {
       c: m.getAttribute("data-vp-c") || m.style.background || "#fef08a",
       t: t,
       n: n,
-      comments: comments
+      comments: comments,
+      at: Date.now()
     })
   }
   try {
@@ -818,6 +858,17 @@ const hlSaveAll_ = (): void => {
       const bag = (res && res[HL_STORE]) || {}
       if (items.length) { bag[pageKey] = items }
       else { delete bag[pageKey] }
+      const keys = Object.keys(bag)
+      if (keys.length > HL_MAX_PAGES) {
+        keys.sort((a, b): number => {
+          const aa = bag[a], bb = bag[b]
+          const ta = (aa && aa[0] && aa[0].at) || 0
+          const tb = (bb && bb[0] && bb[0].at) || 0
+          return ta - tb
+        })
+        const drop = keys.length - HL_MAX_PAGES
+        for (let i = 0; i < drop; i++) { delete bag[keys[i]!] }
+      }
       const payload: any = {}
       payload[HL_STORE] = bag
       ch.storage.local.set(payload)
@@ -1059,7 +1110,8 @@ export const initPageEnhance = (): void => {
         if (area !== "local") { return }
         if (changes.readingProgress || changes.readingProgressColor
             || changes.readingProgressHeight || changes.readingProgressCss
-            || changes.showInfiniteScrollMark) {
+            || changes.showInfiniteScrollMark || changes.highlighterColors
+            || changes.spotlightRadius) {
           loadSettings_()
         }
         if (changes[HL_STORE] || changes.vpPageHighlights) {

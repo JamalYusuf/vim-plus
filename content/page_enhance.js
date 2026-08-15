@@ -37,7 +37,7 @@ define([ "require", "exports", "../lib/utils", "../lib/dom_utils" ], (require, e
     h: 844,
     label: "Mobile"
   } ];
-  const HL_COLORS = [ {
+  const DEFAULT_HL_COLORS = [ {
     k: "1",
     c: "#fef08a",
     name: "Yellow"
@@ -62,6 +62,19 @@ define([ "require", "exports", "../lib/utils", "../lib/dom_utils" ], (require, e
     c: "transparent",
     name: "Clear"
   } ];
+  let HL_COLORS = DEFAULT_HL_COLORS.map(x => ({
+    k: x.k,
+    c: x.c,
+    name: x.name
+  }));
+  const applyHighlighterPalette_ = raw => {
+    const parts = (raw || "").split(",");
+    for (let i = 0; i < 5; i++) {
+      const c = (parts[i] || "").trim();
+      const ok = c.charAt(0) === "#" && c.length >= 4 && c.length <= 9 && c.indexOf(";") < 0 && c.indexOf("{") < 0;
+      HL_COLORS[i].c = ok ? c : DEFAULT_HL_COLORS[i].c;
+    }
+  };
   const STYLE_IDS = {
     progress: "vp-reading-progress-style",
     spot: "vp-spotlight-style",
@@ -73,7 +86,7 @@ define([ "require", "exports", "../lib/utils", "../lib/dom_utils" ], (require, e
   };
   let progressOn = true;
   let progressColor = "#e11d48";
-  let progressHeight = 3;
+  let progressHeight = 2;
   /** Extra CSS from Options → Reading progress CSS (user override) */  let progressExtraCss = "";
   let showInfinity = true;
   let spotMode = "";
@@ -83,6 +96,7 @@ define([ "require", "exports", "../lib/utils", "../lib/dom_utils" ], (require, e
   let zenOn = false;
   let hideImgOn = false;
   let spotX = 0, spotY = 0, spotR = 150;
+  let spotlightRadius = 150;
   let progressEl = null;
   let infinityEl = null;
   let spotEl = null;
@@ -127,7 +141,7 @@ define([ "require", "exports", "../lib/utils", "../lib/dom_utils" ], (require, e
       return;
     }
     try {
-      ch.storage.local.get([ "readingProgress", "readingProgressColor", "readingProgressHeight", "readingProgressCss", "showInfiniteScrollMark" ], items => {
+      ch.storage.local.get([ "readingProgress", "readingProgressColor", "readingProgressHeight", "readingProgressCss", "showInfiniteScrollMark", "highlighterColors", "spotlightRadius" ], items => {
         if (items) {
           // Default ON when unset; only turn off for explicit false
           typeof items.readingProgress === "boolean" ? progressOn = items.readingProgress : items.readingProgress == null && (progressOn = true);
@@ -137,6 +151,13 @@ define([ "require", "exports", "../lib/utils", "../lib/dom_utils" ], (require, e
           hNum > 0 && (progressHeight = Math.min(12, Math.max(1, hNum | 0)));
           typeof items.readingProgressCss === "string" && (progressExtraCss = items.readingProgressCss);
           typeof items.showInfiniteScrollMark === "boolean" && (showInfinity = items.showInfiniteScrollMark);
+          typeof items.highlighterColors === "string" && applyHighlighterPalette_(items.highlighterColors);
+          const rawR = items.spotlightRadius;
+          const rNum = typeof rawR === "number" ? rawR : typeof rawR === "string" ? parseInt(rawR, 10) : 0;
+          if (rNum >= 80 && rNum <= 400) {
+            spotlightRadius = rNum;
+            spotMode && spotMode !== "spotlight" || (spotR = spotlightRadius);
+          }
         }
         // Rebuild styles (color/height may have changed) but keep bar alive
                 applyProgressUI_(true);
@@ -191,7 +212,7 @@ define([ "require", "exports", "../lib/utils", "../lib/dom_utils" ], (require, e
     const h = Math.max(2, Math.min(12, progressHeight | 0));
     const color = progressColorSafe_();
     const needStyle = forceStyle || !D.getElementById(STYLE_IDS.progress);
-    needStyle && ensureStyle_(STYLE_IDS.progress, `\n#vp-read-progress-track{\n  position:fixed!important;top:0!important;left:0!important;right:0!important;\n  height:${h}px!important;z-index:2147483646!important;pointer-events:none!important;\n  background:rgba(113,113,122,.4)!important;\n  box-shadow:0 1px 0 rgba(0,0,0,.12)!important;\n  overflow:hidden!important;\n  --vp-read-p:0;\n}\n#vp-read-progress-fill,#vp-read-progress{\n  position:absolute!important;top:0!important;left:0!important;bottom:0!important;\n  width:100%!important;max-width:100%!important;height:100%!important;\n  transform:scaleX(var(--vp-read-p,0))!important;transform-origin:left center!important;\n  will-change:transform!important;\n  background:linear-gradient(90deg,${color},#fb7185 55%,#fda4af)!important;\n  box-shadow:0 0 10px ${color}aa!important;\n  transition:transform 40ms linear!important;\n  pointer-events:none!important;\n}\n#vp-read-infinity{\n  position:fixed!important;top:${h + 6}px!important;right:10px!important;\n  z-index:2147483647!important;pointer-events:none!important;\n  font:700 13px/1 system-ui,sans-serif!important;color:${color}!important;\n  opacity:0!important;transition:opacity .2s!important;\n  text-shadow:0 0 4px rgba(255,255,255,.8)!important;\n}\n#vp-read-infinity.on{opacity:.95!important}\n` + (progressExtraCss ? "\n/* user readingProgressCss */\n" + progressExtraCss : ""));
+    needStyle && ensureStyle_(STYLE_IDS.progress, `\n#vp-read-progress-track{\n  position:fixed!important;top:0!important;left:0!important;right:0!important;\n  height:${h}px!important;z-index:2147483646!important;pointer-events:none!important;\n  margin:0!important;padding:0!important;border:none!important;\n  background:transparent!important;box-shadow:none!important;\n  overflow:hidden!important;isolation:isolate!important;\n  --vp-read-p:0;\n}\n#vp-read-progress-fill,#vp-read-progress{\n  position:absolute!important;top:0!important;left:0!important;bottom:0!important;\n  width:100%!important;max-width:100%!important;height:100%!important;\n  margin:0!important;padding:0!important;border:none!important;\n  transform:scaleX(var(--vp-read-p,0))!important;transform-origin:left center!important;\n  will-change:transform!important;\n  background:${color}!important;\n  box-shadow:none!important;\n  transition:transform 90ms ease-out!important;\n  pointer-events:none!important;\n}\n#vp-read-infinity{\n  position:fixed!important;top:${h + 8}px!important;right:12px!important;\n  z-index:2147483647!important;pointer-events:none!important;\n  font:600 11px/1 ui-sans-serif,system-ui,sans-serif!important;color:${color}!important;\n  opacity:0!important;transition:opacity .18s ease!important;\n  letter-spacing:.04em!important;text-shadow:none!important;\n}\n#vp-read-infinity.on{opacity:.45!important}\n` + (progressExtraCss ? "\n/* user readingProgressCss */\n" + progressExtraCss : ""));
     ensureProgressNodes_();
     bindProgressListeners_();
     updateProgress_();
@@ -386,7 +407,7 @@ define([ "require", "exports", "../lib/utils", "../lib/dom_utils" ], (require, e
         el = el.parentElement;
       }
     } else {
-      spotR = 150;
+      spotR = spotlightRadius;
     }
     updateSpotPos_();
   };
@@ -490,6 +511,7 @@ define([ "require", "exports", "../lib/utils", "../lib/dom_utils" ], (require, e
           }
         }
         sel.removeAllRanges();
+        n && hlSaveAll_();
         return n;
       }
       const mark = D.createElement("mark");
@@ -503,9 +525,12 @@ define([ "require", "exports", "../lib/utils", "../lib/dom_utils" ], (require, e
         mark.appendChild(frag);
         range.insertNode(mark);
       }
+      mark.setAttribute("data-vp-id", "h" + Date.now().toString(36) + hlUndo.length);
+      mark.setAttribute("data-vp-c", color);
       hlUndo.push(mark);
       hlUndo.length > 40 && hlUndo.shift();
       sel.removeAllRanges();
+      hlSaveAll_();
       return 1;
     } catch (_b) {
       return 0;
@@ -588,7 +613,10 @@ define([ "require", "exports", "../lib/utils", "../lib/dom_utils" ], (require, e
     }
     if (k === "u" || k === "U") {
       const last = hlUndo.pop();
-      last && unwrapMark_(last);
+      if (last) {
+        unwrapMark_(last);
+        hlSaveAll_();
+      }
       ke.preventDefault && ke.preventDefault();
       return;
     }
@@ -631,6 +659,7 @@ define([ "require", "exports", "../lib/utils", "../lib/dom_utils" ], (require, e
       n++;
     }
     hlUndo = [];
+    hlSaveAll_();
     return "cleared " + n + " highlights";
   };
   const offAllView_ = () => {
@@ -732,7 +761,14 @@ define([ "require", "exports", "../lib/utils", "../lib/dom_utils" ], (require, e
     badge.textContent = String(comments.length);
     mark.title = comments.length + " comment(s) \u2014 click to view";
   };
+  let hlSaveTimer = 0;
+  const HL_MAX_PAGES = 200;
   const hlSaveAll_ = () => {
+    hlSaveTimer && W.clearTimeout(hlSaveTimer);
+    hlSaveTimer = W.setTimeout(hlFlushSave_, 300);
+  };
+  const hlFlushSave_ = () => {
+    hlSaveTimer = 0;
     const ch = chromeApi();
     if (!ch || !ch.storage || !ch.storage.local) {
       return;
@@ -767,13 +803,27 @@ define([ "require", "exports", "../lib/utils", "../lib/dom_utils" ], (require, e
         c: m.getAttribute("data-vp-c") || m.style.background || "#fef08a",
         t,
         n,
-        comments
+        comments,
+        at: Date.now()
       });
     }
     try {
       ch.storage.local.get([ HL_STORE ], res => {
         const bag = res && res[HL_STORE] || {};
         items.length ? bag[pageKey] = items : delete bag[pageKey];
+        const keys = Object.keys(bag);
+        if (keys.length > HL_MAX_PAGES) {
+          keys.sort((a, b) => {
+            const aa = bag[a], bb = bag[b];
+            const ta = aa && aa[0] && aa[0].at || 0;
+            const tb = bb && bb[0] && bb[0].at || 0;
+            return ta - tb;
+          });
+          const drop = keys.length - HL_MAX_PAGES;
+          for (let i = 0; i < drop; i++) {
+            delete bag[keys[i]];
+          }
+        }
         const payload = {};
         payload[HL_STORE] = bag;
         ch.storage.local.set(payload);
@@ -1047,7 +1097,7 @@ define([ "require", "exports", "../lib/utils", "../lib/dom_utils" ], (require, e
           if (area !== "local") {
             return;
           }
-          (changes.readingProgress || changes.readingProgressColor || changes.readingProgressHeight || changes.readingProgressCss || changes.showInfiniteScrollMark) && loadSettings_();
+          (changes.readingProgress || changes.readingProgressColor || changes.readingProgressHeight || changes.readingProgressCss || changes.showInfiniteScrollMark || changes.highlighterColors || changes.spotlightRadius) && loadSettings_();
           (changes[HL_STORE] || changes.vpPageHighlights) && restorePageHighlights_();
         });
       } catch (_a) {}

@@ -101,10 +101,17 @@ Edit `pages/wiki-content.ts` → `WIKI_PAGES`, then `npm run tsc` and reload.
 ### Adding a setting
 
 1. Default in `background/settings.ts`  
-2. Type in `background/index.d.ts`  
-3. Options control  
-4. Update hook / content listener if live  
-5. Wiki note when user-facing  
+2. Type + JSDoc in `background/index.d.ts` (storage key, format, read path)  
+3. Options control (`id` matches the key, `data-model`)  
+4. Add the field id to `FIELD_SEC` in `pages/options_nav.ts` (tab assignment)  
+5. Update hook / content listener if live  
+6. Wiki page or note when user-facing  
+
+Example: `viewFxCss` — empty default, Look tab textarea, parsed in `quick_actions.parseViewFxCss_`, documented at wiki `#view-fx`.
+
+Color settings (`accentColor`, `hintBg`, `hintFg`, `findHighlightColor`, `readingProgressColor`, `highlighterColors`) use a native `<input type="color">` plus a hex text field. Injected CSS colors must be sanitized (reject `;` / `{`).
+
+Example: `lookOverrideCSS_` in `background/ui_css.ts` applies accent / hint / find after Save.
 
 ### Adding a permission
 

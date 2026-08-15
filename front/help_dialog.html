@@ -25,7 +25,7 @@
 	top: 52px;
 	-webkit-user-select: auto;
 	user-select: auto;
-	width: 958px;
+	width: min(958px, calc(100vw - 48px));
 	color: #18181b;
 }
 #HDlg:focus {
@@ -389,15 +389,16 @@
 		</span>
 	</div>
 	<div class="HelpQuick">
-		<strong>Quick:</strong>
+		<strong>Vim+:</strong>
+		<kbd>:</kbd> palette ·
+		<kbd>:read</kbd> reader ·
+		<kbd>:hl</kbd> highlight ·
+		<kbd>:zen</kbd> zen window ·
 		<kbd>f</kbd> hints ·
 		<kbd>o</kbd> omnibar ·
-		<kbd>j</kbd>/<kbd>k</kbd> scroll ·
 		<kbd>gS</kbd> panel ·
 		<kbd>gA</kbd> windows ·
-		<kbd>o</kbd> then <kbd>:</kbd> actions ·
-		<kbd>Alt</kbd>+↑ dock / again full ·
-		<a class="VimL HLaunch" href="{{wikiHashbangs}}" data-vim-url="{{wikiHashbangs}}">hashbangs</a> ·
+		<kbd>j</kbd>/<kbd>k</kbd> scroll ·
 		<a class="VimL HLaunch" href="{{wikiKeys}}" data-vim-url="{{wikiKeys}}">keys</a> ·
 		<a class="VimL HLaunch" href="{{wikiPanel}}" data-vim-url="{{wikiPanel}}">panel</a>
 	</div>

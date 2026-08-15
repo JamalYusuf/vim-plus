@@ -116,6 +116,7 @@
         text-transform: uppercase; font-weight: 600; cursor: pointer;
       }
       #actions button:hover { background: var(--vp-red, #e11d48); color: #fff; }
+      .row .fav { width: 16px; height: 16px; flex: 0 0 16px; }
       #toast {
         flex: 0 0 auto; min-height: 22px; padding: 4px 12px;
         font-size: 11px; color: var(--vp-red-hover, #f43f5e);
@@ -163,9 +164,9 @@
         </div>
       </div>
       <div id="search-wrap">
-        <input id="q" type="search" placeholder="Filter…  j/k move · Enter run · 1–5 modes" autocomplete="off" autofocus />
+        <input id="q" type="search" placeholder="Filter…  j/k move · Enter run · 1–6 modes" autocomplete="off" autofocus />
       </div>
-      <div id="list"></div>
+      <div id="list" role="listbox" aria-label="Command center"></div>
       <div id="actions">
         <button type="button" data-act="bookmark">Bookmark</button>
         <button type="button" data-act="readingList">Read later</button>

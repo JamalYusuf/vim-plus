@@ -286,9 +286,11 @@ export const fetchFile_ = ((filePath: string, format?: "blob" | "arraybuffer"): 
   filePath = !format && !filePath.includes("/") ? "/front/" + filePath : filePath
   if (!OnChrome || (format ? Build.MinCVer >= BrowserVer.MinFetchDataURL || CurCVer_ >= BrowserVer.MinFetchDataURL
       : Build.MinCVer >= BrowserVer.MinFetchExtensionFiles || CurCVer_ >= BrowserVer.MinFetchExtensionFiles)) {
-    return fetch(filePath as `/${string}`).then(r =>
-        json ? r.json<Dict<string>>().then((res): Map<string, any> => new Map<string, any>(Object.entries!(res)))
-        : format ? format === "blob" ? r.blob() : r.arrayBuffer() : r.text())
+    return fetch(filePath as `/${string}`).then(r => {
+        if (!r.ok) { throw Error("fetch " + filePath + " → " + r.status) }
+        return json ? r.json<Dict<string>>().then((res): Map<string, any> => new Map<string, any>(Object.entries!(res)))
+        : format ? format === "blob" ? r.blob() : r.arrayBuffer() : r.text()
+    })
   }
   const req = new XMLHttpRequest() as TextXHR | JSONXHR | BlobXHR | ArrayXHR
   req.open("GET", filePath, true)
@@ -310,7 +312,7 @@ export const fetchFile_ = ((filePath: string, format?: "blob" | "arraybuffer"): 
   })
 }) as {
   <T extends `/_locales/${string}/messages.json` | `/i18n/${string}.json`
-        | "words.txt" | "vim-plus.css" | "help_dialog.html"> (file: T, format?: undefined
+        | "words.txt" | "vimium-c.css" | "vim-plus.css" | "help_dialog.html"> (file: T, format?: undefined
   ): Promise<T extends `${string}.json` ? Map<string, any> : string>
   <F extends "blob" | "arraybuffer"> (file: `data:${string}`, format: F): Promise<F extends "blob" ? Blob : ArrayBuffer>
 }
