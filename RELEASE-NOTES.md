@@ -5,7 +5,7 @@
 
 ---
 
-## v1.1.0
+## v1.1.0 (unpublished — store listing is still 1.0.0)
 
 Trust, keyboard completeness, and quieter chrome for the 1.0 product layer.
 

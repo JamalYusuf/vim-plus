@@ -56,6 +56,7 @@
     "package": "node scripts/package-extension.js",
     "package:store": "node scripts/package-extension.js",
     "store": "node scripts/package-extension.js",
+    "extension": "node scripts/package-extension.js --keep-key --no-zip",
     "rebuild": "gulp rebuild",
     "chrome": "bash -c \"BUILD_BTypes=1 BUILD_MinCVer=${BUILD_MinCVer:-121} BUILD_NeedCommit=1 gulp dist && IN_DIST=1 ./scripts/make.sh\"",
     "csize": "bash -c \"BUILD_BTypes=${BUILD_BTypes:-1} BUILD_MinCVer=${BUILD_MinCVer:-121} BUILD_NeedCommit=0 gulp content/size\"",
@@ -67,5 +68,5 @@
     "start": "gulp local",
     "test": "gulp test"
   },
-  "version": "1.1.0"
+  "version": "1.0.0"
 }

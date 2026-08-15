@@ -13,15 +13,15 @@ Until a Chrome Web Store listing is live, install from source:
 git clone <repository-url> vim-plus
 cd vim-plus
 npm ci
-npm run tsc
-# optional fuller local pipeline:
-# npm run local
+npm run extension
 ```
+
+Do **not** load the repository root. That tree is large (`node_modules` alone is ~125MB) and includes TypeScript sources, the docs site, and tests.
 
 1. Open `chrome://extensions`
 2. Turn on **Developer mode**
 3. Click **Load unpacked**
-4. Select the project root (directory containing `manifest.json`)
+4. Select **`build/extension`** (this folder has `manifest.json` and only runtime files)
 5. Pin **Vim+** on the toolbar
 
 ### Recommended first setup
